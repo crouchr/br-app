@@ -6,7 +6,6 @@ import GeoIP
 import os
 import sys,syslog,time
 import re
-import IPy
 import pkg_resources
 
 Version = "1.10"
