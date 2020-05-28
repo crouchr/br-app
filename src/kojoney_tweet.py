@@ -5,10 +5,7 @@
 import time, os , syslog , re , sys 
 #import twitter		# Google API python-twitter 
 
-import tweepy
-
 from urlparse import urlparse
-from ConfigParser import ConfigParser
 
 import ipintellib				# RCH library - master on mars
 import mailalert				# RCH library
@@ -30,13 +27,11 @@ import kojoney_honeyd_parse
 import kojoney_suricata_parse			
 import kojoney_shadow_snort_parse			
 import kojoney_fwsnort_parse			
-import kojoney_spade_parse			
-import kojoney_bro_parse			
-import kojoney_argus_parse			
+import kojoney_spade_parse
+import kojoney_argus_parse
 import kojoney_aaa_parse			
 import kojoney_p0f_parse			
 import kojoney_maldet_parse
-import kojoney_tsom_parse
 import kojoney_conpot_parse
 
 import kojoney_netmenaces_idmef			# no Tweeting - just  IDMEF alert generation
@@ -47,8 +42,7 @@ import kojoney_funcs
 import twitter_funcs				# RCH library
 
 # Hooks to use Blackrain BRX
-import BlackRainClient				# BRX API
-import blackrain_logging
+from backlog import blackrain_logging
 import kojoney_blackrain
 import kojoney_netflow_parse
 import logging

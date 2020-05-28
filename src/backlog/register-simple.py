@@ -13,7 +13,7 @@ sensorVersion   = "b-rc2"	# change per CD release - i.e. when any file changes
 registerVersion = "v0.1"	# change when this file changes 
 
 # standard Python libraries
-import time,sys,logging
+import sys,logging
 
 # rch libraries
 import blackrain_stun
@@ -24,7 +24,7 @@ import blackrain_cpuinfo
 import blackrain_logging
 
 # third-party libraries
-import BlackRainClient				# Mat's API to BRX
+import BlackRainClient  # Mat's API to BRX
 
 # Permanently Hard-coded values
 # =============================

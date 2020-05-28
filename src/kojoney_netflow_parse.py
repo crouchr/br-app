@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-import time, os , syslog , re 
+import time, syslog
 #import kojoney_afterglow
-import blackrain_netflow
-import kojoney_hiddenip
+from backlog import blackrain_netflow
+
 
 def twittifyNetflow(tweet):
     print "kojoney_netflow_parse.py : twittifyHoneyd() : before twittification, raw tweet = " + tweet

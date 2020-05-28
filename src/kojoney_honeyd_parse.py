@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
-import time, os , syslog , re 
+import time, syslog , re
 import kojoney_afterglow
-import blackrain_honeyd
+from backlog import blackrain_honeyd
+
 
 def twittifyHoneyd(tweet):
     #print "kojoney_honeyd_parse.py : twittifyHoneyd() : before twittification, raw tweet = " + tweet

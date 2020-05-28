@@ -1,9 +1,9 @@
 
-import simplejson
+#import simplejson
 import urllib2
 import time
 import socket
-
+import json
 # u=http://freegeoip.net/json/8.8.8.8
 # {'city': 'Mountain View', 'region_code': 'CA', 'region_name': 'California', 'areacode': '650', 'ip': '8.8.8.8',
 # 'zipcode': '94043', 'longitude': -122.0574, 'metro_code': '807', 'latitude': 37.419199999999996, 'country_code': 'US', 'country_name': 'United States'}
@@ -19,7 +19,7 @@ def freegeoip(ip):
                                                                                                                                     
         req = urllib2.Request(u,None,headers) 
         time.sleep(1)	# 4000 requests per hour are permitted                                                                                                                                 
-        return simplejson.load(urllib2.urlopen(req))
+        return json.load(urllib2.urlopen(req))
     
     except urllib2.HTTPError,e:
         print "HTTP error " + e.__str__()
