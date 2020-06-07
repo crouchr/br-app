@@ -5,9 +5,9 @@ import time
 import syslog
  
 from email.mime.multipart import MIMEMultipart
-from email.MIMEBase import MIMEBase
+#from email.MIMEBase import MIMEBase
 from email.MIMEText import MIMEText
-from email import Encoders 
+#from email import Encoders
 
 #directory = "/tmp/images/"
 

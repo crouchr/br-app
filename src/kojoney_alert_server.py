@@ -7,12 +7,12 @@ import kojoney_ultimatenotification
 
 def processAlert(line) :
     try:
-        sender    = "uber.koob@gmail.com"
-        password  = "fuckfacebook"
+        sender    = "majoralert100@gmail.com"
+        password  = "Tubularbells1968"
         
         #recipients = "richard.crouch@vodafone.com"
         #recipientList = ["majoralert999@gmail.com","richard.crouch@vodafone.com"]
-        recipientList = ["majoralert999@gmail.com"]
+        recipientList = ["uber.koob@gmail.com"]
         
         line = line.rstrip("\n")
         msg = "Entry read from Alert Queue :  " + line
@@ -20,33 +20,27 @@ def processAlert(line) :
         syslog.syslog(msg)
         
         fields = line.split("|")
-        #print fields.__str__()
-        
+
         subject      = fields[1]
         message      = fields[3]
-        
-        #print "subject : " + subject
-        #print "message : " + message
-          
+
         fileList = []
         
         # Send the alert via Googlemail
         print "Sending Kojoney Alert via Googlemail..."
-        googleMail.sendViaGmail(sender,password,recipientList,subject,message,fileList)
+        result = googleMail.sendViaGmail(sender,password,recipientList,subject,message,fileList)
         msg = "kojoney_alert_server.py : processAlert() : Sent Kojoney Alert via Googlemail"
         print msg
-        syslog.syslog(msg)  
-        
+        syslog.syslog(msg)
         time.sleep(2)	# crude rate limiter
         
         # Send via Ultimate Notification direct to iPhone
-        unMsg = subject + " : " + message
-        print "kojoney_alert_server.py : ultimateNotification msg=" + unMsg
-        kojoney_ultimatenotification.ultimatenotification(unMsg)
-        
-        msg = "kojoney_alert_server.py : processAlert() : Sent Kojoney Alert via Ultimate Notification to iPhone"
-        print msg
-        syslog.syslog(msg)  
+        #unMsg = subject + " : " + message
+        #print "kojoney_alert_server.py : ultimateNotification msg=" + unMsg
+        #kojoney_ultimatenotification.ultimatenotification(unMsg)
+        #msg = "kojoney_alert_server.py : processAlert() : Sent Kojoney Alert via Ultimate Notification to iPhone"
+        #print msg
+        #syslog.syslog(msg)
         
         #print "kojoney_alert_server.py : processAlert() : done"
         return

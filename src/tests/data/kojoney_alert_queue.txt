@@ -1,0 +1,33 @@
+subject|BlackRain:Anubis Analysis|msg|ANALYST,SANDBOX 841cf1a502e4440a79602b05f56c52cd : NET DNS|Wed Jan  7 10:37:33 2015
+subject|BlackRain:File Analysis|msg|ANALYST,FILE 841cf1a502e4440a79602b05f56c52cd.bin: PE32 executable (GUI) Intel 80386, for MS Windows|Wed Jan  7 10:37:38 2015
+subject|BlackRain:Test from kojoney_alert_client|msg|Botcode found in /usr/local/src/2376w7672.txt at Wed Jan  7 21:14:40 2015|Wed Jan  7 21:14:40 2015
+subject|BlackRain:Botjuicer Analysis|msg|0a9144ad34865a3e524ebd18a26357f5.php type=pBot clamAV=OK s=? p=? ch=? fl=yes|Mon Jan 26 07:43:31 2015
+subject|BlackRain:Botjuicer Analysis|msg|2b09ceeb1cd23e4aa16ede63e6092c29.php type=IRC clamAV=OK s=? p=? ch=? fl=?|Sun Oct 11 16:54:41 2015
+subject|BlackRain:Botjuicer Analysis|msg|84562a924b8c29630ace53a6a9817df4.php type=IRC clamAV=OK s=? p=? ch=? fl=?|Sun Oct 11 16:55:30 2015
+subject|BlackRain:Botjuicer Analysis|msg|3b94b43b427389da88c995616ad6e18d.php type=IRC clamAV=OK s=? p=? ch=? fl=?|Sun Oct 11 16:56:03 2015
+subject|BlackRain:Botjuicer Analysis|msg|bc20a67a1fb42e8d2d47a23db523dc31.php type=base64_encoded clamAV=OK s=? p=? ch=? fl=?|Sat Oct 17 14:11:01 2015
+subject|BlackRain:Botjuicer Analysis|msg|cb20b5a6fdc7c5ccfef203a89a9c2458.php type=base64_encoded clamAV=OK s=? p=? ch=? fl=?|Sun Oct 18 03:43:32 2015
+subject|BlackRain:Botjuicer Analysis|msg|78dee9886a5fdb4642bdf2025a2b2b94.php type=? clamAV=OK s=? p=? ch=? fl=?|Sat Oct 31 00:10:39 2015
+subject|BlackRain:Botjuicer Analysis|msg|9fa2a78275e05bc7adce075386fd11ee.php type=? clamAV=OK s=? p=? ch=? fl=?|Sat Oct 31 00:11:29 2015
+subject|BlackRain:Botjuicer Analysis|msg|106059d23dcfaddcff763eeec7ec3249.php type=pBot clamAV=OK s=<? /* * *  #crew@corp. since 2003 *  edited by: devil__ <admin@xdevil.org> * *  COMMANDS: * *  .user <password> p=<? /* * *  #crew
+subject|BlackRain:Botjuicer Analysis|msg|ecfb1606e8b7c01c417b67282e9c6e35.php type=base64_encoded clamAV=OK s=? p=? ch=? fl=?|Thu Nov  5 22:28:14 2015
+subject|BlackRain:Botjuicer Analysis|msg|563da5c4590e0ea7a0a37a04c5dd046f.php type=base64_encoded clamAV=OK s=? p=? ch=? fl=?|Fri Apr 15 19:35:52 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,DLOAD=x.exe => MD5=440647bebf95ec9e5e82c77e166e2ded|Fri Apr 15 21:03:21 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,FILE x.exe: PE32 executable (GUI) Intel 80386 (stripped to external PDB), for MS Windows|Fri Apr 15 21:03:23 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,DLOAD=x.exe => MD5=440647bebf95ec9e5e82c77e166e2ded|Sun Apr 17 19:36:05 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,FILE x.exe: PE32 executable (GUI) Intel 80386 (stripped to external PDB), for MS Windows|Sun Apr 17 19:36:09 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,DLOAD=xudp => MD5=e2b544dbcfa067371e0eec3abbe1e6bd|Thu Apr 21 11:29:34 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,FILE Linux), statically linked, stripped|Thu Apr 21 11:29:42 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,DLOAD=www.cisco.com => MD5=|Sun Apr 24 21:32:54 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,AV www.cisco.com => Unseen by VirusTotal|Sun Apr 24 21:32:58 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,DLOAD=www.cisco.com => MD5=|Sun Apr 24 21:34:19 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,AV www.cisco.com => Unseen by VirusTotal|Sun Apr 24 21:34:24 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,DLOAD=www.cisco.com => MD5=|Sun Apr 24 21:35:43 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,AV www.cisco.com => Unseen by VirusTotal|Sun Apr 24 21:35:52 2016
+subject|BlackRain:Botjuicer Analysis|msg|3acdc36be49215aab1f648a68efa7bcf.php type=base64_encoded clamAV=OK s=? p=? ch=? fl=?|Mon May  2 20:34:48 2016
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,DLOAD=v.py => MD5=e35b98c92944e5e900d1a3a64d6ee5dd|Wed May 24 04:25:36 2017
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,FILE v.py: a python script, ASCII text executable|Wed May 24 04:25:41 2017
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,DLOAD=x.exe => MD5=440647bebf95ec9e5e82c77e166e2ded|Tue Mar 13 17:04:36 2018
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,FILE x.exe: PE32 executable (GUI) Intel 80386 (stripped to external PDB), for MS Windows|Tue Mar 13 17:04:44 2018
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,DLOAD=5MB.zip => MD5=b3215c06647bc550406a9c8ccc378756|Mon May 18 18:50:16 2020
+subject|BlackRain:Snarfed File Analysis|msg|ANALYST,FILE 5MB.zip: data|Mon May 18 18:50:29 2020
