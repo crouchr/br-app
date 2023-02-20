@@ -22,7 +22,8 @@ except Exception as e:
     print("Exception" + repr(e)) 
     syslog.syslog("ipintellib.py() : Exception " + repr(e) + " caught whilst opening GeoIP City database " + Geo_ip_dbase)
     sys.exit(-1)
-    
+
+
 # Get version of the library  
 def getVersion():
     global Version
