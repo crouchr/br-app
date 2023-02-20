@@ -90,9 +90,9 @@ def processIplog(txnId,sensorId,line):
         
         return tweets
 
-    except Exception,e:
-        msg = "kojoney_iplog_parse.py : processIplog() : " + `e` + " line=" + line
-        print msg
+    except Exception as e:
+        msg = "kojoney_iplog_parse.py : processIplog() : " + repr(e) + " line=" + line
+        print(msg)
         syslog.syslog(msg)
         return None
 
@@ -119,12 +119,12 @@ if __name__ == '__main__' :
         if not line:		# no data to process
             sys.exit()
         else :			# new data has been found
-            print line
+            print(line)
             tweets = processIplog(123,"TEST",line)
             
         if tweets != None and len(tweets) != 0 :
             for tweet in tweets :
-                print "*** Tweet : " + tweet
+                print("*** Tweet : " + tweet)
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

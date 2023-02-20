@@ -18,14 +18,14 @@ def calcMD5(fullFilename):
         result = raw.split(" ")[0]
                                
         if "No such file" in raw :
-            print "calcMD5() : No such file : " + fullFilename.__str__()
+            print("calcMD5() : No such file : " + fullFilename.__str__())
             return None
         else:
             return result
                                                                                            
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : calcMD5() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
                                                                                                                                             
@@ -50,21 +50,21 @@ def processMaldet(txnId,sensorId,line):
         if "malware hit " not in line :
             return None
         
-        print "----------------------------------"
+        print("----------------------------------")
         #line = line.replace(" on "," file=")
                
         fields = line.split("malware hit ")
-        print "processMaldet() : fields = " + fields.__str__()
+        print("processMaldet() : fields = " + fields.__str__())
         
         msg = fields[1]
-        print "processMaldet() : msg = " + msg
+        print("processMaldet() : msg = " + msg)
         signature = msg.split(" ")[0]
                 
         filepath = msg.split("on ")[1]
         filename = filepath.split("/")[-1]
-        print "processMaldet() : filepath  = " + filepath.__str__()
-        print "processMaldet() : filename  = " + filename.__str__()
-        print "processMaldet() : signature = " + signature.__str__()
+        print("processMaldet() : filepath  = " + filepath.__str__())
+        print("processMaldet() : filename  = " + filename.__str__())
+        print("processMaldet() : signature = " + signature.__str__())
 
         # filename will have flow info if cl_sniffer captured it
         ips = re.findall("(\d+\.\d+\.\d+\.\d+):(\d+)\-(\d+\.\d+\.\d+\.\d+):(\d+)",line)
@@ -107,9 +107,9 @@ def processMaldet(txnId,sensorId,line):
             
         return msg
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_maldet_parse.py : processMaldet() : exception : " + e.__str__() + " line=" + line
-        print msg
+        print(msg)
         syslog.syslog(msg)
          
 def sendMaldetIDMEF(attackType,signature,filepath,bitly,logEntry):
@@ -145,9 +145,9 @@ def sendMaldetIDMEF(attackType,signature,filepath,bitly,logEntry):
         
         client.SendIDMEF(idmef)      
                                                                                                                                                                                                                                               
-    except Exception,e:
+    except Exception as e:
         msg = "sendMaldetIDMEF() : exception : " + e.__str__()    
-        print msg
+        print(msg)
         syslog.syslog(msg)
                                                                                                                                                                                                                                                             
 # Start of code
@@ -170,7 +170,7 @@ if __name__ == '__main__' :
             msg = processMaldet(123,"TEST",line)
         
         if msg != None:
-            print "*** msg after parsing = [" + msg +"]"
+            print("*** msg after parsing = [" + msg +"]")
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

@@ -2,7 +2,7 @@
 
 # Tail the Kojoney Channel and produce visualisation files
 
-import sys, time, os , syslog , urlparse , re 
+import sys, time, os , syslog , urllib.parse , re 
 #import twitter		# Google API
 
 import ipintellib	# RCH library - master on mars
@@ -30,7 +30,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -56,14 +56,14 @@ def statusAlert(subject,content):
         status = mailalert.mailalert(sender,destination,smtpServer,alertSubject,alertContent,debugLevel)        
         
         # uncomment the following line if you want to see the e-mail being sent
-        print "notify     : e-mail : subject=" + '"' + alertSubject + '"'  
+        print("notify     : e-mail : subject=" + '"' + alertSubject + '"')  
         
         # Add a record to syslog
         a = "Sent alert e-mail, Subject=" + alertSubject + " to " + destination[0]
         syslog.syslog(a)
     
-    except Exception,e:
-        syslog.syslog("kojoney_viz.py : statusAlert() : " + `e`)
+    except Exception as e:
+        syslog.syslog("kojoney_viz.py : statusAlert() : " + repr(e))
 
 
 # Write Security Visualisation data to be processed by AfterGlow to .csv file
@@ -99,12 +99,12 @@ def writeSecViz1(ip,username,countryCode,commandStr):
         
         # Write to file
         fpOut = open(r'/home/var/log/kojoney_tail_secviz_cmds.csv','a')
-        print "writeSecViz1():" + msg
-        print >> fpOut,msg
+        print("writeSecViz1():" + msg)
+        print(msg, file=fpOut)
         fpOut.close()
         
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : writeSecViz1() exception caught = " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : writeSecViz1() exception caught = " + repr(e) + " ip=" + ip)
 
 # Write Security Visualisation data to be processed by AfterGlow to .csv file
 # Format IP_address,commandStr
@@ -135,12 +135,12 @@ def writeSecViz2(ip,username,countryCode,fileName):
         # Write to file
         fpOut = open(r'/home/var/log/kojoney_tail_secviz_dloads.csv','a')
         #msg = ip + ":" + asNum + ":" + asRegisteredCode + ":" + p0fStr + "," + username + "," + fileName + "," + countryCode
-        print "writeSecViz2():" + msg
-        print >> fpOut,msg
+        print("writeSecViz2():" + msg)
+        print(msg, file=fpOut)
         fpOut.close()
 
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : writeSecViz2() exception caught = " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : writeSecViz2() exception caught = " + repr(e) + " ip=" + ip)
 
 # Write Security Visualisation data to be processed by AfterGlow to .csv file
 # This file is used for correlating haxx0r IP stack uptime with username and src IP
@@ -187,17 +187,17 @@ def writeSecViz3(ip,username):
         #asNum = asInfo['as']					# AS123 
         asRegisteredCode = asInfo['registeredCode']		# Short-form e.g.ARCOR
         
-        msg = ip + "," + `bootTimeEpochHours` + "," + ip + ":" + Username + "," + "os=" + os + ",hops=" + hops + ","\
-        + asRegisteredCode + ",now=" + nowStr + "," + `now` + ",bootTime=" + bootTimeStr + "," + `bte` + ",fw=" + fw + ",nat=" + nat
+        msg = ip + "," + repr(bootTimeEpochHours) + "," + ip + ":" + Username + "," + "os=" + os + ",hops=" + hops + ","\
+        + asRegisteredCode + ",now=" + nowStr + "," + repr(now) + ",bootTime=" + bootTimeStr + "," + repr(bte) + ",fw=" + fw + ",nat=" + nat
         
-        print "WriteSecViz3() = " + msg
+        print("WriteSecViz3() = " + msg)
         
         fpOut = open(r'/home/var/log/kojoney_tail_secviz3_uptime.csv','a')
-        print >> fpOut,msg 
+        print(msg, file=fpOut) 
         fpOut.close()
 
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : writeSecViz3() exception caught = " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : writeSecViz3() exception caught = " + repr(e) + " ip=" + ip)
 
 # Candidate to replace secviz4 - uses source port from firewall and netflow logs to get accurate uptime
 # Write Security Visualisation data to be processed by AfterGlow to .csv file
@@ -260,17 +260,17 @@ def writeSecViz4(ip,srcPort,dstIP,dstPort,event):
         # Add nowStr so that can see if the bteh/btes stays constant for multiple visits...
         # Log boottime epoch as bteh and btes to see how accurate they are
         # todo : add flow details 
-        msg = ip + "," + `bteh` + "," + event + "," + os + "," + asNum + "(" + asRegisteredCode + ")" + ",now=" + nowStr + ",bootTime=" + bootTimeStr + ",btes=" + `btes` + ",uptime=" + `uptime`
+        msg = ip + "," + repr(bteh) + "," + event + "," + os + "," + asNum + "(" + asRegisteredCode + ")" + ",now=" + nowStr + ",bootTime=" + bootTimeStr + ",btes=" + repr(btes) + ",uptime=" + repr(uptime)
         
-        print "WriteSecViz4(): " + msg
+        print("WriteSecViz4(): " + msg)
         
         # file needs to be touched
         fpOut = open(r'/home/var/log/kojoney_tail_secviz4_uptime.csv','a')
-        print >> fpOut,msg 
+        print(msg, file=fpOut) 
         fpOut.close()
 
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : writeSecViz4() exception caught = " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : writeSecViz4() exception caught = " + repr(e) + " ip=" + ip)
 
 
 UniqueEvent = {}
@@ -388,13 +388,13 @@ def processChannelViz(line):
         ukey = srcIPinfo + "," + type + ":" + node + ":" + phase + ":" + event + ":" + proto + dstPort
         #print "ukey=" + ukey 
         
-        if UniqueEvent.has_key(ukey) == False:
+        if (ukey in UniqueEvent) == False:
             UniqueEvent[ukey] = 1	# make this a timestamp ? epoch
             SeqNo = SeqNo + 1
             
             # For flow-derived events, construct the secviz file output fields[0-2] + additional info     
             addInfo = ",time=" + timeS + ",ASname=" + ASname + ",CC=" + countryCode + ",event=" + event + ",dns=" + dnsName + ",AScode=" + AScode
-            msg = srcIPinfo + "," + "#" + `SeqNo` + " " + type + ":" + node + ":" + phase + ":" + event + ":" + proto + dstPort + "," + dstIPinfo + addInfo
+            msg = srcIPinfo + "," + "#" + repr(SeqNo) + " " + type + ":" + node + ":" + phase + ":" + event + ":" + proto + dstPort + "," + dstIPinfo + addInfo
         
             # Do not visualise return flows - this needs to be done using proper correlation in next version
             # Needs more thought
@@ -425,9 +425,9 @@ def processChannelViz(line):
             msg=msg.replace(":FEED:iptables:","")
         
             # file is created when this process first runs
-            print "unseen event -> add to dictionary and fingerprint file : " + msg
+            print("unseen event -> add to dictionary and fingerprint file : " + msg)
             fpOut = open(r'/home/var/log/kojoney_fprint.csv','a')
-            print >> fpOut,msg 
+            print(msg, file=fpOut) 
             fpOut.close()
 
         # Create SID text graph : Has the SID been seen before ? if not, add to the graph tree with text version of message 
@@ -436,7 +436,7 @@ def processChannelViz(line):
             #print "IDS EXPLT event : SID is " + sid
             
             # bug ??? : what if the event is not a snort event but a fwsnort or psad event ?
-            if UniqueSid.has_key(sid) == False:
+            if (sid in UniqueSid) == False:
                 UniqueSid[sid] = 1	# make this a timestamp ? epoch
                 #print "msg        = " + getSnortInfo.getSnortMsg(sid) 
                 #print "classtype  = " + getSnortInfo.getSnortAtom(sid,"classtype")
@@ -447,9 +447,9 @@ def processChannelViz(line):
                 msg = "IDS_SID_KEY" + "," + "sid:" + sid + ",sid:" +  snortMsg
                 
                 # file is created when this process first runs
-                print "unseen Snort event -> add to dictionary and fingerprint file"
+                print("unseen Snort event -> add to dictionary and fingerprint file")
                 fpOut = open(r'/home/var/log/kojoney_fprint.csv','a')
-                print >> fpOut,msg 
+                print(msg, file=fpOut) 
                 fpOut.close()        
         
         # file needs to be touched - this will become obsolete
@@ -457,8 +457,8 @@ def processChannelViz(line):
         #print >> fpOut,msg 
         #fpOut.close()
 
-    except Exception,e:
-        syslog.syslog("kojoney_viz.py : processChannelViz() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_viz.py : processChannelViz() exception caught = " + repr(e) + " line=" + line)
 
 
 # Process dns log from Malware hosting system DNSmasq sending syslog to /var/log/debug
@@ -499,21 +499,21 @@ def processdns(line):
                 #dnsPair = "RQ:" + name + ",DNS," + ip		# add "RQ:" so that DNS names can be identified and colour-coded in Afterglow
                 dnsPair = name + "," + ip			# add "RQ:" so that DNS names can be identified and colour-coded in Afterglow
                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-                if UniqueDNS.has_key(dnsPair) == False :
+                if (dnsPair in UniqueDNS) == False :
                     DNStransaction = DNStransaction + 1
                     SeqNo = SeqNo + 1
                     geoIP = ipintellib.geo_ip(ip)
                     countryCode = geoIP['countryCode']
-                    msg = "RQ:" + name + "," + "#" + `SeqNo` + " " + "DNS_" + `DNStransaction` + "," + ip + ":" + countryCode 
-                    print "unique DNS pair found, add the following entry to visualisation file : " + msg
+                    msg = "RQ:" + name + "," + "#" + repr(SeqNo) + " " + "DNS_" + repr(DNStransaction) + "," + ip + ":" + countryCode 
+                    print("unique DNS pair found, add the following entry to visualisation file : " + msg)
                     UniqueDNS[dnsPair] = 1	# change to now epoch ?
                     # log unique name -> IP mappings to a file for Afterglow post-processing - this file must have been touched
                     fpOut = open(r'/home/var/log/kojoney_fprint.csv','a')
-                    print >> fpOut,msg
+                    print(msg, file=fpOut)
                     fpOut.close()
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-    except Exception,e:
-        syslog.syslog("kojoney_viz.py : processdns() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_viz.py : processdns() exception caught = " + repr(e) + "line=" + line)
 
 
 def processSebek(line):   
@@ -522,8 +522,8 @@ def processSebek(line):
         pass
         #print "processSebek : " + line                                                                                                                                                                                                                                                                               
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-    except Exception,e:
-        syslog.syslog("kojoney_viz.py : processSebek() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_viz.py : processSebek() exception caught = " + repr(e) + "line=" + line)
 # -------------------------------------------------------
         
 # Start of code        
@@ -532,16 +532,16 @@ def processSebek(line):
 # Make pidfile so we can be monitored by monit        
 pid =  makePidFile("kojoney_viz")
 if pid == None:
-    syslog.syslog("Failed to create pidfile for pid " + `pid`)
+    syslog.syslog("Failed to create pidfile for pid " + repr(pid))
     sys.exit(0)
 else:
-    syslog.syslog("kojoney_viz started with pid " + `pid`)
+    syslog.syslog("kojoney_viz started with pid " + repr(pid))
                 
 # Send an email to say kojoney_tail has started
 now = time.time()
 nowLocal = time.gmtime(now)
 #makeMsg(0,"0","system,kojoney_viz started with pid=" + `pid` + " at localtime " + time.asctime(nowLocal))
-a = "kojoney_viz started with pid=" + `pid`
+a = "kojoney_viz started with pid=" + repr(pid)
 
 #statusAlert("*** kojoney_viz started ***",a)
 
@@ -551,16 +551,16 @@ a = "kojoney_viz started with pid=" + `pid`
 #except Exception,e:
 #    syslog.syslog("kojoney_tail.py exception connecting to Twitter : main() : " + `e`)
 
-print "Kill any existing kojoney_tweet.py process(es)..."
+print("Kill any existing kojoney_tweet.py process(es)...")
 os.system('killall kojoney_tweet.py')
 time.sleep(5)
 
-print "Kill any existing tcpdump process(es)..."
+print("Kill any existing tcpdump process(es)...")
 os.system('killall tcpdump')
 time.sleep(3)
-print "Erase old pcap file......"
+print("Erase old pcap file......")
 os.system('rm -f /home/var/log/dronetracer.pcap')
-print "Start tcpdump to capture C&C traffic at packet level..."
+print("Start tcpdump to capture C&C traffic at packet level...")
 os.system('/usr/sbin/tcpdump -i eth1 -n -s 1500 -U host 172.31.0.67 -w /home/var/log/dronetracer.pcap &')
     
 # Set the Kojoney Channel input filename to scan
@@ -576,30 +576,30 @@ filenamesebek = '/home/var/log/kojoney_sebek.csv'
 filesebek     = open(filenamesebek,'r')
 
 # Create the fingerprint file
-print "Create fresh fingerprint file"
+print("Create fresh fingerprint file")
 fpOut = open(r'/home/var/log/kojoney_fprint.csv','w')
 fpOut.close()
 
 # Run up kojoney_tweet.py
-print "Run up kojoney_tweet.py process to Tweet the visualisation file..."
+print("Run up kojoney_tweet.py process to Tweet the visualisation file...")
 os.system('/home/crouchr/kojoney_tweet.py &')
 
 # Create the fingerprint file
-print "sleep 5 seconds to allow kojoney_tweet.py to settle..."
+print("sleep 5 seconds to allow kojoney_tweet.py to settle...")
 time.sleep(5)
 
-print "Add header to fingerprint file"
+print("Add header to fingerprint file")
 now = time.time()
 #nowLocal = time.gmtime(now)  
 nowLocal = time.localtime(now)  
 fpOut = open(r'/home/var/log/kojoney_fprint.csv','a')
-print >> fpOut,"DroneTracer : Malware Network Activity Analysis System,(c)2010 Richard Crouch,MD5:" + MalwareMD5 + " analysis started @ " + time.asctime(nowLocal)            
+print("DroneTracer : Malware Network Activity Analysis System,(c)2010 Richard Crouch,MD5:" + MalwareMD5 + " analysis started @ " + time.asctime(nowLocal), file=fpOut)            
 fpOut.close()
 
-print "************************************"
-print " Now run malware in the BotTank... *"
-print "************************************"
-print " "
+print("************************************")
+print(" Now run malware in the BotTank... *")
+print("************************************")
+print(" ")
 
 # Run up kojoney_tweet.py
 #print "Run up kojoney_tweet.py procss to Tweet the visualisation file..."
@@ -614,19 +614,19 @@ print " "
 st_results = os.stat(filename)
 st_size = st_results[6]
 file.seek(st_size)
-print "system     : Seek to end of Kojoney Channel feed"
+print("system     : Seek to end of Kojoney Channel feed")
 
 # Find the size of the DNSMASQ file and move to the end
 st_results_dns = os.stat(filenamedns)
 st_size_dns = st_results_dns[6]
 filedns.seek(st_size_dns)
-print "system     : Seek to end of Malware host system dnsmasq DNS feed"
+print("system     : Seek to end of Malware host system dnsmasq DNS feed")
 
 # Find the size of the DNSMASQ file and move to the end
 st_results_sebek = os.stat(filenamesebek)
 st_size_sebek = st_results_sebek[6]
 filesebek.seek(st_size_sebek)
-print "system     : Seek to end of Sebek feed"
+print("system     : Seek to end of Sebek feed")
 
 while True:
 

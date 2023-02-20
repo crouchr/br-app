@@ -55,7 +55,7 @@ def sendTelnetIDMEF(srcIP,dstIP,dstPort,user,password,success,logEntry):
             
         # Additional Data
         fieldsOffset = fieldsSet
-        print "fieldsOffset = " + fieldsOffset.__str__()
+        print("fieldsOffset = " + fieldsOffset.__str__())
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").type", "string")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").meaning", "password")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").data", password)
@@ -63,8 +63,8 @@ def sendTelnetIDMEF(srcIP,dstIP,dstPort,user,password,success,logEntry):
         result = client.SendIDMEF(idmef)
         #print result.__str__()
         return
-    except Exception,e:
-        print "Exception : " + e.__str__()
+    except Exception as e:
+        print("Exception : " + e.__str__())
         return
         
 if __name__ == '__main__' :

@@ -68,9 +68,9 @@ def portScanIDMEF(srcIP,scanType,dstPort,line):
         client.SendIDMEF(idmef)
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_iplog_idmef.py : portScanIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
         

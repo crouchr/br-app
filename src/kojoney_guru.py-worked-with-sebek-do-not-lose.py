@@ -19,7 +19,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -45,14 +45,14 @@ def statusAlert(subject,content):
         status = mailalert.mailalert(sender,destination,smtpServer,alertSubject,alertContent,debugLevel)        
         
         # uncomment the following line if you want to see the e-mail being sent
-        print "notify     : e-mail : subject=" + '"' + alertSubject + '"'  
+        print("notify     : e-mail : subject=" + '"' + alertSubject + '"')  
         
         # Add a record to syslog
         a = "Sent alert e-mail, Subject=" + alertSubject + " to " + destination[0]
         syslog.syslog(a)
     
-    except Exception,e:
-        syslog.syslog("kojoney_guru.py : statusAlert() : " + `e`)
+    except Exception as e:
+        syslog.syslog("kojoney_guru.py : statusAlert() : " + repr(e))
 
 #URL_FOUND,http://web.clicknet.ro/mirel19/sur.tgz->IP=86.35.15.210,WHOIS=AS9050 (RTD),GeoIP=RO Bucharest 26.10E:lat=44.433300018310547 long=<type 'long'>
 #URL_FOUND,http://mau.visual18k.ro/exploit/x.tar->IP=96.9.153.214,WHOIS=AS21788 (NOC),GeoIP=US Scranton -75.65E:lat=41.420101165771484 long=<type 'long'>
@@ -92,23 +92,23 @@ def processURLfoundWget(line):
 
     try :
         line=line.strip("\n")
-        print "processURLfoundWget() : line read : " + line
+        print("processURLfoundWget() : line read : " + line)
                         
         if line.find("Honeypot wget requests URL") == -1 :
             return 
             
-        print "processURLfoundWget() : candidate line read : " + line
+        print("processURLfoundWget() : candidate line read : " + line)
                     
         fields = line.split()
-        print fields
+        print(fields)
         url = fields[9]
-        print "url is " + url
+        print("url is " + url)
 
         surl = url.replace("http://","")
         surl = surl.split('/')
         surl = surl[0]
 
-        print "stripped url is " + surl
+        print("stripped url is " + surl)
         dnsInfo = ipintellib.ip2name(surl)
         ip = dnsInfo['name']
         
@@ -122,33 +122,33 @@ def processURLfoundWget(line):
         # Download single URL
         retrieveSingleURL(url,ip)                                                                                                                                 
     
-    except Exception,e:
-        syslog.syslog("kojoney_guru.py : processURLfoundTweet() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_guru.py : processURLfoundTweet() exception caught = " + repr(e) + " line=" + line)
 
 # Use wget to download the single malware file
 def retrieveSingleURL(url,ip):
 
     try :
-        print "retrieveURL() : url to be downloaded from " + ip + " is " + url
+        print("retrieveURL() : url to be downloaded from " + ip + " is " + url)
      
         # generate destination filename
-        dFilename = url + "--" + ip + "--" + `time.time()`
+        dFilename = url + "--" + ip + "--" + repr(time.time())
         #print "retrieveURL() : destination filename : " + dFilename
         
         # not working : bug
         #cmd = "wget -t 3 --directory-prefix=/home/var/haxxor_webs/honeytweeter-downloads --no-check-certificate" + " -O " + dFilename + " " + url 
         cmd = "wget --directory-prefix=/home/var/haxxor_webs/honeytweeter-downloads --no-check-certificate" + " " + url 
-        print "retrieveURL() : cmd to be exectuted : " + cmd
+        print("retrieveURL() : cmd to be exectuted : " + cmd)
         
         result = os.system(cmd)		# returns int
-        print "wget result is " + `result`         
-        syslog.syslog("kojoney_guru.py retrieveURL() : result=" + `result` + " for " + cmd)
+        print("wget result is " + repr(result))         
+        syslog.syslog("kojoney_guru.py retrieveURL() : result=" + repr(result) + " for " + cmd)
 
         # Downloading a file changes defcon status
         kojoney_funcs.writeDefconEvent("botwall","haxxor downloaded malware from " + ip + " file=" + url) 
             
-    except Exception,e:
-        syslog.syslog("kojoney_guru.py : retrieveURL() exception caught = " + `e` + " url=" + url)
+    except Exception as e:
+        syslog.syslog("kojoney_guru.py : retrieveURL() exception caught = " + repr(e) + " url=" + url)
 
                                    
 # -------------------------------------------------------
@@ -159,16 +159,16 @@ syslog.openlog("kojoney_guru")         # Set syslog program name
 # Make pidfile so we can be monitored by monit        
 pid =  makePidFile("kojoney_guru")
 if pid == None:
-    syslog.syslog("Failed to create pidfile for pid " + `pid`)
+    syslog.syslog("Failed to create pidfile for pid " + repr(pid))
     sys.exit(0)
 else:
-    syslog.syslog("kojoney_guru.py started with pid " + `pid`)
+    syslog.syslog("kojoney_guru.py started with pid " + repr(pid))
                 
 # Send an email to say kojoney_tail has started
 now = time.time()
 nowLocal = time.gmtime(now)
 #makeMsg(0,"0","system,kojoney_viz started with pid=" + `pid` + " at localtime " + time.asctime(nowLocal))
-a = "kojoney_guru started with pid=" + `pid`
+a = "kojoney_guru started with pid=" + repr(pid)
 
 #statusAlert("*** kojoney_tweet started ***",a)
 
@@ -198,7 +198,7 @@ fileWget = open(filenameWget,'r')
 st_resultsWget = os.stat(filenameWget)
 st_sizeWget = st_resultsWget[6]
 fileWget.seek(st_sizeWget)
-print "system     : Seek to end of Honeypot syslog file"
+print("system     : Seek to end of Honeypot syslog file")
 
 while True:
     
@@ -218,10 +218,10 @@ while True:
     lineWget  = fileWget.readline()
         
     if not lineWget:		# no data to process
-        print "nothing in Honeypot logfile to process"
+        print("nothing in Honeypot logfile to process")
         fileWget.seek(whereWget)
     else :			# new data has been added to log file
-        print "*** NEW EVENT in Honeypot logfile to process !"
+        print("*** NEW EVENT in Honeypot logfile to process !")
         processURLfoundWget(lineWget)
                     
     #print "sleeping..."

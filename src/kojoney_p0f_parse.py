@@ -75,10 +75,10 @@ def processp0f(line):
             return None
         
         #msg = time.asctime(nowLocal)
-        msg = srcIP + " -> " + dstIP + " now=" + `now` + " uptime=" + `uptime` + " -> boot=" + `boot` + " bootTstamp=" + bootTstamp
+        msg = srcIP + " -> " + dstIP + " now=" + repr(now) + " uptime=" + repr(uptime) + " -> boot=" + repr(boot) + " bootTstamp=" + bootTstamp
         
         fp = open("/home/var/log/uptimes.log",'a')
-        print >> fp,msg
+        print(msg, file=fp)
         fp.close()
         
         tweet = "p0f_UP," + msg
@@ -128,8 +128,8 @@ def processp0f(line):
         #    return tweet
         else:
             return None
-    except Exception,e:
-        syslog.syslog("kojoney_p0f_parse.py : processp0f() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_p0f_parse.py : processp0f() : " + repr(e) + " line=" + line)
                 
 
 if __name__ == '__main__' :
@@ -142,5 +142,5 @@ if __name__ == '__main__' :
         tweet = processp0f(line)
         
         if tweet != None:
-            print "tweet:" + tweet
+            print("tweet:" + tweet)
         

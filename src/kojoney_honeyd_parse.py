@@ -47,7 +47,7 @@ def processHoneyd(line):
     #line = line.rstrip(" ")
         
     try :
-        print "kojoney_honeyd_parse.processHoneyd() : line read is " + line
+        print("kojoney_honeyd_parse.processHoneyd() : line read is " + line)
             
         # only honeyd "START" messages have p0f info in them
         pat = "genre=([A-Za-z0-9]*)"
@@ -84,7 +84,7 @@ def processHoneyd(line):
             if len(ips) != 0 :
                 sip = ips[0]
 
-            if p0f.has_key(sip) :
+            if sip in p0f :
                 genre = "os=" + p0f[sip]
             else:
                 genre = ""    
@@ -128,12 +128,12 @@ def processHoneyd(line):
         
         return tweet,flowEvent
         
-        print "Honeyd flow is not interesting, so ignore"
+        print("Honeyd flow is not interesting, so ignore")
         return None,flowEvent
 
 
-    except Exception,e:
-                syslog.syslog("kojoney_honeyd_parse.py : processHoneyd() : " + `e` + " line=" + line)
+    except Exception as e:
+                syslog.syslog("kojoney_honeyd_parse.py : processHoneyd() : " + repr(e) + " line=" + line)
 
 
 if __name__ == '__main__' :
@@ -154,8 +154,8 @@ if __name__ == '__main__' :
         
         # print out tweets that would actually get tweeted                                                                                                                            
         if tweet != None and tweet.find(":::") == -1 :
-            print "*** tweet : " + tweet
-            print "*** flow  : " + flowEvent.__str__()
+            print("*** tweet : " + tweet)
+            print("*** flow  : " + flowEvent.__str__())
                                                                                                                                                                                
         time.sleep(0.1)         # 0.1 
 

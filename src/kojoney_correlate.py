@@ -45,7 +45,7 @@ def correlate(tweet,count):
     # The key for correlation is the eventType e.g.WEB_SCN, REPORT etc.
     event = eventType + ":" + ip
      
-    if Correlate.has_key(event) == True :		
+    if (event in Correlate) == True :		
         Correlate[event] = Correlate[event] + 1                                                                                                                       
     else:					# first time IP has been seen
         Correlate[event] = 1                       
@@ -64,18 +64,18 @@ if __name__ == '__main__' :
     file     = open(filename,'r')
             
 
-    print "system     : Seek to end of Tweets queue " + filename
+    print("system     : Seek to end of Tweets queue " + filename)
 
     try:
 
         while True:
                    
             line  = file.readline().rstrip()
-            print "\n-----------------"
+            print("\n-----------------")
             if not line :		# no data to process
                 sys.exit("no more data to process\n")
             else:
-                print line                    
+                print(line)                    
                 tweet = line.split("tweet=")[1]
                 tweet = tweet.strip('"')
                 #print "tweet = " + tweet
@@ -83,19 +83,19 @@ if __name__ == '__main__' :
                 a = correlate(tweet,count)
                 
                 if a == 0:
-                    tweet = "<" + `a` + ">" + tweet	# Tweet is exempt from correlation
-                    print tweet
+                    tweet = "<" + repr(a) + ">" + tweet	# Tweet is exempt from correlation
+                    print(tweet)
                 elif a == count :
-                    tweet = "[" + `a` + "]" + tweet	# last time Tweet will be printed
-                    print tweet
+                    tweet = "[" + repr(a) + "]" + tweet	# last time Tweet will be printed
+                    print(tweet)
                 elif a < count :
-                    tweet = "{" + `a` + "}" + tweet    
-                    print tweet 
+                    tweet = "{" + repr(a) + "}" + tweet    
+                    print(tweet) 
                 else :
-                    print "Suppressed"
+                    print("Suppressed")
                             
             #time.sleep(0.4)		# use 0.2 secs
 
-    except Exception,e:    
-        print "kojoney_correlate.py : main() exception caught = " + `e` + " line=" + line
+    except Exception as e:    
+        print("kojoney_correlate.py : main() exception caught = " + repr(e) + " line=" + line)
         #syslog.syslog("kojoney_tweet_engine.py : main() exception caught = " + `e` + " line=" + line)

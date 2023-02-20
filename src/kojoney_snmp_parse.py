@@ -80,9 +80,9 @@ def processSnmpSyslog(line):
             tweet = "SNMP_HIDS," + msg
             return tweet
             
-    except Exception,e:
-        msg = "kojoney_snmp_parse.py : processSnmpSyslog() : " + `e` + " line=" + line
-        print msg
+    except Exception as e:
+        msg = "kojoney_snmp_parse.py : processSnmpSyslog() : " + repr(e) + " line=" + line
+        print(msg)
         syslog.syslog(msg)
                 
 if __name__ == '__main__' :
@@ -96,6 +96,6 @@ if __name__ == '__main__' :
         tweet = processSnmpSyslog(line)
         
         if tweet != None:
-            print "tweet:" + tweet
+            print("tweet:" + tweet)
         
         

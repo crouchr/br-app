@@ -14,7 +14,7 @@ if __name__ == '__main__' :
     while True:
         line  = file.readline() 
         if not line :
-            print "No more data to read"
+            print("No more data to read")
             break
   
         #if "tcp" in line:
@@ -33,6 +33,6 @@ if __name__ == '__main__' :
                     #print ip + " : " + countryCode.__str__() + " : " + asNum.__str__() + " : " + asRegisteredCode.__str__()
     
     # No more data in file to read    
-    print "total number of TOR IPs : " + total.__str__()
+    print("total number of TOR IPs : " + total.__str__())
     
         

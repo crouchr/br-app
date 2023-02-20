@@ -17,7 +17,7 @@ def sendNetmenacesIDMEF(line):
     
         global ATTACKS
         line = line.rstrip('\n')
-        print line
+        print(line)
         
         sock = 'NONE,0,0.0.0.0,NONE'		# N + zero
         for keyword in ATTACKS:
@@ -38,7 +38,7 @@ def sendNetmenacesIDMEF(line):
             dstPort    = sock.split(',')[1]
             dstIP      = sock.split(',')[2]
             attackType = sock.split(',')[3]
-            print "  ->  @netmenaces : attackType=" + attackType +  " attacker=" + srcIP + " dstIP=" + dstIP + " dstPort=" + dstPort + " proto=" + proto
+            print("  ->  @netmenaces : attackType=" + attackType +  " attacker=" + srcIP + " dstIP=" + dstIP + " dstPort=" + dstPort + " proto=" + proto)
         else:
             msg = "sendNetmenaces() : error : no IP address found in : " + line
             syslog.syslog(msg) 
@@ -105,9 +105,9 @@ def sendNetmenacesIDMEF(line):
         client.SendIDMEF(idmef)
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_netmences_idmef.py : sendNetmencesIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 
@@ -144,7 +144,7 @@ def sendEvilafootIDMEF(line):
             dstPort    = sock.split(',')[1]
             dstIP      = sock.split(',')[2]
             attackType = sock.split(',')[3]
-            print "  ->  @evilafoot : attackType=" + attackType +  " attacker=" + srcIP + " dstIP=" + dstIP + " dstPort=" + dstPort + " proto=" + proto
+            print("  ->  @evilafoot : attackType=" + attackType +  " attacker=" + srcIP + " dstIP=" + dstIP + " dstPort=" + dstPort + " proto=" + proto)
         else:
             msg = "sendEvilafoot() : error : no IP address found in : " + line
             syslog.syslog(msg) 
@@ -199,9 +199,9 @@ def sendEvilafootIDMEF(line):
         client.SendIDMEF(idmef)
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_netmences_idmef.py : sendEvilafootIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 
@@ -210,7 +210,7 @@ def sendGyustIDMEF(line):
     try:
     
         line = line.rstrip('\n')
-        print line
+        print(line)
         
         if "Royal Highness" not in line:
             return
@@ -223,7 +223,7 @@ def sendGyustIDMEF(line):
             dstPort    = "2222"
             dstIP      = "192.0.2.3"
             attackType = "SSH attack"
-            print "  ->  @gjust : attackType=" + attackType +  " attacker=" + srcIP + " dstIP=" + dstIP + " dstPort=" + dstPort + " proto=" + proto
+            print("  ->  @gjust : attackType=" + attackType +  " attacker=" + srcIP + " dstIP=" + dstIP + " dstPort=" + dstPort + " proto=" + proto)
         else:
             msg = "sendGyust() : error : no IP address found in : " + line
             syslog.syslog(msg) 
@@ -278,9 +278,9 @@ def sendGyustIDMEF(line):
         client.SendIDMEF(idmef)
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_netmences_idmef.py : sendGyustIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 

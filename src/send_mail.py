@@ -33,9 +33,9 @@ def send_mail(send_from, send_to, subject, text, files=[], server="localhost"):
         smtp.close()
         return True
         
-    except Exception,e:
+    except Exception as e:
         msg = "send_mail.py : send_mail() : exception : subject = [" + subject + "], To : " + send_to.__str__() + " : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return False
 # main

@@ -12,9 +12,9 @@ import time
 
 
 def visWebScan(line):
-    print "visWebScan(): line=" + line
+    print("visWebScan(): line=" + line)
     fields = line.split(" ")
-    print fields
+    print(fields)
     
     # catch very basic problems with truncated messages
     if len(fields) != 5 :
@@ -32,8 +32,8 @@ def visWebScan(line):
             
         filename = "/home/var/log/visualisation/webscan.csv"
         fp       = open(filename,'a')
-        print >> fp,msg
-        print msg
+        print(msg, file=fp)
+        print(msg)
         fp.close()
         
 #['HONEYD_FLOW,tcp', '221.1.220.163', '3644', '[HONEYD]', 'dport=7212', 'rxBytes=199', 'os=Windows']        
@@ -57,8 +57,8 @@ def visHoneyd(line):
                                                  
     filename = "/home/var/log/visualisation/honeyd.csv"
     fp       = open(filename,'a')
-    print >> fp,msg
-    print msg
+    print(msg, file=fp)
+    print(msg)
     fp.close()
 
 
@@ -100,7 +100,7 @@ def visAmunX(line):
     #print shellcode
 
     vis = vuln + ":" + port + "," + "sc=" + shellcode + "," + url
-    print vis
+    print(vis)
     
     # catch very basic problems with truncated messages
     #if len(fields) != 7 :

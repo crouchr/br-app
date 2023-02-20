@@ -23,7 +23,7 @@ def processTelnetd(txnId,sensorId,line):
             return None
         
         #print "--------------------"
-        print "processTelnetd() : " + line
+        print("processTelnetd() : " + line)
         
         username = ""
         
@@ -68,15 +68,15 @@ def processTelnetd(txnId,sensorId,line):
                 #username = c[0][0]
                 #password = c[0][1]
                 cmd = c[0][2]
-                print "telnet command : [" + cmd + "]"
+                print("telnet command : [" + cmd + "]")
                 addInfo1 = cmd
                 addInfo2 = None
                 kojoney_attacker_event.generateAttackerEvent(txnId,srcIP,None,sensorId,"MAINTAIN_ACCESS","TELNETD",None,"Attacker entered command",None,None,None,addInfo1,addInfo2)
         return None
 
-    except Exception,e:
+    except Exception as e:
           msg = "processTelnetd() : exception : " + e.__str__()
-          print msg
+          print(msg)
           syslog.syslog(msg)
 
         
@@ -103,7 +103,7 @@ if __name__ == '__main__' :
             msg = processTelnetd(777,"TEST",line)
             
         if msg != None:
-            print "line after parsing = [" + msg +"]"
+            print("line after parsing = [" + msg +"]")
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

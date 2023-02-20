@@ -1,32 +1,32 @@
 
 import simplejson
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 def search_public_timeline(q, refresh_url=None, **kwargs):
     if not refresh_url:
         parms = {}
         parms['q'] = q
         parms.update(kwargs)
-        query_str = '?%s' % urllib.urlencode(parms)
+        query_str = '?%s' % urllib.parse.urlencode(parms)
     else:
         query_str = refresh_url
                                                                       
         u = 'http://search.twitter.com/search.json%s' % query_str
-        print u
+        print(u)
                                                                                                                    
         #user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         #headers = {'User-Agent' : user_agent}
                                                                                                                                     
-        req = urllib2.Request(u) #, None, headers
+        req = urllib.request.Request(u) #, None, headers
                                                                                                                                      
-        return simplejson.load(urllib2.urlopen(req))
+        return simplejson.load(urllib.request.urlopen(req))
         
         
 if __name__ == '__main__':
     q = "botnet"
     q = "one direction"
     results = search_public_timeline(q,refresh_url=None)
-    print results.__str__()
+    print(results.__str__())
     
 #
 #      Searches the public timeline for the q string. There is no sanity checking

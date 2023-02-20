@@ -45,9 +45,9 @@ def convert(filenameIn,filenameOut):
         #print "File " + filenameIn + " converted to UNIX format OK"
         return True
         
-    except Exception,e:
+    except Exception as e:
         msg = "analyse_php_scripts() : convert() : filenameIn = " + filenameIn + " exception = " + e.__str__()         
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 
@@ -65,9 +65,9 @@ def makeTweet(filename):
         # code join
         return tweet
         
-    except Exception,e:
+    except Exception as e:
         msg = "analyse_php_scripts() : makeTweet() : botFingerprint = " + botFingerprint.__str__() + " exception = " + e.__str__()         
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 
@@ -90,9 +90,9 @@ def getArrayVal(line,param):
     
         return a
     
-    except Exception,e:
+    except Exception as e:
         msg = "analyse_php_scripts.py : getArrayVal() : exception " + e.__str__()         
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
     
@@ -147,9 +147,9 @@ def crack_pBot(filename,fingerprint):
         
         return fingerprint
     
-    except Exception,e:
+    except Exception as e:
         msg = "analyse_php_scripts.py : crack_pBot() : exception " + e.__str__()         
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
     
@@ -223,9 +223,9 @@ def getBotFingerprint(filetype,clamav,filename) :
         
         return fingerprint
 
-    except Exception,e:
+    except Exception as e:
         msg = "analyse_php_scripts.py : getBotFingerprint() : filename = " + filename + " exception = " + e.__str__()         
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
     
@@ -252,9 +252,9 @@ def isPHPfile(filename) :
             
         return "Undetermined"   
     
-    except Exception,e:
+    except Exception as e:
         msg = "analyse_php_scripts.py : isPHPfile() : filename = " + filename + " exception = " + e.__str__()         
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
         
@@ -263,7 +263,7 @@ def isPHPfile(filename) :
 # Main function to be called from BlackRain        
 def analysePHPfile(filename):        
     try :
-        print "analysePHPfile() : filename=" + filename.__str__()
+        print("analysePHPfile() : filename=" + filename.__str__())
         # First thing to do is virus scan the file
         cmd = "clamscan --no-summary " + filename
         #print "analysePHPfile() : cmd=" + cmd.__str__()
@@ -271,7 +271,7 @@ def analysePHPfile(filename):
         #result = "Test code, bypassing ClamAV for speed"
         pipe = os.popen(cmd,'r')    
         result = pipe.read().rstrip("\n")
-        print "ClamAV on " + filename + " -> " + result
+        print("ClamAV on " + filename + " -> " + result)
     
         if "FOUND" in result :
             clamav = result.split(" ")[1]
@@ -288,15 +288,15 @@ def analysePHPfile(filename):
             convert(filename,filenameOut)
             botFingerprint = getBotFingerprint(filetype,clamav,filenameOut)
             
-            print "analysePHPfile() : Bot fingerprint = " + botFingerprint.__str__()
+            print("analysePHPfile() : Bot fingerprint = " + botFingerprint.__str__())
             
             return botFingerprint    
         else:
             return None
             
-    except Exception,e:
+    except Exception as e:
         msg = "analyse_php_scripts.py : analysePHPfile() : filename = " + filename + " exception = " + e.__str__()         
-        print msg
+        print(msg)
         syslog.syslog(msg)
                 
 # ===========================
@@ -309,7 +309,7 @@ if __name__ == '__main__' :
     
     try :            
         report = ""
-        print "analyse_php_scripts.py : Started OK"     
+        print("analyse_php_scripts.py : Started OK")     
         if len(sys.argv) != 2 :
             directory = "/usr/local/src/glastopf/files/get"	# use a sensible default
             #sys.exit("Need to supply name of directory as a command-line argument, exiting...")
@@ -321,16 +321,16 @@ if __name__ == '__main__' :
         
         #fpAllFiles = open("analyse_php_scripts_all_files.txt",'w')
         
-        print "Start loop, analyse PHP files in : " + directory    
-        print "Results summary file (output) : " + ANALYSE_SUMMARY_REPORT
+        print("Start loop, analyse PHP files in : " + directory)    
+        print("Results summary file (output) : " + ANALYSE_SUMMARY_REPORT)
         
         globPattern = "/*"
         #globPattern = "/8088*"			# just do one file - good for testing
         for filenameIn in glob.glob(directory + globPattern) :
             if "archive" in filenameIn:		# ignore this directory
                 continue
-            print "-----------------------------------------------------------------------------------------"
-            print "analysing malware file : " + filenameIn + " ..." 
+            print("-----------------------------------------------------------------------------------------")
+            print("analysing malware file : " + filenameIn + " ...") 
             
             #******************************************
             botFingerprint = analysePHPfile(filenameIn)
@@ -348,17 +348,17 @@ if __name__ == '__main__' :
                 botFingerprint = None
                      
             msg = msg + "\n"
-            print msg 
-            print >> fpSummary,msg
+            print(msg) 
+            print(msg, file=fpSummary)
             report = report + msg
               
             msg = "Tweet : " + makeTweet(filenameIn).__str__() + "\n"
-            print msg + "\n"
-            print >> fpSummary,msg
+            print(msg + "\n")
+            print(msg, file=fpSummary)
             report = report + msg
         
             msg = "---------------------------------------------------------------------\n"
-            print >> fpSummary,msg
+            print(msg, file=fpSummary)
             report = report + msg
             #print "report so far :-" + "\n" + report
         
@@ -371,8 +371,8 @@ if __name__ == '__main__' :
         text = "This e-mail is generated automatically by the BlackRain Honeynet\n"
         send_mail.send_mail('richard_crouch@btconnect.com',recipients,"BlackRain : Malware Scripts Juicer Report" , text, files, 'smtp.btconnect.com')
         
-    except Exception,e:
+    except Exception as e:
         msg = "analyse_php_scripts.py : main() : exception " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         

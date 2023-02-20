@@ -50,7 +50,7 @@ def sendFlowClamdIDMEF(sensorId,srcIP,srcPort,dstIP,dstPort,clamavSig,line,tweet
         
         # Additional Data
         fieldsOffset = fieldsSet
-        print "fieldsOffset = " + fieldsOffset.__str__() 
+        print("fieldsOffset = " + fieldsOffset.__str__()) 
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").type", "string")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").meaning", "ClamAV Signature")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").data", clamavSig)
@@ -68,9 +68,9 @@ def sendFlowClamdIDMEF(sensorId,srcIP,srcPort,dstIP,dstPort,clamavSig,line,tweet
         client.SendIDMEF(idmef)
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_clamd_idmef.py : sendFlowClamdIDMEF : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 

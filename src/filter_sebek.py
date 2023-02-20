@@ -58,7 +58,7 @@ import os,sys,syslog
 def filterSebek(line):
 
     try:
-        print "filterSebek() : entered with line:" + line 
+        print("filterSebek() : entered with line:" + line) 
         linec=line 	# make a copy of line
     
         line=line.split(":")
@@ -69,21 +69,21 @@ def filterSebek(line):
         cmd = line[1]
     
         sebek = "process=" + process + " cmd=" + cmd
-        print "filterSebek() : sebek = " + sebek 
+        print("filterSebek() : sebek = " + sebek) 
     
         # filter out boring info
         if len(cmd) == 0 :
-            print "filterSebek() : no cmd found : " + cmd 
+            print("filterSebek() : no cmd found : " + cmd) 
             return ""
         
         # private information - non-honeypot passwords
         if cmd.find("s0lab0sch") != -1 or cmd.find("ialwtt") != -1 :
-            print "filterSebek() : contains private data : " + cmd 
+            print("filterSebek() : contains private data : " + cmd) 
             return ""
     
         # SSH brute force attempts
         if cmd.find("libssh") != -1 or cmd.find("dropbear") != -1 or cmd.find("PuTTY") != -1 or cmd.find("OpenSSH") != -1 or cmd.find("SSH-2.0") != -1 :
-            print "filterSebek() : brute force attempt : " + linec 
+            print("filterSebek() : brute force attempt : " + linec) 
             return ""    
     
         # local access via console - i.e. me accessing - comment this out for debugging on Qemu console
@@ -117,14 +117,14 @@ def filterSebek(line):
         line = line.split(" ")
         
         # note use of {} sp that keystrokes enclosed in [] can be distinguished
-        print "filterSebek() : line = " + `line`
+        print("filterSebek() : line = " + repr(line))
         tidyStr = line[0].lstrip("[") + " " + line[1] + " " + line[3] + " " + line[4] + " " + "{" + process + "}" + " " + prompt + " " + cmd
     
-        print "filterSebek() : tidyStr = " + tidyStr
+        print("filterSebek() : tidyStr = " + tidyStr)
         return tidyStr
     
-    except Exception,e:
-        syslog.syslog("filter_sebek.py : filterSebek() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("filter_sebek.py : filterSebek() exception caught = " + repr(e) + "line=" + line)
         return "!"        
 #
 #   

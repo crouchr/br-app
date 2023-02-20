@@ -26,14 +26,14 @@ def xprobeScan(ip):
         #cmdLine = "/usr/local/bin/nmap -P0 -O -v " + ip
         # -p1-65535
         cmdLine = "/usr/local/bin/xprobe2 " + ip + " > /home/var/log/scans/" + "xprobe-" + ip + ".txt"
-        print cmdLine
+        print(cmdLine)
         
         syslog.syslog("started: " + cmdLine)
         pipe = os.popen(cmdLine,'r')
         raw = pipe.read()
         syslog.syslog("finished: " + cmdLine)
       
-        print "raw=",raw
+        print("raw=",raw)
         #openPorts     = re.findall("(\d+)\/tcp\s+open",raw)
         #filteredPorts = re.findall("(\d+)\/tcp\s+filtered",raw)
  
@@ -105,9 +105,9 @@ def xprobeScan(ip):
         # return results
         #return openPorts,filteredPorts,hops,osService,uptime,ipid,tcpSeq,hostname
     
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_xprobe.py : " + e.__str__() 
-        print msg
+        print(msg)
         syslog.syslog(msg)
 
 

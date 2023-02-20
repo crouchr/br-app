@@ -35,7 +35,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -48,17 +48,17 @@ def makePidFile(name):
 # This code is now obsolete
 def processOssec(line,file):
     
-    print "processOssec() : first line read is " + line
+    print("processOssec() : first line read is " + line)
     srcIP = "0.0.0.0"
     dstIP = "0.0.0.0"
     user  = "None"
     
     if line.find("** Alert") == -1 :
-        print "Ignore additional log details : " + line
+        print("Ignore additional log details : " + line)
         return
         #continue
         
-    print "*** Sync  : NEW EVENT in Ossec alerts logfile to process !"
+    print("*** Sync  : NEW EVENT in Ossec alerts logfile to process !")
                 
     # Header
     #print "first line : " + line
@@ -87,9 +87,9 @@ def processOssec(line,file):
         #print "++ Rule number = " + rule
         #if m.group(2) != None :
         level = m[0][1]
-        print "level=" + level
+        print("level=" + level)
         if int(level) < 6 :
-            print "OSSEC Level is too low, so ignore this Alert, Level=" + level.__str__()
+            print("OSSEC Level is too low, so ignore this Alert, Level=" + level.__str__())
             return
         #print "++ Level = " + level
         #if int(level) >= 5:
@@ -127,7 +127,7 @@ def processOssec(line,file):
         m = re.findall(r'Dst IP: (.*)',line5)
         if len(m) > 0  :
             dstIP = m[0]
-            print "++ Destination IP = " + dstIP
+            print("++ Destination IP = " + dstIP)
         else :
              dstIP = "0.0.0.0"   
     #elif "Usr" in line:    
@@ -224,7 +224,7 @@ def processOssecSyslog(txnId,sensorId,line):
         #    return
     
         #print "------------------"
-        print line
+        print(line)
         
         rule = re.findall("Rule\: (\d+)",line)
         if len(rule) > 0 :
@@ -412,18 +412,18 @@ def processOssecSyslog(txnId,sensorId,line):
                                                                      
         return None
         
-    except Exception,e:
+    except Exception as e:
         msg = "processOssecSyslog() : exception : " + e.__str__() + " line=" + line + "]"
-        print msg
+        print(msg)
         syslog.syslog(msg)
 
 # Write to a test file events to be Tweeted
 def writeImportantKojOssecFile(msg): 
-    print "kojoney_ossec_parse.py : *** IMPORTANT Ossec event *** :-"
-    print getTimestamp(),msg
+    print("kojoney_ossec_parse.py : *** IMPORTANT Ossec event *** :-")
+    print(getTimestamp(),msg)
     
     fp=open('/home/var/log/kojoney_ossec.log','a')
-    print >> fp,getTimestamp(),msg
+    print(getTimestamp(),msg, file=fp)
     fp.close()            
     
     return msg	
@@ -443,16 +443,16 @@ if __name__ == '__main__' :
 # Make pidfile so we can be monitored by monit        
     pid =  makePidFile("test_ossec")
     if pid == None:
-        syslog.syslog("Failed to create pidfile for pid " + `pid`)
+        syslog.syslog("Failed to create pidfile for pid " + repr(pid))
         sys.exit(0)
     else:
-        syslog.syslog("kojoney_ossec_parse.py started with pid " + `pid`)
+        syslog.syslog("kojoney_ossec_parse.py started with pid " + repr(pid))
                 
     # Send an email to say kojoney_tail has started
     now = time.time()
     nowLocal = time.gmtime(now)
     #makeMsg(0,"0","system,kojoney_viz started with pid=" + `pid` + " at localtime " + time.asctime(nowLocal))
-    a = "kojoney_ossec_parse.py started with pid=" + `pid`
+    a = "kojoney_ossec_parse.py started with pid=" + repr(pid)
 
     #statusAlert("*** kojoney_tweet started ***",a)
 
@@ -470,7 +470,7 @@ if __name__ == '__main__' :
 #    st_size = st_results[6]
 #    file.seek(st_size)
 
-    print "system     : Seek to end of Ossec alerts log feed " + filename
+    print("system     : Seek to end of Ossec alerts log feed " + filename)
 
     while True:
     

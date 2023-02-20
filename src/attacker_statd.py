@@ -21,7 +21,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     
     #print "pid is " + `pid`
@@ -35,9 +35,9 @@ def countFiles(path,globStr):
         fileCount = len(glob.glob1(path,globStr))
         return fileCount
         
-    except Exception,e :
-        msg = "attacker_statd.py : countFiles() : exception caught = " + `e`
-        print msg
+    except Exception as e :
+        msg = "attacker_statd.py : countFiles() : exception caught = " + repr(e)
+        print(msg)
         syslog.syslog(msg)
         return None  
         
@@ -51,7 +51,7 @@ def updateAttackerOIDsNetflow(attacker,line) :
         if line.find("dir=in") == -1 :
             return
         
-        print "----"
+        print("----")
         #print "attacker_statd.py : updateAttackerOIDsNetflow() : INCOMING : line=" + line[0:120] + "..."
         pat1 = 'dIP=(\d+\.\d+\.\d+\.\d+)'
         pat2 = 'sIP=(\d+\.\d+\.\d+\.\d+)'
@@ -74,12 +74,12 @@ def updateAttackerOIDsNetflow(attacker,line) :
             #print srcIP
                 
             # Weed out comms with Twitter, Google etc.
-            print "attacker_statd.py : called hiddenIP() with IP = " + srcIP
+            print("attacker_statd.py : called hiddenIP() with IP = " + srcIP)
             if kojoney_hiddenip.hiddenIP(srcIP) == True :
-                print "attacker_statd.py : srcIP " + srcIP + " is not a real attacker since hiddenIP()=True, so ignore"
+                print("attacker_statd.py : srcIP " + srcIP + " is not a real attacker since hiddenIP()=True, so ignore")
                 return 
             else:
-                print "attacker_statd.py : srcIP " + srcIP + " is an attacker since hiddenIP()=False, so update SNMP stats"
+                print("attacker_statd.py : srcIP " + srcIP + " is an attacker since hiddenIP()=False, so update SNMP stats")
             
             if srcIP not in attacker['IP'] :
                 #print srcIP + " not seen before"
@@ -165,14 +165,14 @@ def updateAttackerOIDsNetflow(attacker,line) :
                     #print msg
                     #syslog.syslog(msg)
         else:
-            print "attacker_statd.py : dstIP " + dip[0] + " not found in honeypotList=" + honeypotIPs.__str__() + ", so no need to update attacker SNMP stats"             
+            print("attacker_statd.py : dstIP " + dip[0] + " not found in honeypotList=" + honeypotIPs.__str__() + ", so no need to update attacker SNMP stats")             
         
         # All done so return
         return                 
     
-    except Exception,e:    
-        msg = "attacker_statd.py : updateAttackerOIDsNetflow() : exception caught = " + `e` + " line=" + line
-        print msg
+    except Exception as e:    
+        msg = "attacker_statd.py : updateAttackerOIDsNetflow() : exception caught = " + repr(e) + " line=" + line
+        print(msg)
         syslog.syslog(msg)
                                    
 # -------------------------------------------------------
@@ -183,10 +183,10 @@ syslog.openlog("attacker_statd",syslog.LOG_PID,syslog.LOG_LOCAL2)         # Set 
 # Make pidfile so we can be monitored by monit        
 pid =  makePidFile("attacker_statd")
 if pid == None:
-    syslog.syslog("Failed to create pidfile for pid " + `pid`)
+    syslog.syslog("Failed to create pidfile for pid " + repr(pid))
     sys.exit(0)
 else:
-    syslog.syslog("attacker_statd.py started with pid " + `pid`)
+    syslog.syslog("attacker_statd.py started with pid " + repr(pid))
     
 attacker = shelve.open(attackerShelfFile)
 if len(attacker) == 0 :		# contains no entries
@@ -223,11 +223,11 @@ if len(attacker) == 0 :		# contains no entries
     attacker['ANALYST_FILES_PNG']   = 0
     attacker['ANALYST_FILES_TGZ']   = 0
             
-    print "case 1 : shelf file does not exist, so create a new one : attacker['IP'] is " + attacker['IP'].__str__()
+    print("case 1 : shelf file does not exist, so create a new one : attacker['IP'] is " + attacker['IP'].__str__())
     syslog.syslog("No attacker shelf file found, so created an empty one in " + attackerShelfFile)
 else:
     #print "case 2 : exists : attacker['IP'] after is " + attacker['IP'].__str__()
-    print "case 2 : using existing shelf file"
+    print("case 2 : using existing shelf file")
     syslog.syslog("attacker shelf file already exists, so will use it, filename=" + attackerShelfFile)
     
 attacker.close()    
@@ -247,7 +247,7 @@ st_resultsNetflow = os.stat(netflowFilename)
 st_sizeNetflow    = st_resultsNetflow[6]
 netflowFile.seek(st_sizeNetflow)
 
-print "system     : Seek to end of Netflow file : " + netflowFilename
+print("system     : Seek to end of Netflow file : " + netflowFilename)
 
 fileCheckCounter = 0
 fileCounts = {}
@@ -306,6 +306,6 @@ try:
         # -----                                
         time.sleep(1)		
 
-except Exception,e:
-        print "attacker_statd.py : main() exception caught = " + `e` + " line=" + line
-        syslog.syslog("attacker_statd.py : main() exception caught = " + `e` + " line=" + line)
+except Exception as e:
+        print("attacker_statd.py : main() exception caught = " + repr(e) + " line=" + line)
+        syslog.syslog("attacker_statd.py : main() exception caught = " + repr(e) + " line=" + line)

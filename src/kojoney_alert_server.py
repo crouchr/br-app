@@ -16,7 +16,7 @@ def processAlert(line) :
         
         line = line.rstrip("\n")
         msg = "Entry read from Alert Queue :  " + line
-        print msg
+        print(msg)
         syslog.syslog(msg)
         
         fields = line.split("|")
@@ -27,10 +27,10 @@ def processAlert(line) :
         fileList = []
         
         # Send the alert via Googlemail
-        print "Sending Kojoney Alert via Googlemail..."
+        print("Sending Kojoney Alert via Googlemail...")
         result = googleMail.sendViaGmail(sender,password,recipientList,subject,message,fileList)
         msg = "kojoney_alert_server.py : processAlert() : Sent Kojoney Alert via Googlemail"
-        print msg
+        print(msg)
         syslog.syslog(msg)
         time.sleep(2)	# crude rate limiter
         
@@ -45,9 +45,9 @@ def processAlert(line) :
         #print "kojoney_alert_server.py : processAlert() : done"
         return
          
-    except Exception, e:
+    except Exception as e:
         msg = "processAlert() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         
         
@@ -77,9 +77,9 @@ def main():
                 processAlert(lineAlert)                                                                                            
             time.sleep(5)         
                                                                                                                    
-    except Exception,e:
+    except Exception as e:
         msg = "main() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)    
     
   

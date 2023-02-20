@@ -2,7 +2,7 @@
 
 # Tail the Tweet Queue and send data to SplunkCloud LaaS and to MongoDB
 
-import sys, time, os , syslog , urlparse , re 
+import sys, time, os , syslog , urllib.parse , re 
 import kojoney_loggly
 import kojoney_splunk
 from pymongo import MongoClient
@@ -19,7 +19,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -46,12 +46,12 @@ def map2cif(sdata):
         cifdata['description'] = "BlackRain honeypot : " + sdata['eventType']    
         cifdata['tags'] = ['honeypot','blackrain']
             
-        print "CIF data : " + cifdata.__str__()
+        print("CIF data : " + cifdata.__str__())
         return cifdata    
             
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_logglyd.py : map2cif : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 
@@ -96,9 +96,9 @@ def processTweet(line) :
         
         return sdata
                         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_logglyd.py : processTweet : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 
@@ -107,7 +107,7 @@ def processTweet(line) :
 # Start of code        
 def main():
     try:        
-        print "Started"
+        print("Started")
         
         # Make pidfile so we can be monitored by monit        
         pid =  makePidFile("kojoney_logglyd")
@@ -151,7 +151,7 @@ def main():
         kippo_size = kippo_results[6]
         kippo_file.seek(kippo_size)
       
-        print "kojoney_logglyd     : Seek to end of monitored files..."
+        print("kojoney_logglyd     : Seek to end of monitored files...")
         
         while True:
                    
@@ -166,13 +166,13 @@ def main():
                 #print time.ctime() + " : Nothing in Kojoney Tweet Queue (" + filename + ") to process..."
                 file.seek(where)
             else:			
-                print "kojoney_logglyd.py : *** NEW EVENT in Kojoney Tweet Queue to process !"
+                print("kojoney_logglyd.py : *** NEW EVENT in Kojoney Tweet Queue to process !")
                 sdata = processTweet(line)
                 if sdata != None :
-                    print "=================================="
-                    print time.ctime()
-                    print "Send JSON event to local syslog-ng"
-                    print "=================================="
+                    print("==================================")
+                    print(time.ctime())
+                    print("Send JSON event to local syslog-ng")
+                    print("==================================")
                     pprint(sdata)
                     syslog.syslog(sdata.__str__())
                         
@@ -190,9 +190,9 @@ def main():
             # this can be a float for sub-second sleep    
             time.sleep(1)	# 10th of a second
     
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_logglyd.py : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
     
     

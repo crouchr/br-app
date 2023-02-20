@@ -75,17 +75,17 @@ ACCESS_KEY      = '2815408698-0z4yiKmXv27bHwgDwfXmA13mTbTzBRQ03OvtDTH'
 ACCESS_SECRET   = 'DlKAnAecLLO96MvcvLnc971ripUW0K92TchZ2kRcxb7rX'
 
 try :
-    print "CONSUMER_KEY    = " + CONSUMER_KEY
-    print "CONSUMER_SECRET = " + CONSUMER_SECRET
+    print("CONSUMER_KEY    = " + CONSUMER_KEY)
+    print("CONSUMER_SECRET = " + CONSUMER_SECRET)
 
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth_url = auth.get_authorization_url()
-    print 'Please authorise by visiting the following URL using a GUI browser : \n' + auth_url
-    verifier = raw_input('PIN: ').strip()
+    print('Please authorise by visiting the following URL using a GUI browser : \n' + auth_url)
+    verifier = input('PIN: ').strip()
     auth.get_access_token(verifier)
 
-    print "ACCESS_KEY    = " + auth.access_token.key
-    print "ACCESS_SECRET = " + auth.access_token.secret
-except Exception,e:
-    print "Failure : " + e.__str__()
+    print("ACCESS_KEY    = " + auth.access_token.key)
+    print("ACCESS_SECRET = " + auth.access_token.secret)
+except Exception as e:
+    print("Failure : " + e.__str__())
     

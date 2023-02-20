@@ -29,12 +29,12 @@ def ageAttacks(phaseMaxDuration):
                 
         for attack in agedAttacks :
             del ATTACKER_DICT[attack] 
-            print "[-] attack " + attack + " removed from list of ongoing attacks"
+            print("[-] attack " + attack + " removed from list of ongoing attacks")
     
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_attacker_correlate.py : ageAttack() : exception : " + e.__str__()
         syslog.syslog(msg)
-        print msg
+        print(msg)
         #sys.exit()         
   
 # add new attacks to dictionary    
@@ -46,8 +46,8 @@ def processAttack(line):
         
         fields = line.split(",")
         #print fields
-        print line
-        print " "
+        print(line)
+        print(" ")
         
         attackerIP = fields[3]
         phase      = fields[5]	# SCANNING | ATTACKING etc
@@ -56,20 +56,20 @@ def processAttack(line):
         phaseKey   = attackerIP + "-" + phase
         #phaseKey   = attackerIP + "-" + phase + "-" + sensor
         
-        if ATTACKER_DICT.has_key(phaseKey) == False :
-            print "[+] " + phaseKey + " is a new attack phase, adding to log and DICT of known attacks..."
+        if (phaseKey in ATTACKER_DICT) == False :
+            print("[+] " + phaseKey + " is a new attack phase, adding to log and DICT of known attacks...")
             ATTACKER_DICT[phaseKey] = time.time()
             fpOut = open("/home/var/log/attacker_correlated.log","a")
-            print >> fpOut,line
+            print(line, file=fpOut)
             fpOut.close()
-            print " -> " + line
+            print(" -> " + line)
         else:
-            print phaseKey + " is a known attack phase already being monitored, so ignore"
+            print(phaseKey + " is a known attack phase already being monitored, so ignore")
              
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_attacker_correlate.py : processAttack() : exception : " + e.__str__()
         syslog.syslog(msg)
-        print msg
+        print(msg)
         sys.exit()         
   
 
@@ -82,13 +82,13 @@ if __name__ == "__main__" :
         # Tail the uncorrelated Attacker Log
         filenameAttack = '/home/var/log/attacker.log'	# change to csv ?
         fileAttack     = open(filenameAttack,'r')
-        print "system     : Open Attacker log file : " + filenameAttack
+        print("system     : Open Attacker log file : " + filenameAttack)
     
         # Find the size of the Attack file and move to the end
         st_results_attack = os.stat(filenameAttack)
         st_size_attack = st_results_attack[6]
         fileAttack.seek(st_size_attack)
-        print "system     : Seek to end of Attacker log file"
+        print("system     : Seek to end of Attacker log file")
     
         while True:
             whereAttack = fileAttack.tell()
@@ -98,7 +98,7 @@ if __name__ == "__main__" :
                 #print time.ctime() + " Nothing in Attack logfile to process"
                 fileAttack.seek(whereAttack)
             else:                       # new data has been added to log file
-                print "\n*** NEW EVENT in Attacker Log to process"
+                print("\n*** NEW EVENT in Attacker Log to process")
                 processAttack(lineAttack)
                                                             
             # ageout old attacks
@@ -107,9 +107,9 @@ if __name__ == "__main__" :
             #print "sleeping..."
             time.sleep(0.5)
     
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_attacker_correlate.py : main() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         sys.exit()
    

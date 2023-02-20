@@ -19,7 +19,7 @@ def makePidFile(name):
         
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid  # returns None if failed
@@ -42,21 +42,21 @@ def statusAlert(subject,content):
         status = mailalert.mailalert(sender,destination,smtpServer,alertSubject,alertContent,debugLevel)
                                                                                 
         # uncomment the following line if you want to see the e-mail being sent
-        print "notify     : e-mail : subject=" + '"' + alertSubject + '"'
+        print("notify     : e-mail : subject=" + '"' + alertSubject + '"')
                                                                                                 
         # Add a record to syslog
         a = "Sent alert e-mail, Subject=" + alertSubject + " to " + destination[0]
         syslog.syslog("kojoney_twitter_drone.py :statusAert() : " + a)
                                                                                                                         
-    except Exception,e:
-        syslog.syslog("kojoney_twitter_drone.py : statusAlert() : " + `e`)
+    except Exception as e:
+        syslog.syslog("kojoney_twitter_drone.py : statusAlert() : " + repr(e))
                                                                                                                                     
 def lockBotwall(nodeName) :
     if nodeName == "mars" :
         cmd = "/sbin/ifconfig eth1 down"
         statusAlert("LOCK control msg received by " + nodeName,"Received following control request via Twitter : " + cmd) 
         syslog.syslog("kojoney_twitter_drone.py : lockBotwall() cmd = " + cmd)
-        print "Twitter Control : cmd = " + cmd
+        print("Twitter Control : cmd = " + cmd)
         os.system(cmd)
         #TweetClientCC.PostUpdate("Twitter Control : " + cmd)
     return
@@ -66,7 +66,7 @@ def unlockBotwall(nodeName) :
         cmd = "/sbin/ifconfig eth1 up"
         statusAlert("UNLOCK control msg received by " + nodeName,"Received following control request via Twitter : " + cmd) 
         syslog.syslog("kojoney_twitter_drone.py : unlockBotwall() cmd = " + cmd)
-        print "Twitter Control : cmd = " + cmd
+        print("Twitter Control : cmd = " + cmd)
         os.system(cmd)
         #TweetClientCC.PostUpdate("Twitter Control : " + cmd)
     return
@@ -76,7 +76,7 @@ def resetAll(nodeName) :
     cmd = "/sbin/shutdown -r now"
     statusAlert("REBOOT_ALL control msg received by " + nodeName,"Received following control request via Twitter : " + cmd)     
     syslog.syslog("kojoney_twitter_drone.py : reset() cmd = " + cmd)
-    print "Twitter Control : cmd = " + cmd
+    print("Twitter Control : cmd = " + cmd)
     os.system(cmd)
     #TweetClientCC.PostUpdate("Twitter Control : " + cmd)
     return
@@ -87,7 +87,7 @@ def resetVM(nodeName) :
     cmd = "/sbin/shutdown -r now"
     statusAlert("REBOOT_VM control msg received by " + nodeName,"Received following control request via Twitter : " + cmd)     
     syslog.syslog("kojoney_twitter_drone.py : reset() cmd = " + cmd)
-    print "Twitter Control : cmd = " + cmd
+    print("Twitter Control : cmd = " + cmd)
     os.system(cmd)
     #TweetClientCC.PostUpdate("Twitter Control : " + cmd)
     return
@@ -98,7 +98,7 @@ def resetBotwall(nodeName) :
     cmd = "/sbin/shutdown -r now"
     statusAlert("REBOOT_BOTWALL control msg received by " + nodeName,"Received following control request via Twitter : " + cmd)     
     syslog.syslog("kojoney_twitter_drone.py : reset() cmd = " + cmd)
-    print "Twitter Control : cmd = " + cmd
+    print("Twitter Control : cmd = " + cmd)
     os.system(cmd)
     #TweetClientCC.PostUpdate("Twitter Control : " + cmd)
     return
@@ -115,12 +115,12 @@ def report(nodeName) :
     if nodeName == "mars" :
         cmd = "/home/crouchr/run_drone_report.sh"
         syslog.syslog("kojoney_twitter_drone.py : report() cmd = " + cmd)
-        print "Twitter Control : cmd = " + cmd
+        print("Twitter Control : cmd = " + cmd)
         #TweetClientCC.PostUpdate("Twitter Control : " + cmd)
     return
 
 def processCandCTweet(nodeName,tweet) :
-    print "processC&Ctweet() : node=" + nodeName + " raw tweet=" + tweet
+    print("processC&Ctweet() : node=" + nodeName + " raw tweet=" + tweet)
     tweet = tweet.lower()	 # convert to lower case
     
     if tweet.find("cmd unlock ") != -1 :   	 	# unshut interface
@@ -139,8 +139,8 @@ def processCandCTweet(nodeName,tweet) :
         help(nodeName) 
     elif tweet.find("cmd test ") != -1 : 	
         # This works - leave the code commented or you get into a loop of e-mails
-        msg = "__drone.py running on node=" + nodeName + " sent this test Tweet, epoch=" + `time.time()`  
-        print "Post the following test Tweet : " + msg
+        msg = "__drone.py running on node=" + nodeName + " sent this test Tweet, epoch=" + repr(time.time())  
+        print("Post the following test Tweet : " + msg)
         #status = TweetClientCC.PostUpdate("__drone.py sent test GeoTagged Tweet from a location in California, epoch=" + `time.time()` , lat = 34 , long = -118)  
         ## - add back in when tweepy completed : status = TweetClientCC.PostUpdate(msg)  
     else :
@@ -159,10 +159,10 @@ syslog.openlog("kojoney_twitter_drone")         # Set syslog program name
 # Make pidfile so we can be monitored by monit        
 pid =  makePidFile("kojoney_twitter_drone")
 if pid == None:
-    syslog.syslog("kojoney_twitter_drone.py : Failed to create pidfile for pid " + `pid`)
+    syslog.syslog("kojoney_twitter_drone.py : Failed to create pidfile for pid " + repr(pid))
     sys.exit(0)
 else:
-    syslog.syslog("kojoney_twitter_drone.py started with pid " + `pid`)
+    syslog.syslog("kojoney_twitter_drone.py started with pid " + repr(pid))
             
 # Create a connection to Twitter
 
@@ -188,9 +188,9 @@ try :
     #TweetClientCC = twitter.Api(username="honeycc6"   , password="fuckfacebook")                
     
     if platform.node() == "mars" :
-        msg = "SYSTEM : Botwall started OK, id=" + `time.time()`
+        msg = "SYSTEM : Botwall started OK, id=" + repr(time.time())
     else :
-        msg = "SYSTEM : Honeypot host started OK, id=" + `time.time()`
+        msg = "SYSTEM : Honeypot host started OK, id=" + repr(time.time())
     
     ## reinstate this : print msg    
     ## reinstate this : TweetClientCC.PostUpdate(msg)
@@ -209,14 +209,14 @@ try :
     
     home_timeline = api_dr.home_timeline()
     
-    print "Below are the stale tweets :-"
+    print("Below are the stale tweets :-")
     for tweet in home_timeline:
         cache[tweet.id] = tweet.text
-        print "  id=" + `tweet.id` + " text=" + tweet.text
+        print("  id=" + repr(tweet.id) + " text=" + tweet.text)
         
     
-    print "Current Tweets have now been added to stale cache"
-    print "Sleeping for 10 seconds..."
+    print("Current Tweets have now been added to stale cache")
+    print("Sleeping for 10 seconds...")
     time.sleep(10)
     
     # Look for new tweets
@@ -226,18 +226,18 @@ try :
         home_timeline = api_dr.home_timeline()
     
         for tweet in home_timeline:       
-            if cache.has_key(tweet.id) == False :
-                print "\n*** New Tweet found ***"
+            if (tweet.id in cache) == False :
+                print("\n*** New Tweet found ***")
                 cache[tweet.id] = tweet.text      
                 processCandCTweet(platform.node(),tweet.text)
-        print "Sleeping for 30 seconds..."
+        print("Sleeping for 30 seconds...")
         time.sleep(30)
         
         # the tweet seems to include a different value of id to tweet.id but still seems to work - bug ?
         
-    print "Exiting."
+    print("Exiting.")
 
-except Exception,e:
-    syslog.syslog("kojoney_twitter_drone.py : exception " + `e`)
+except Exception as e:
+    syslog.syslog("kojoney_twitter_drone.py : exception " + repr(e))
     
                                                                  

@@ -22,11 +22,11 @@ try:
         log = data.split("ossec: ")[1]
         msg = time.ctime() + " " + log.__str__()
         fp = open(FILENAME,'a')
-        print >> fp,msg
+        print(msg, file=fp)
         fp.close()
         
-except Exception,e:
+except Exception as e:
     msg = "Exception : " + e.__str__()
-    print msg
+    print(msg)
     syslog.syslog(msg)
     

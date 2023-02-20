@@ -60,8 +60,8 @@ def processAmunSubmit(line):
 
         return None
 
-    except Exception,e:
-                syslog.syslog("kojoney_amun_parse.py : processAmunSubmit() : " + `e` + " line=" + line)
+    except Exception as e:
+                syslog.syslog("kojoney_amun_parse.py : processAmunSubmit() : " + repr(e) + " line=" + line)
 
 # return the Tweet or None
 #2010-04-26 09:53:28,660 INFO exploit 217.115.189.123:4626 -> 192.168.1.66:135 (DCOM Vulnerability: tftp://217.115.189.123:69/ssms.exe) (Shellcode: leimbach)
@@ -143,9 +143,9 @@ def processAmunExploit(line):
     
         return msg
 
-    except Exception,e:
-        error = "kojoney_amun_parse.py : processAmunExploit() : " + `e` + " line=" + line
-        print error
+    except Exception as e:
+        error = "kojoney_amun_parse.py : processAmunExploit() : " + repr(e) + " line=" + line
+        print(error)
         syslog.syslog(error)
                 
 # return the Tweet or None
@@ -170,8 +170,8 @@ def processAmunDownload(line):
     
         return msg
 
-    except Exception,e:
-        syslog.syslog("kojoney_amun_parse.py : processAmunDownload() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_amun_parse.py : processAmunDownload() : " + repr(e) + " line=" + line)
                                
 # -------------------------------------------------------
         
@@ -202,7 +202,7 @@ if __name__ == '__main__' :
             msg = processAmunDownload(line)
         
         if msg != None:
-            print "line after parsing = [" + msg +"]"
+            print("line after parsing = [" + msg +"]")
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

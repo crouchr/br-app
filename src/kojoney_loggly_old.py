@@ -15,7 +15,7 @@ def sendToLoggly(sensorId,line):
     try :
         global txnId                    
         
-        print "sendToLoggly() : line=" + line
+        print("sendToLoggly() : line=" + line)
         
         # honeytweeter
         #shakey = "e25e6042-e490-4910-a246-94cefbdd11b9"               
@@ -163,7 +163,7 @@ def sendToLoggly(sensorId,line):
                 
         body = json.dumps(sdata)        
         
-        print "sendToLoggly() : JSON body = " + body
+        print("sendToLoggly() : JSON body = " + body)
                          
         # Send to Loggly
                          
@@ -179,18 +179,18 @@ def sendToLoggly(sensorId,line):
         
         if "ok" in content.__str__() :		# bug -> why can't I look at the "response" field in a structured way
             msg = "Sent to Loggly OK : " + body.__str__()
-            print msg
+            print(msg)
         else:
             msg = "Sent to Loggly FAIL : " + body.__str__() + " error = " + content.__str__()
-            print msg
+            print(msg)
             syslog.syslog(msg)        
         
         # crude form of rate-limiter
         time.sleep(0.5)
                                  
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_loggly.py : sendToLoggly() : exception : " + e.__str__() + " line=" + line
-        print msg
+        print(msg)
         syslog.syslog(msg)
         
                                

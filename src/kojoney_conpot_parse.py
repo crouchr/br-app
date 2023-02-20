@@ -52,8 +52,8 @@ def processConpot(line):
         else :
             return None
 
-    except Exception,e:
-        syslog.syslog("kojoney_conpot_parse.py : processConpot() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_conpot_parse.py : processConpot() : " + repr(e) + " line=" + line)
 
                                                
 # -------------------------------------------------------
@@ -82,9 +82,9 @@ if __name__ == '__main__' :
             msg = processConpot(line)
         
         if msg != None:
-            print "line before parsing = {" + line + "}"
-            print "line after parsing  = [" + msg  + "]"
-            print " "
+            print("line before parsing = {" + line + "}")
+            print("line after parsing  = [" + msg  + "]")
+            print(" ")
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

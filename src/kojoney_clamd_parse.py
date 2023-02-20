@@ -55,9 +55,9 @@ def processClamd(line,sensorId,txnId):
                      
         return None
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_clamd_parse.py : processClamd() : " + e.__str_() + " line=" + line
-        print msg
+        print(msg)
         syslog.syslog(msg)
 
 
@@ -92,7 +92,7 @@ if __name__ == '__main__' :
             if " FOUND" in line :
                 msg = processClamd(line,"TEST",123)
                 if msg != None:
-                    print "*** Tweet : " + msg
+                    print("*** Tweet : " + msg)
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

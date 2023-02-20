@@ -5,7 +5,7 @@ import syslog
 import time
 import ipintellib	# rch library
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
 import p0fcmd
 import BlackRainClient
@@ -83,7 +83,7 @@ def loginToBRX(sensorId):
         #syslog.syslog("BRX_LOGIN_ERROR : Failed to login to BRX")
         return 
             
-    except Exception , e :                                                                                             
+    except Exception as e :                                                                                             
         #logging.critical("Exception : kojoney_blackrain.loginToBRX() : " + e.__str__())  
         return 
 
@@ -161,9 +161,9 @@ def sendEvent(flowEvent) :
         
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "Exception : kojoney_blackrain.sendEvent() : " + e.__str__()
-        print msg
+        print(msg)
         logging.critical(msg)
         return  
 
@@ -207,9 +207,9 @@ def transmitToBRX(eventHeader,eventPayload):
         #syslog.syslog("BRX_TX_ERROR : Failed to transmit data to BRX")
         return 
     
-    except Exception,e:
+    except Exception as e:
         msg = "Exception : kojoney_blackrain.transmitToBRX() : " + e.__str__()
-        print msg
+        print(msg)
         logging.critical(msg)
         syslog.syslog(msg)
         return  

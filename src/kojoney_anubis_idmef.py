@@ -10,7 +10,7 @@ def sendFiledownloadIDMEF(url,fullFilename,filename,fileMD5,completion,logEntry)
     try:
         if fileMD5 != None:
             cymruHash = kojoney_cymru_hash.cymruHash(fileMD5)
-            print "cymruHash : "  + cymruHash
+            print("cymruHash : "  + cymruHash)
         else:
             cymruHash = "0"
         
@@ -25,7 +25,7 @@ def sendFiledownloadIDMEF(url,fullFilename,filename,fileMD5,completion,logEntry)
                 dstIP = dnsInfo['name']
         else:
             dstIP = "0.0.0.0"  
-        print "kojoney_anubis_idmef.py : sendFiledownloadIDMEF() : dstIP = " + dstIP.__str__()         
+        print("kojoney_anubis_idmef.py : sendFiledownloadIDMEF() : dstIP = " + dstIP.__str__())         
         
         # Create a new Prelude client
         client = PreludeEasy.ClientEasy("blackrain")
@@ -81,9 +81,9 @@ def sendFiledownloadIDMEF(url,fullFilename,filename,fileMD5,completion,logEntry)
         client.SendIDMEF(idmef)
         return
                         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis_idmef.py : sendFiledownloadIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 
@@ -136,9 +136,9 @@ def botjuicePHPIDMEF(fullFilename,logEntry):
         client.SendIDMEF(idmef)
         return
                         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis_idmef.py : sendFiledownloadIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 
@@ -179,9 +179,9 @@ def tracerouteIDMEF(dstIP,logEntry):
         client.SendIDMEF(idmef)
         return
                         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis_idmef.py : tracerouteIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 
@@ -225,9 +225,9 @@ def nmapIDMEF(dstIP,logEntry):
         client.SendIDMEF(idmef)
         return
                         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis_idmef.py : nmapIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
                                                                      

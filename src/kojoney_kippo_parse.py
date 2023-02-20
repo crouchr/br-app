@@ -28,8 +28,8 @@ def processKippo(txnId,sensorId,line):
 
     try :
         line=line.strip("\n")
-        print "############################################"
-        print "processKippo() : line received from Honeypot : " + line
+        print("############################################")
+        print("processKippo() : line received from Honeypot : " + line)
         addInfo1 = None
         addInfo2 = None
                 
@@ -54,19 +54,19 @@ def processKippo(txnId,sensorId,line):
             
             #print "login OK : credentials = " + username + " " + password
             msg = srcIP + ":" + countryCode + "," + username + ":" + password + ",succeeded" + ",kippo"
-            print msg
+            print(msg)
             
             # Fake auth.log entry for use by OSSEC :-
             # Accepted password for crouchr from 192.168.1.73 port 46366 ssh2
             tstamp = time.ctime()
             fields = tstamp.split(" ")
-            print "kojoney_kippo_parse.py : fields=" + fields.__str__()
+            print("kojoney_kippo_parse.py : fields=" + fields.__str__())
             
             tstamp = fields[1] + " " + fields[2] + " " + fields[3]
             fakeAuthLogMsg = tstamp + " mars sshd[12345]: Accepted password for " + username + " from " + srcIP + " port 12345 ssh2"
-            print "kojoney_kippo_parse.py : fakeAuthLogMsg : " + fakeAuthLogMsg
+            print("kojoney_kippo_parse.py : fakeAuthLogMsg : " + fakeAuthLogMsg)
             fp = open("/home/var/log/kippo_auth.log",'a')
-            print >> fp, fakeAuthLogMsg
+            print(fakeAuthLogMsg, file=fp)
             fp.close()
             
             # Send event to SIEM
@@ -87,7 +87,7 @@ def processKippo(txnId,sensorId,line):
             kojoney_attacker_event.generateAttackerEvent(txnId,srcIP,None,sensorId,"GAINED_ACCESS","KIPPO",None,"Successful login",None,None,None,addInfo1,addInfo2)
 
             fp = open("/home/var/secviz/failedCredentialsViz.csv",'a')
-            print >> fp, msg
+            print(msg, file=fp)
             fp.close()
             
         # log failed attempted passwords to a file            
@@ -113,7 +113,7 @@ def processKippo(txnId,sensorId,line):
                 
             #print "login FAIL : credentials = " + username + " " + password
             msg = srcIP + ":" + countryCode + "," + username + ":" + password + ",failed" + ",kippo" + "," + time.ctime()
-            print msg
+            print(msg)
 
             # Fake FAILED auth.log entry for use by Ossec :-
             # Failed password for user crouchr from 192.168.1.73 port 46366 ssh2
@@ -122,10 +122,10 @@ def processKippo(txnId,sensorId,line):
             tstamp = fields[1] + " " + fields[2] + " " + fields[3]
             fakeAuthLogMsg = tstamp + " mars sshd[12345]: Failed password for user " + username + " from " + srcIP + " port 12345 ssh2"
             fakeAuthLogMsg = fakeAuthLogMsg.replace("2013 ","")
-            print "fakeAuthLogMsg : " + fakeAuthLogMsg
+            print("fakeAuthLogMsg : " + fakeAuthLogMsg)
             # Update clone of auth.log so OSSEC standard SSH rules can be used           
             fp = open("/home/var/log/kippo_auth.log",'a')
-            print >> fp, fakeAuthLogMsg
+            print(fakeAuthLogMsg, file=fp)
             fp.close()
             
             # Send event to SIEM
@@ -146,7 +146,7 @@ def processKippo(txnId,sensorId,line):
             kojoney_attacker_event.generateAttackerEvent(txnId,srcIP,None,sensorId,"ATTACKING","KIPPO",None,"Failed login attempt",None,None,None,addInfo1,addInfo2)
 
             fp = open("/home/var/secviz/failedCredentialsViz.csv",'a')
-            print >> fp, msg
+            print(msg, file=fp)
             fp.close()
         
         # Also add INPUT - i.e. if user performs a passwd
@@ -180,7 +180,7 @@ def processKippo(txnId,sensorId,line):
         else:
             cmd = ' '.join(fields[11:])
             #cmd = 'rch testing - ignore'
-            print "kojoney_kippo_parse.py : cmd=[" + cmd.__str__() + "]"
+            print("kojoney_kippo_parse.py : cmd=[" + cmd.__str__() + "]")
         
             ip = re.findall("(\d+\.\d+\.\d+\.\d+)",line)
             if len(ip) > 0 :
@@ -205,7 +205,7 @@ def processKippo(txnId,sensorId,line):
             # Log all commands to a file
             msg = time.ctime() + "," + srcIP + "," + countryCode.__str__() + "," + cmd
             fpCmds = open("/home/var/log/kippo-all-cmds.csv","a")
-            print >> fpCmds,msg
+            print(msg, file=fpCmds)
             fpCmds.close()
             
             # Update Attacker Database
@@ -232,11 +232,11 @@ def processKippo(txnId,sensorId,line):
             elif "shutdown " in cmd.lower():		# Use trailing space to force an argument to have been supplied for wget etc.
                 kojoney_attacker_event.generateAttackerEvent(txnId,srcIP,None,sensorId,"COVER_TRACKS","KIPPO",None,"Attacker attempted to shutdown node",None,None,None,addInfo1,addInfo2)
                 
-        print "processKippo() : tweet=" + tweet 
+        print("processKippo() : tweet=" + tweet) 
         return tweet
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processKippo() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processKippo() exception caught = " + repr(e) + " line=" + line)
 
 
 if __name__ == '__main__' :
@@ -252,7 +252,7 @@ if __name__ == '__main__' :
             msg = processKippo(666,"TEST",line)
             
         if msg != None :
-            print msg
+            print(msg)
             
         #time.sleep(0.2)
                                                                                 

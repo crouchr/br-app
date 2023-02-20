@@ -32,12 +32,12 @@ def addTweetToQueue(tweet,geoip=False,tstamp=None):
         #tweet = '"' + tweet + '"'
         msg = "submitted=" + time.asctime(tuple) + " cmd=" + cmd + " tweet=" + tweet      
         fpOut = open(r'/home/var/log/tweet_queue.log','a')
-        print >> fpOut,msg 
+        print(msg, file=fpOut) 
         fpOut.close()
-        print "twitter_funcs.py : added entry to Tweet queue :" + msg
+        print("twitter_funcs.py : added entry to Tweet queue :" + msg)
         
-    except Exception,e:
-        syslog.syslog("twitter_funcs.py : addTweetToQueue() exception caught = " + `e` + " tweet=" + tweet)
+    except Exception as e:
+        syslog.syslog("twitter_funcs.py : addTweetToQueue() exception caught = " + repr(e) + " tweet=" + tweet)
 
 # Wrapper
 # Extract first non-honeypot IP from a Tweet
@@ -71,10 +71,10 @@ def sendGeoIPTweet(tweet_raw) :
         else: # Did not find an IP address
             tweet = "--" + "," + tweet_raw        
         
-        sendTweet(tweet,lat=latitude,long=longitude,meta=metaData)
+        sendTweet(tweet,lat=latitude,int=longitude,meta=metaData)
     
-    except Exception,e:
-        syslog.syslog("twitter_funcs.py : sendGeoIPTweet() exception caught = " + `e` + " tweet_raw=" + tweet_raw)
+    except Exception as e:
+        syslog.syslog("twitter_funcs.py : sendGeoIPTweet() exception caught = " + repr(e) + " tweet_raw=" + tweet_raw)
 
 # locate Tweets of Interest
 # put to file initially and then to a separate Twitter channel
@@ -107,13 +107,13 @@ def tweetsOfInterest(tweet):
             if tweet.lower().find(i.lower()) != -1 : 
                 msg = i + "," + tweet
                 fpOut = open(r'/home/var/log/tweetsofinterest.txt','a')
-                print >> fpOut,msg 
+                print(msg, file=fpOut) 
                 fpOut.close()
                 #print msg
                 #syslog.syslog("twitter_funcs.py : tweetsOfInterest() : " + msg)
         
-    except Exception,e:
-        syslog.syslog("twitter_funcs.py : tweetsOfInterest() exception caught = " + `e` + " tweet=" + tweet)
+    except Exception as e:
+        syslog.syslog("twitter_funcs.py : tweetsOfInterest() exception caught = " + repr(e) + " tweet=" + tweet)
 
 
 # Look for multiple IPs in a Tweet and then obfuscate them
@@ -133,9 +133,9 @@ def anonymizeIP(msg):
             #a = "anonymizeIP : ip found = " + ip 
             #syslog.syslog(a)
             #print a
-            print ips
+            print(ips)
             for ip in ips:
-                print ip
+                print(ip)
                 #if ip.find("/") != -1 :	# this is a route so do not obfuscate
                 #    print ip + " is a route, so do not obfuscate"
                 #    continue		# go to next IP in list
@@ -161,9 +161,9 @@ def anonymizeIP(msg):
             #syslog.syslog(a)
             #print a
             
-            print ips
+            print(ips)
             for ip in ips:
-                print ip
+                print(ip)
                 octets = ip.split("-")
                 anonIP = "x-x-x-x"
                 #a = "anonymizeIP : anonIP = " + anonIP
@@ -181,8 +181,8 @@ def anonymizeIP(msg):
             #syslog.syslog(a)
             return msg    
 
-    except Exception,e:
-        syslog.syslog("twitter_funcs.py : anonymizeIP() exception caught = " + `e` + " tweet_raw=" + msg)
+    except Exception as e:
+        syslog.syslog("twitter_funcs.py : anonymizeIP() exception caught = " + repr(e) + " tweet_raw=" + msg)
 
 
 # --------------------------------------
@@ -221,14 +221,14 @@ def sendTweet(tweet_raw,lat=None,long=None,meta=None,account="honeytweeter"):
         return
          
     try:
-        if (lat != None and long != None) :
+        if (lat != None and int != None) :
             lat  = '%.2f' % lat	    # truncate to 2 decimal points as required by Twitter
-            long = '%.2f' % long    # truncate to 2 decimal points as required by Twitter
+            long = '%.2f' % int    # truncate to 2 decimal points as required by Twitter
         
         #print "sendTweet() : after truncation to 2 decimal points, lat=" + `lat` + " long=" + `long` 
         
         # If GeoIP failed, then set to None so as not to have Tweepy reject the API call - hypothesis at the moment
-        if lat == '999.00' or long == '999.00' :
+        if lat == '999.00' or int == '999.00' :
             #print "send_tweet() : no geoip information obtained"
             lat = None
             long = None
@@ -242,12 +242,12 @@ def sendTweet(tweet_raw,lat=None,long=None,meta=None,account="honeytweeter"):
         # Add tweet - before anonymisation / truncation etc. to a file purely for visualisation
         msg = tweet  
         fpOut = open(r'/home/var/log/tweets.visualistion.txt','a')
-        print >> fpOut,msg 
+        print(msg, file=fpOut) 
         fpOut.close()
     
         # prepend TweetId to prevent duplicate Tweets and to check how reliable the tweet API is 
         TweetId = TweetId + 1 
-        tweet = "#hnytwtr" + " " + "id" + `TweetId` + "," + tweet
+        tweet = "#hnytwtr" + " " + "id" + repr(TweetId) + "," + tweet
         
         # search for keywords in Tweet and save to a file
         # Note - this is done *before* anonymization and before truncation
@@ -274,12 +274,12 @@ def sendTweet(tweet_raw,lat=None,long=None,meta=None,account="honeytweeter"):
             metaData = "," + meta
         else:
             metaData = ""    
-        msg = "[" + tweet + "]" + " metadata:lat=" + `lat` + "," + "long=" + `long` + metaData 
+        msg = "[" + tweet + "]" + " metadata:lat=" + repr(lat) + "," + "long=" + repr(int) + metaData 
         #print msg
 
-        msg = `TweetId` + "," + msg
+        msg = repr(TweetId) + "," + msg
         fpOut = open(r'/home/var/log/tweets.attempts.log.txt','a')
-        print >> fpOut,msg 
+        print(msg, file=fpOut) 
         fpOut.close()
         
 
@@ -288,14 +288,14 @@ def sendTweet(tweet_raw,lat=None,long=None,meta=None,account="honeytweeter"):
         # You need to enable the Tweet account for geotagging under Settings tab on Twitter Web page        
         # ******************************************************************************************     
 
-        print "*** twitter_funcs.py : sendTweet() sent by API : tweet = " + msg
+        print("*** twitter_funcs.py : sendTweet() sent by API : tweet = " + msg)
         if tweet.find(":::") == -1 :	# ":::" at end of tweet == do not tweet via API
             #syslog.syslog("twitter_funcs.py : sendTweet() : TWITTER_API : " + tweet)
             start = time.time()
             auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
             auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
             api = tweepy.API(auth)
-            api.update_status(tweet,lat=lat,long=long)
+            api.update_status(tweet,lat=lat,int=int)
             end = time.time()
             
             # Calculate duration of Twitter submission
@@ -303,65 +303,66 @@ def sendTweet(tweet_raw,lat=None,long=None,meta=None,account="honeytweeter"):
             #syslog.syslog("twitter_funcs.py : sendTweet() : Tweet sent OK : TWITTER_PERF : " + "%.2f" % apiTime + " secs")
             
             fpOut = open(r'/home/var/log/tweets.sent.log.txt','a')
-            print >> fpOut,msg,apiTime.__str__() 
+            print(msg,apiTime.__str__(), file=fpOut) 
             fpOut.close()
     
             time.sleep(5)	# crude rate limit into Twitter 
     
     # Trap Twitter exceptions
-    except Exception,tweepy.TweepError:
+    except Exception as xxx_todo_changeme:
+        tweepy.TweepError = xxx_todo_changeme
         msg = "twitter_funcs.py : sendTweet() exception : TweepError = [" + tweepy.TweepError.__str__() + "], length of tweet = " + len(tweet).__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         
         fpOut = open(r'/home/var/log/tweepError.txt','a')
         msg = "twitter_funcs.py : sendTweet() exception : TweepError = [" + tweepy.TweepError.__str__() + "], length of tweet = " + len(tweet).__str__() + ", tweet=" + tweet.__str__()
-        print >> fpOut,msg
+        print(msg, file=fpOut)
         fpOut.close()
     
         msg = "twitter_funcs.py : sendTweet() exception : tweet = " + tweet.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         
         return
         #return False,tweepy.TweepError.__str__()
         
     # Trap general exceptions                             
-    except Exception,e:
-        syslog.syslog("twitter_funcs.py : sendTweet() : exception caught = " + `e` + " tweet_raw=" + tweet_raw)
+    except Exception as e:
+        syslog.syslog("twitter_funcs.py : sendTweet() : exception caught = " + repr(e) + " tweet_raw=" + tweet_raw)
 
 
 if __name__ == '__main__' :
 
     tweet = "Here is an attack from 1.2.3.4:43 that needs to be anonymised"
-    print tweet
+    print(tweet)
     tweet = anonymizeIP(tweet)
-    print tweet
-    print " "
+    print(tweet)
+    print(" ")
     
     tweet = "Here is an attack from 1.2.3.4:43 towards 4.5.6.7 that needs to be anonymised"
-    print tweet
+    print(tweet)
     tweet = anonymizeIP(tweet)
-    print tweet
-    print " "
+    print(tweet)
+    print(" ")
     
     tweet = "Here is an attack from 1.2.3.4:43 using route 34.56.2.0/24 that needs to be anonymised"
-    print tweet
+    print(tweet)
     tweet = anonymizeIP(tweet)
-    print tweet
-    print " "
+    print(tweet)
+    print(" ")
     
     tweet = "Here is an attack from 1-2-3-4.dynamic.adsl.com towards 4.5.6.7 that needs to be anonymised"
-    print tweet
+    print(tweet)
     tweet = anonymizeIP(tweet)
-    print tweet
-    print " "
+    print(tweet)
+    print(" ")
     
     tweet = "Here is an attack with no IP address that needs to be anonymised"
-    print tweet
+    print(tweet)
     tweet = anonymizeIP(tweet)
-    print tweet
-    print " "
+    print(tweet)
+    print(" ")
 
     tweet = "Here is a Tweet with Cisco router from AS3209 and Vodafone in it - with a trojanised piece of bot shellcode from an IRC proxy"
     tweetsOfInterest(tweet)

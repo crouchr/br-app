@@ -20,7 +20,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -42,9 +42,9 @@ def calcMD5(fullFilename):
         else:
             return result
             
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : calcMD5() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
     
@@ -56,16 +56,16 @@ def isSafeToScan(ip) :
     geoIP = {}
     
     try :
-        print "*** kojoney_anubis.py : calling hiddenIP() ***"
+        print("*** kojoney_anubis.py : calling hiddenIP() ***")
         # Do not scan Google / Local LAN etc
         if kojoney_hiddenip.hiddenIP(ip) == True :
             msg = "kojoney_anubis.py : isSafeToScan() : " + ip + " is **not** OK to scan according to hiddenIP()"
-            print msg
+            print(msg)
             #syslog.syslog(msg)
             return False
         else:
             msg = "kojoney_anubis.py : isSafeToScan() : " + ip + " is OK to scan according to hiddenIP()"
-            print msg
+            print(msg)
             #syslog.syslog(msg)
         
         # Check the country of the attacker
@@ -75,17 +75,17 @@ def isSafeToScan(ip) :
         if cc not in SAFE_COUNTRIES:
             msg = ip + " is in " + cc.__str__() + " jurisdiction and so considered UNSAFE to scan"
             #syslog.syslog(msg)
-            print msg
+            print(msg)
             return False
         else:
             msg = ip + " is in " + cc.__str__() + " jurisdiction and so considered safe to scan"
             #syslog.syslog(msg)
-            print msg
+            print(msg)
             return True    
             
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : isSafeToScan() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return False
 
@@ -95,7 +95,7 @@ def isSafeToScan(ip) :
 def analyseMalwareFile(malwareFilename,test):
     
     try :
-        print "kojoney_anubis.py : analyseMalwareFile() : malwareFilename=" + malwareFilename.__str__()
+        print("kojoney_anubis.py : analyseMalwareFile() : malwareFilename=" + malwareFilename.__str__())
         
         if "/" in malwareFilename :
             fullFilename = malwareFilename
@@ -105,27 +105,27 @@ def analyseMalwareFile(malwareFilename,test):
         a = fullFilename.split("/")
         filename = a[-1]		# -1 = last component
         
-        print "analyseMalwareFile() : full path = " + fullFilename.__str__()
-        print "analyseMalwareFile() : filename  = " + filename.__str__()
+        print("analyseMalwareFile() : full path = " + fullFilename.__str__())
+        print("analyseMalwareFile() : filename  = " + filename.__str__())
         
         tweet = "ANALYST,FILE "		# YES SO DONT : if I make this ANUBIS does tweet engine get into a loop ?
 
         cmd = "/usr/local/sbin/file " + fullFilename.__str__()
-        print cmd
+        print(cmd)
         pipe = os.popen(cmd,'r')
         
         raw = pipe.read().rstrip("\n")
-        print raw      
+        print(raw)      
         if "cannot open" in raw :
-            print "kojoney_anubis.py : analyseMalwareFile() : can't open " + malwareFilename.__str__()
+            print("kojoney_anubis.py : analyseMalwareFile() : can't open " + malwareFilename.__str__())
             return None
         
         # Extract just the filename, not the full pathname from the result
         a = raw.split("/")
-        print "analyseMalwareFile() : a=" + a.__str__()
+        print("analyseMalwareFile() : a=" + a.__str__())
         #print len(a)
         result = a[-1]	# -1 = the last component i.e. the result from the FILE utility
-        print "kojoney_anubis.py : analyseMalwareFile() FILE utility result=" +  result.__str__()
+        print("kojoney_anubis.py : analyseMalwareFile() FILE utility result=" +  result.__str__())
         
         # Shorten Tweets
         result = result.replace("last modified:","mod.")
@@ -139,9 +139,9 @@ def analyseMalwareFile(malwareFilename,test):
                 
         return tweet          
              
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : analyseMalwareFile() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 
@@ -149,7 +149,7 @@ def analyseMalwareFile(malwareFilename,test):
 # note : malwareFilename is generally the full file and pathname
 def analyseMalwareAV(malwareFilename,test):
     try :
-        print "kojoney_anubis.py : analyseMalwareAV() : malwareFilename=" + malwareFilename.__str__()
+        print("kojoney_anubis.py : analyseMalwareAV() : malwareFilename=" + malwareFilename.__str__())
         
         if "/" in malwareFilename :
             fullFilename = malwareFilename	# No path information
@@ -160,26 +160,26 @@ def analyseMalwareAV(malwareFilename,test):
             md5 = malwareFilename.replace(".bin","")
             filename = malwareFilename		# No path information
         
-        print "analyseMalwareAV() : fullFilename     = " + fullFilename.__str__()
-        print "analyseMalwareAV() : fullFilename MD5 = " + md5.__str__()
+        print("analyseMalwareAV() : fullFilename     = " + fullFilename.__str__())
+        print("analyseMalwareAV() : fullFilename MD5 = " + md5.__str__())
         
         # Check #1 : Team Cymru Malware Hash Registry (MHR)
         #md5 = malwareFilename.replace(".bin","")
         #print md5
         cymruPercent = kojoney_cymru_hash.cymruHash(md5)
-        print "Check#1 : Team Cymru AV percent = " + cymruPercent.__str__()
+        print("Check#1 : Team Cymru AV percent = " + cymruPercent.__str__())
       
         # Check #2 : VirusTotal
         vt = virustotal.getVirusTotalFile(md5,"ALL",False)
         if vt['status'] == True:
-            print vt['md5']
-            print vt['date'] 
-            print vt['single']
-            print vt['matches']
-            print vt['total']  
-            print vt['permalink']
-            print vt['bitly']
-            print "Summary : " + vt['summary']
+            print(vt['md5'])
+            print(vt['date']) 
+            print(vt['single'])
+            print(vt['matches'])
+            print(vt['total'])  
+            print(vt['permalink'])
+            print(vt['bitly'])
+            print("Summary : " + vt['summary'])
             tweet = "ANALYST,AV " + filename + " => " + vt['summary']    
         else:                                                                                                                                                                                    
             return None
@@ -217,9 +217,9 @@ def analyseMalwareAV(malwareFilename,test):
         
         return tweet          
              
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : analyseMalwareAV() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 
@@ -232,7 +232,7 @@ def analyseAnubisReport(url,test):
         malwareFilename = None
         tweet = "ANALYST,SANDBOX "	# if I make this ANUBIS does tweet engine get into a loop ?
         
-        print "url : " + url.__str__()
+        print("url : " + url.__str__())
         reportUrl = url + "&format=txt"
         
         # make it easier to delete reports downloaded as part of testing
@@ -242,7 +242,7 @@ def analyseAnubisReport(url,test):
             reportFilename = "/home/var/haxxor_webs/kojoney_analyst/anubis/" + "anubis-" + time.time().__str__() + ".txt"
         
         cmd = "wget --timeout 30 -q -t 2 -nc --no-check-certificate" + " '" + reportUrl + "'" + " -O " + reportFilename 
-        print "analyseURL() : cmd to be exectuted : " + cmd
+        print("analyseURL() : cmd to be exectuted : " + cmd)
         result = os.system(cmd)		# returns int
         #print "wget result is " + result.__str__()         
         #syslog.syslog("kojoney_anubis.py retrieveURL() : wget result=" + result.__str__() + " for " + cmd)
@@ -250,7 +250,7 @@ def analyseAnubisReport(url,test):
         if result != 0 :
             msg = "kojoney_anubis.py : analyseAnubis Report() : wget returned non-zero (failure) result=" + result.__str__()
             syslog.syslog(msg)
-            print msg
+            print(msg)
             return None,None
         
         # If Anubis is busy with many analysis jobs in it's queue, then we can't get the report now
@@ -269,15 +269,15 @@ def analyseAnubisReport(url,test):
         if fprint != None:
             tweet = tweet + " : " + fprint.__str__()
         
-        print "kojoney_anubis.py : analyseAnubisReport() : tweet=" + tweet.__str__()
-        print "kojoney_anubis.py : analyseAnubisReport() : malwareFilename=" + malwareFilename.__str__()
+        print("kojoney_anubis.py : analyseAnubisReport() : tweet=" + tweet.__str__())
+        print("kojoney_anubis.py : analyseAnubisReport() : malwareFilename=" + malwareFilename.__str__())
         #print malwareFilename
         #kojoney_alert_client.sendAlert("Anubis Sandbox Analysis",tweet,True,False)
         return tweet,malwareFilename
              
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : analyseAnubisReport() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None,None
 
@@ -292,9 +292,9 @@ def getMD5fromFile(fullpathname):
                 line=line.strip()
                 return line             
         return None
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : getMD5fromFile() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 
@@ -351,9 +351,9 @@ def getFingerprint(fullpathname):
         fprint = fprint.strip(" ")	# strip leading / trailing spaces
         return fprint
                      
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : getFingerprint() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 #
@@ -367,9 +367,9 @@ def anubisJobQueued(fullpathname) :
                 
         return False             
         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : anubisJobQueued() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return True
 
@@ -382,30 +382,30 @@ def vizNmap(ip,portsList) :
     try:
         geoIP = ipintellib.geo_ip(ip)
         cc = geoIP['countryCode']
-        print cc
+        print(cc)
     
         # Too many open ports - maybe a honeypot ?
         # bug : move it out of here since honeypot detection shoudl not be linked to visualisation
         if len(portsList) > 20 :
             msg = "vizNmap() : " + ip + " has too many open ports associated : suspected honeypot"
-            print msg
+            print(msg)
             #syslog.syslog(msg)
             fp = open(vizFile,'a')
             msg = ip + ":" + cc + "," + "SUSPECTED HONEYPOT"
-            print >> fp,msg 
+            print(msg, file=fp) 
             fp.close()
             return
         
         fp = open(vizFile,'a')
         for port in portsList :
             msg = ip + ":" + cc + "," + port.__str__()
-            print "vizNmap() : " + msg
-            print >> fp,msg 
+            print("vizNmap() : " + msg)
+            print(msg, file=fp) 
         fp.close()
         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : vizNmap() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 
@@ -422,10 +422,10 @@ def analyseURL(url,test):
         # remove any trailing arguments
         url = url.split(" ")
         url = url[0]
-        print "url : " + url.__str__()
+        print("url : " + url.__str__())
         
         urlCanon = url.lower()
-        print urlCanon
+        print(urlCanon)
                                 
         if urlCanon.find("tftp:") != -1 :       # wget can't do tftp - need a new function
             return None
@@ -438,11 +438,11 @@ def analyseURL(url,test):
         fullFilename = "/home/var/haxxor_webs/kojoney_analyst/" + filename.__str__()                                                                                        
                 
         # Step 1 : Download the file
-        print "filename     : " + filename.__str__()
-        print "fullFilename : " + fullFilename.__str__()
+        print("filename     : " + filename.__str__())
+        print("fullFilename : " + fullFilename.__str__())
 
         cmd = "wget --timeout 30 -q -t 2 -nc -P /home/var/haxxor_webs/kojoney_analyst --no-check-certificate" + " " + url.__str__()
-        print "kojoney_anubis.py : analyseURL() : cmd to be exectuted : " + cmd
+        print("kojoney_anubis.py : analyseURL() : cmd to be exectuted : " + cmd)
                                                                                                                    
         #if test == True:
         #    print "Test mode so do not download the file"
@@ -453,7 +453,7 @@ def analyseURL(url,test):
         if wgetResult == 0 :                	# success
             msg = "kojoney_anubis.py : analyseURL() : download OK, wgetResult=" + wgetResult.__str__() + " for " + url.__str__()
             #syslog.syslog(msg)
-            print msg
+            print(msg)
             #tweet = "ANALYST" + "," + "--" + "," + "DL=" + url + ", MD5=" + calcMD5(fullFilename)
             fileMD5 = calcMD5(fullFilename)
             tweet = "ANALYST,DLOAD=" + filename + " => MD5=" + fileMD5
@@ -478,9 +478,9 @@ def analyseURL(url,test):
         #print "tweetList[] = " + tweetList.__str__()
         return tweetList        
                        
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_anubis.py : analyseURL() : exception : " + e.__str__() + " url=" + url.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 
@@ -508,15 +508,15 @@ def main():
     
     # Start of code        
     syslog.openlog("kojoney_anubis",syslog.LOG_PID,syslog.LOG_LOCAL2)         # Set syslog program name         
-    print "started, test=" + test.__str__()
+    print("started, test=" + test.__str__())
        
     # Make pidfile so we can be monitored by monit        
     pid =  makePidFile("kojoney_anubis")
     if pid == None:
-        syslog.syslog("Failed to create pidfile for pid " + `pid`)
+        syslog.syslog("Failed to create pidfile for pid " + repr(pid))
         sys.exit(0)
     else:
-        syslog.syslog("kojoney_anubis.py started with pid " + `pid`)
+        syslog.syslog("kojoney_anubis.py started with pid " + repr(pid))
                 
     # kojoney_guru populates the kojoney_analyst.txt file with jobs to analyse
     if test == True :
@@ -536,9 +536,9 @@ def main():
     if test == False :	# test mode starts at start of file
         st_size    = st_results[6]
         fp.seek(st_size)
-        print "kojoney_anubis.py : Seek to END of Analyst Job file " + filename
+        print("kojoney_anubis.py : Seek to END of Analyst Job file " + filename)
     else:
-        print "kojoney_anubis.py : Seek to START of Analyst Job file " + filename
+        print("kojoney_anubis.py : Seek to START of Analyst Job file " + filename)
 
     ######
     #sys.exit()
@@ -555,14 +555,14 @@ def main():
             #print "kojoney_anubis.py : nothing in Analyst Job file to process"
             fp.seek(where)
         else :			
-            print " "
-            print "***********************************************************"
-            print "kojoney_anubis.py : NEW EVENT in Analyst jobfile to analyse"
-            print "***********************************************************"
-            print line
+            print(" ")
+            print("***********************************************************")
+            print("kojoney_anubis.py : NEW EVENT in Analyst jobfile to analyse")
+            print("***********************************************************")
+            print(line)
             
             fields    = line.split(",")
-            print "JOB : " + fields.__str__()
+            print("JOB : " + fields.__str__())
             jobType = fields[1]	
             #print "kojoney_anubis.py : jobType = " + jobType
             
@@ -570,16 +570,16 @@ def main():
             #    tweet = analyseURL(fields[2],test) 
             
             if jobType == "PHPFILE" and DO_PHP_JOB == True :
-                print "\n----------------------------------------------------------------------"
-                print "                         PHP Malware Analysis" 
-                print "----------------------------------------------------------------------\n"
+                print("\n----------------------------------------------------------------------")
+                print("                         PHP Malware Analysis") 
+                print("----------------------------------------------------------------------\n")
                 msg = "kojoney_anubis.py : Detected that a file has been downloaded by Glastopf via RFI attack, so analyse it..."
                 #syslog.syslog(msg)
                 
-                print "JOB = " + line
+                print("JOB = " + line)
                 phpfilename = "/usr/local/src/glastopf/files/get/" + fields[2]	# fields[2] = MD5 name
                 msg = "PHP file to be analysed : " + phpfilename 
-                print msg
+                print(msg)
                 #syslog.syslog(msg)
                 
                 tweet = analyse_php_scripts.makeTweet(phpfilename)
@@ -596,14 +596,14 @@ def main():
                     if test != True:
                         twitter_funcs.addTweetToQueue(tweet)
                     else:
-                        print "*** Tweet (TestMode) : " + tweet
+                        print("*** Tweet (TestMode) : " + tweet)
                 
             elif jobType == "ANUBIS" and DO_ANUBIS_JOB == True :
-                print "\n----------------------------------------------------------------------"
-                print "                   Anubis Win32 Malware Analysis" 
-                print "----------------------------------------------------------------------\n"
+                print("\n----------------------------------------------------------------------")
+                print("                   Anubis Win32 Malware Analysis") 
+                print("----------------------------------------------------------------------\n")
                 msg = "kojoney_anubis.py : Detected that an Anubis Malware Report may be ready, so wait for 10 minutes and then download and analyse it..."
-                print "JOB = " + line
+                print("JOB = " + line)
                 #syslog.syslog(msg)
                 if test != True:
                     time.sleep(600) 
@@ -616,9 +616,9 @@ def main():
                         kojoney_alert_client.sendAlert("Anubis Analysis",tweet,True,False)
                         twitter_funcs.addTweetToQueue(tweet)
                     else:
-                        print "*** Tweet 1 : " + tweet
+                        print("*** Tweet 1 : " + tweet)
                 else:		# There is no filename so go to next JOB
-                    print "kojoney_anubis.py : main() : Tweet 1 : could not open file so aborting remaining analysis"
+                    print("kojoney_anubis.py : main() : Tweet 1 : could not open file so aborting remaining analysis")
                     continue
                     
                 # Step 2 : Run file through *NIX "file" utility
@@ -630,9 +630,9 @@ def main():
                         kojoney_alert_client.sendAlert("File Analysis",tweet,True,False)
                         twitter_funcs.addTweetToQueue(tweet)
                     else:
-                        print "*** Tweet 2 : " + tweet
+                        print("*** Tweet 2 : " + tweet)
                 else:	# There is no filename so go to next JOB
-                    print "kojoney_anubis.py : main() : Tweet 2 : could not open file so aborting remaining analysis"
+                    print("kojoney_anubis.py : main() : Tweet 2 : could not open file so aborting remaining analysis")
                     continue
                 
                 # Step 3 : Run file through ClamAV
@@ -644,14 +644,14 @@ def main():
                             kojoney_alert_client.sendAlert("AV Analysis",tweet,True,False)
                             twitter_funcs.addTweetToQueue(tweet)
                         else:
-                            print "*** Tweet 3 : " + tweet
+                            print("*** Tweet 3 : " + tweet)
             
             elif jobType == "LMD" and DO_LMD_JOB == True :
-                print "\n----------------------------------------------------------------------"
-                print "                   LMD Malware Analysis" 
-                print "----------------------------------------------------------------------\n"
+                print("\n----------------------------------------------------------------------")
+                print("                   LMD Malware Analysis") 
+                print("----------------------------------------------------------------------\n")
                 msg = "kojoney_anubis.py : Detected that malware was detected by LMD so analyse it..."
-                print "JOB = " + line
+                print("JOB = " + line)
                 #syslog.syslog(msg)
                         
                 # Step 1 : Run file through *NIX "file" utility
@@ -665,9 +665,9 @@ def main():
                         #kojoney_alert_client.sendAlert("LMD File Analysis",tweet,True,False)
                         twitter_funcs.addTweetToQueue(tweet)
                     else:
-                        print "*** Tweet 1/2 : " + tweet
+                        print("*** Tweet 1/2 : " + tweet)
                 else:	# There is no filename so go to next JOB
-                    print "kojoney_anubis.py : main() : Tweet 2 : could not open file so aborting remaining analysis"
+                    print("kojoney_anubis.py : main() : Tweet 2 : could not open file so aborting remaining analysis")
                     continue
                 
                 # Step 2 : Run file through ClamAV
@@ -680,21 +680,21 @@ def main():
                             #kojoney_alert_client.sendAlert("LMD AV Analysis",tweet,True,False)
                             twitter_funcs.addTweetToQueue(tweet)
                         else:
-                            print "*** Tweet 2/2 : " + tweet
+                            print("*** Tweet 2/2 : " + tweet)
             
             elif jobType == "URL" and DO_URL_JOB == True :
-                print "\n----------------------------------------------------------------------"
-                print "                         URL download and Malware Analysis" 
-                print "----------------------------------------------------------------------\n"
-                print "JOB = " + line
+                print("\n----------------------------------------------------------------------")
+                print("                         URL download and Malware Analysis") 
+                print("----------------------------------------------------------------------\n")
+                print("JOB = " + line)
                 msg = "kojoney_anubis.py : Detected that a URL has appeared in the tweet_queue.log file, so download and analyse it..."
-                print msg
+                print(msg)
                 #syslog.syslog(msg)
                     
                 tweetList = analyseURL(fields[2],test) 
                 if tweetList != None :
                     for tweet in tweetList:
-                        print "*** Tweet *** : " + tweet
+                        print("*** Tweet *** : " + tweet)
                         if test != True :
                             kojoney_alert_client.sendAlert("Snarfed File Analysis",tweet,True,False)
                             twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -702,28 +702,28 @@ def main():
             elif jobType == "RECON" and DO_RECON_JOB == True :
                 ip = fields[2]
                 
-                print "\nkojoney_anubis.py : Tracerouted IPs cache ->"
-                print ipTracerouted
+                print("\nkojoney_anubis.py : Tracerouted IPs cache ->")
+                print(ipTracerouted)
                 if isSafeToScan(ip) == False :
                     continue				# go to top of loop i.e. next IP
                 #else:
                 #    continue				# force to not do traceroute until time blackhole is smarter
                         
-                if ipTracerouted.has_key(ip) == False :
+                if (ip in ipTracerouted) == False :
                 #if ip not in ipList :
                     #ipList.append(ip)
-                    print "\n----------------------------------------------------------------------"
-                    print "                Step 1 : Reconnaissance (traceroute)                    " 
-                    print "----------------------------------------------------------------------\n"
-                    print "JOB = " + line
+                    print("\n----------------------------------------------------------------------")
+                    print("                Step 1 : Reconnaissance (traceroute)                    ") 
+                    print("----------------------------------------------------------------------\n")
+                    print("JOB = " + line)
                     msg = ip + " has not been actively tracerouted Today"
-                    print msg         
+                    print(msg)         
                     #syslog.syslog(msg)
                     
                     #syslog.syslog("sleep for " + RECON_DELAY.__str__() + " seconds and then traceroute " + ip)
                     
                     if test != True:
-                        print "sleeping for " + RECON_DELAY.__str__() + " seconds..."
+                        print("sleeping for " + RECON_DELAY.__str__() + " seconds...")
                         time.sleep(RECON_DELAY)			# leave the host alone for a bit... 
                     
                     # Step 4 : Traceroute to the attacker
@@ -754,17 +754,17 @@ def main():
                 
                 # nmap the attacker
                 # =================    
-                print "\nkojoney_anubis.py : Nmapped IPs cache ->"
-                print ipNmapped
+                print("\nkojoney_anubis.py : Nmapped IPs cache ->")
+                print(ipNmapped)
                 
-                if ipNmapped.has_key(ip) == False :
+                if (ip in ipNmapped) == False :
                 #if True == False :	#  uncomment this to disable this function : bypass this until a way of not clogging DSL can be found
-                    print "\n----------------------------------------------------------------------"
-                    print "                Step 2 : Reconnaissance (nmap)                          " 
-                    print "----------------------------------------------------------------------\n"
-                    print "kojoney_anubis.py : " + ip + " has not been actively nmapped Today"
+                    print("\n----------------------------------------------------------------------")
+                    print("                Step 2 : Reconnaissance (nmap)                          ") 
+                    print("----------------------------------------------------------------------\n")
+                    print("kojoney_anubis.py : " + ip + " has not been actively nmapped Today")
                     
-                    print "kojoney_anubis.py : sleep for " + RECON_DELAY.__str__() + " seconds and then Nmap " + ip 
+                    print("kojoney_anubis.py : sleep for " + RECON_DELAY.__str__() + " seconds and then Nmap " + ip) 
                     if test != True:
                         time.sleep(RECON_DELAY)			# leave the host alone for a bit... 
                     
@@ -804,7 +804,7 @@ def main():
                 # Send info to Prelude SIEM             
                 kojoney_anubis_idmef.nmapIDMEF(ip,tweet)
          
-                print "kojoney_anubis.py : nmap tweet = " + tweet.__str__()
+                print("kojoney_anubis.py : nmap tweet = " + tweet.__str__())
                 
                 if test != True:
                     if tweet != None :

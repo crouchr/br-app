@@ -26,14 +26,14 @@ def nmapScan(ip):
         #cmdLine = "/usr/local/bin/nmap -P0 -O -v " + ip
         # -p1-65535
         cmdLine = "/usr/local/bin/nmap -T polite -P0 -F -A -O -v -oN /home/var/log/scans/" + "nmap-" + ip + ".txt" + " " + ip
-        print cmdLine
+        print(cmdLine)
       
         syslog.syslog("started: " + cmdLine)
         pipe = os.popen(cmdLine,'r')
         raw = pipe.read()
         syslog.syslog("finished: " + cmdLine)
       
-        print "raw=",raw
+        print("raw=",raw)
         openPorts     = re.findall("(\d+)\/tcp\s+open",raw)
         filteredPorts = re.findall("(\d+)\/tcp\s+filtered",raw)
  
@@ -52,7 +52,7 @@ def nmapScan(ip):
                 osService = osService[0]
             else:
                 osService = "?"    
-        print osService
+        print(osService)
 
         # Service info : hostname  
         # Service Info: Host: psyBNC.at; OS: Unix  
@@ -64,24 +64,24 @@ def nmapScan(ip):
                 hostname = hostname[0]
             else:
                 hostname = "?"    
-        print hostname 
+        print(hostname) 
 
         # Uptime (not Windows)    
         uptime = "?"
         if raw.find("Uptime guess:") != -1 :
-            print "Located Uptime guess: in nmap output"
+            print("Located Uptime guess: in nmap output")
             uptime = re.findall("Uptime guess: (\d+)\.\d+ (\w+) ",raw)
             if len(uptime) == 1 :
                 uptimeVal,uptimeUnits = uptime[0]	# unpack the tuple returned
                 uptime = uptimeVal + " " + uptimeUnits
             else:
                 uptime = "?"    
-        print uptime
+        print(uptime)
 
         # IP ID 
         ipid = "?"
         if raw.find("IP ID Sequence Generation:") != -1 :
-            print "Located IP ID in nmap output"
+            print("Located IP ID in nmap output")
             ipid = re.findall("IP ID Sequence Generation: (.+)",raw)
             if len(ipid) == 1 :
                 ipid = ipid[0]	# unpack the tuple returned
@@ -89,12 +89,12 @@ def nmapScan(ip):
                     ipid = "unknown"
             else:
                 ipid = "?"    
-        print ipid
+        print(ipid)
 
         # TCP Sequnece number prediction - ISN - vulnerable to TCP spoofing
         tcpSeq = "?"
         if raw.find("TCP Sequence Prediction:") != -1:
-            print "Located TCP Sequence Prediction in nmap output"
+            print("Located TCP Sequence Prediction in nmap output")
             tcpSeq = re.findall("TCP Sequence Prediction: (.+)",raw)
         if len(tcpSeq) == 1 :
             tcpSeq = tcpSeq[0]
@@ -105,9 +105,9 @@ def nmapScan(ip):
         # return results
         return openPorts,filteredPorts,hops,osService,uptime,ipid,tcpSeq,hostname
     
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_nmap.py : " + e.__str__() 
-        print msg
+        print(msg)
         syslog.syslog(msg)
 
 
@@ -149,12 +149,12 @@ if __name__ == '__main__' :
     openPorts,filteredPorts,hops,os,uptime,ipid,tcpSeq,hostname = nmapScan("88.87.21.102")    
     
     
-    print "open               : " + openPorts.__str__()
-    print "filtered           : " + filteredPorts.__str__()
-    print "os (Service)       : " + os.__str__()
-    print "hops               : " + hops.__str__()
-    print "uptime             : " + uptime.__str__()
-    print "IP ID              : " + ipid.__str__()
-    print "TCP Seq predict    : " + tcpSeq.__str__()
-    print "hostname (Service) : " + hostname.__str__()
+    print("open               : " + openPorts.__str__())
+    print("filtered           : " + filteredPorts.__str__())
+    print("os (Service)       : " + os.__str__())
+    print("hops               : " + hops.__str__())
+    print("uptime             : " + uptime.__str__())
+    print("IP ID              : " + ipid.__str__())
+    print("TCP Seq predict    : " + tcpSeq.__str__())
+    print("hostname (Service) : " + hostname.__str__())
                                                                                

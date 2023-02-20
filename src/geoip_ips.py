@@ -18,8 +18,8 @@ import ipintellib
 filename    = sys.argv[1]
 outfilename = sys.argv[2]
 
-print "input  filename : " + filename
-print "output filename : " + outfilename
+print("input  filename : " + filename)
+print("output filename : " + outfilename)
 
 file     = open(filename,'r')
 outfile  = open(outfilename,'w')
@@ -31,7 +31,7 @@ while True:
         
     line  = file.readline().rstrip()
     if not line :
-        print "input stream contains no more data to process, so exit."
+        print("input stream contains no more data to process, so exit.")
         break
                     
     intel    = ""
@@ -50,7 +50,7 @@ while True:
         #print "first IP address found = " + `ips[0]`
         ip = ips[0]
    
-        if uniqueIP.has_key(ip) != True :	# This IP has not been seen before
+        if (ip in uniqueIP) != True :	# This IP has not been seen before
             #print ip
             uniqueIP[ip] = 1
     
@@ -81,9 +81,9 @@ while True:
 # end of processing file             
 # Print the list of IPs by number of events             
 #print uniqueIP
-print " "
+print(" ")
 for ip in uniqueIP :
-    data = ip + "," + `uniqueIP[ip]` + "," + uniqueIntel[ip]
+    data = ip + "," + repr(uniqueIP[ip]) + "," + uniqueIntel[ip]
     #print data
-    print >> outfile,data
+    print(data, file=outfile)
                     

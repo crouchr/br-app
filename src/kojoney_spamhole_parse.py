@@ -48,10 +48,10 @@ def processSpamholed(line):
             geoIP = ipintellib.geo_ip(srcIP)                                
             countryCode = geoIP['countryCode'].__str__()                     
             
-            print "spammer IP               : " + srcIP
-            print "spammer country code     : " + countryCode
-            print "hole flag                : " + hole
-            print "spammer connection count : " + count
+            print("spammer IP               : " + srcIP)
+            print("spammer country code     : " + countryCode)
+            print("hole flag                : " + hole)
+            print("spammer connection count : " + count)
                     
             if "allowing e-mail passthrough" in line :        
                 passthrough = True
@@ -71,9 +71,9 @@ def processSpamholed(line):
                 countryCode = geoIP['countryCode'].__str__()                     
                 
                 #print "********************"
-                print "spammer IP               : " + srcIP
-                print "spammer country code     : " + countryCode
-                print "EHLO message             : " + ehloStr
+                print("spammer IP               : " + srcIP)
+                print("spammer country code     : " + countryCode)
+                print("EHLO message             : " + ehloStr)
                 
                 kojoney_spamholed_idmef.sendSpamholedEhloIDMEF(srcIP,"192.168.1.61","10025","Spammer said EHLO",ehloStr,line)
         
@@ -87,19 +87,19 @@ def processSpamholed(line):
                 geoIP   = ipintellib.geo_ip(srcIP)                                
                 countryCode = geoIP['countryCode'].__str__()                     
                 
-                print "*****************************"
-                print "spammer IP               : " + srcIP
-                print "spammer country code     : " + countryCode
-                print "spammer email            : " + spammerEmail
+                print("*****************************")
+                print("spammer IP               : " + srcIP)
+                print("spammer country code     : " + countryCode)
+                print("spammer email            : " + spammerEmail)
                 
                 kojoney_spamholed_idmef.sendSpamholedMailfromIDMEF(srcIP,"192.168.1.61","10025","Spammer said MAIL:FROM",spammerEmail,line)
                         
         return None
 
-    except Exception,e:
+    except Exception as e:
         msg = "exception : " + e.__str__()
-        print msg
-        syslog.syslog("kojoney_spamhole_parse.py : processSpamholed() : " + `e` + " line=" + line)
+        print(msg)
+        syslog.syslog("kojoney_spamhole_parse.py : processSpamholed() : " + repr(e) + " line=" + line)
 
         
 # Start of code
@@ -125,12 +125,12 @@ if __name__ == '__main__' :
         else :			# new data has been found
             #print "line before parsing = [" + line + "]"
             #msg = processAmunSubmit(line)
-            print "----"
+            print("----")
             msg = processSpamholed(line)
             #msg = processAmunDownload(line)
         
         if msg != None:
-            print "line after parsing = [" + msg +"]"
+            print("line after parsing = [" + msg +"]")
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

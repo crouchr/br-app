@@ -82,8 +82,8 @@ def processGlastopf(line):
                     
         return None
 
-    except Exception,e:
-                syslog.syslog("kojoney_glastopf_parse.py : processGlastopf() : " + `e` + " line=" + line)
+    except Exception as e:
+                syslog.syslog("kojoney_glastopf_parse.py : processGlastopf() : " + repr(e) + " line=" + line)
 
                                
 # -------------------------------------------------------
@@ -110,7 +110,7 @@ if __name__ == '__main__' :
             msg = processGlastopf(line)
             
         if msg != None:
-            print "*** Tweet : " + msg
+            print("*** Tweet : " + msg)
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

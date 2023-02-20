@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import time, os , syslog , urlparse 
+import time, os , syslog , urllib.parse 
 import twitter		# Google API
 
 import ipintellib	# RCH library - master on mars
@@ -23,7 +23,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -65,17 +65,17 @@ def alert(subject,ip,username,content):
         alertSubject = "honeypot intrusion! : " + subject
         alertContent = info + "\n\np0f : " + p0fStr + "\n\n" + content + "\n\nSent by Kojoney Honeypot\n\n"                 
         
-        print "alert():\nsubject:" + alertSubject + "\ncontent:\n" + alertContent + "\n" 
+        print("alert():\nsubject:" + alertSubject + "\ncontent:\n" + alertContent + "\n") 
         
         status = mailalert.mailalert(sender,destination,smtpServer,alertSubject,alertContent,debugLevel)
-        print "notify     : e-mail : subject=" + '"' + alertSubject + '"'
+        print("notify     : e-mail : subject=" + '"' + alertSubject + '"')
         
         # Add a record to syslog
         a = "Sent alert e-mail, Subject=" + alertSubject + " to " + destination[0]
         syslog.syslog(a)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : alert() : " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : alert() : " + repr(e) + " ip=" + ip)
 
 def statusAlert(subject,content):
     smtpServer   = 'smtp.btconnect.com'
@@ -92,14 +92,14 @@ def statusAlert(subject,content):
         #print "alert subject:" + alertSubject + "\nalertContent:\n" + content + "\n"
         
         status = mailalert.mailalert(sender,destination,smtpServer,alertSubject,alertContent,debugLevel)        
-        print "notify     : e-mail : subject=" + '"' + alertSubject + '"'  
+        print("notify     : e-mail : subject=" + '"' + alertSubject + '"')  
         
         # Add a record to syslog
         a = "Sent alert e-mail, Subject=" + alertSubject + " to " + destination[0]
         syslog.syslog(a)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : statusAlert() : " + `e`)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : statusAlert() : " + repr(e))
 
 
 # Write Security Visualisation data to be processed by AfterGlow to .csv file
@@ -124,12 +124,12 @@ def writeSecViz1(ip,username,countryCode,commandStr):
         fpOut = open(r'/var/log/kojoney_tail_secviz_cmds.csv','a')
         
         msg = ip + ":" + asNum + ":" + asRegisteredCode + ":" + p0fStr + "," + username + "," + '"' + commandStr + '"' + "," + countryCode  
-        print "writeSecViz1():" + msg
-        print >> fpOut,msg
+        print("writeSecViz1():" + msg)
+        print(msg, file=fpOut)
         fpOut.close()
         
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : writeSecViz1() exception caught = " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : writeSecViz1() exception caught = " + repr(e) + " ip=" + ip)
 
 # Write Security Visualisation data to be processed by AfterGlow to .csv file
 # Format IP_address,commandStr
@@ -149,12 +149,12 @@ def writeSecViz2(ip,username,countryCode,fileName):
         fpOut = open(r'/var/log/kojoney_tail_secviz_dloads.csv','a')
         
         msg = ip + ":" + asNum + ":" + asRegisteredCode + ":" + p0fStr + "," + username + "," + fileName + "," + countryCode
-        print "writeSecViz2():" + msg
-        print >> fpOut,msg
+        print("writeSecViz2():" + msg)
+        print(msg, file=fpOut)
         fpOut.close()
 
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : writeSecViz2() exception caught = " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : writeSecViz2() exception caught = " + repr(e) + " ip=" + ip)
 
 # Write Security Visualisation data to be processed by AfterGlow to .csv file
 # This file is used for correlating haxx0r IP stack uptime with username and src IP
@@ -200,17 +200,17 @@ def writeSecViz3(ip,username):
         #asNum = asInfo['as']					# AS123 
         asRegisteredCode = asInfo['registeredCode']		# Short-form e.g.ARCOR
         
-        msg = ip + "," + `bootTimeEpochHours` + "," + ip + ":" + Username + "," + "os=" + os + ",hops=" + hops + ","\
-        + asRegisteredCode + ",now=" + nowStr + "," + `now` + ",bootTime=" + bootTimeStr + "," + `bte` + ",fw=" + fw + ",nat=" + nat
+        msg = ip + "," + repr(bootTimeEpochHours) + "," + ip + ":" + Username + "," + "os=" + os + ",hops=" + hops + ","\
+        + asRegisteredCode + ",now=" + nowStr + "," + repr(now) + ",bootTime=" + bootTimeStr + "," + repr(bte) + ",fw=" + fw + ",nat=" + nat
         
-        print "WriteSecViz3() = " + msg
+        print("WriteSecViz3() = " + msg)
         
         fpOut = open(r'/var/log/kojoney_tail_secviz3_uptime.csv','a')
-        print >> fpOut,msg 
+        print(msg, file=fpOut) 
         fpOut.close()
 
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : writeSecViz3() exception caught = " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : writeSecViz3() exception caught = " + repr(e) + " ip=" + ip)
 
 # Candidate to replace secviz4 - uses source port from firewall and netflow logs to get accurate uptime
 # Write Security Visualisation data to be processed by AfterGlow to .csv file
@@ -272,31 +272,31 @@ def writeSecViz4(ip,srcPort,dstIP,dstPort,event):
         # Add nowStr so that can see if the bteh/btes stays constant for multiple visits...
         # Log boottime epoch as bteh and btes to see how accurate they are
         # todo : add flow details 
-        msg = ip + "," + `bteh` + "," + event + "," + os + "," + asNum + "(" + asRegisteredCode + ")" + ",now=" + nowStr + ",bootTime=" + bootTimeStr + ",btes=" + `btes` + ",uptime=" + `uptime`
+        msg = ip + "," + repr(bteh) + "," + event + "," + os + "," + asNum + "(" + asRegisteredCode + ")" + ",now=" + nowStr + ",bootTime=" + bootTimeStr + ",btes=" + repr(btes) + ",uptime=" + repr(uptime)
         
-        print "WriteSecViz4(): " + msg
+        print("WriteSecViz4(): " + msg)
         
         # file needs to be touched
         fpOut = open(r'/home/var/log/kojoney_tail_secviz4_uptime.csv','a')
-        print >> fpOut,msg 
+        print(msg, file=fpOut) 
         fpOut.close()
 
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : writeSecViz4() exception caught = " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : writeSecViz4() exception caught = " + repr(e) + " ip=" + ip)
 
 
 # Send a Tweet from  honeytweeter
 # username is actually the global variable Username
 def sendTweetCLI(sessionid,username,ip,cli):
         
-    print "Entered sendTweetCLI()"
+    print("Entered sendTweetCLI()")
     
     now=time.time()
     
     try:
         # sessionid of -1 indicates that we have no AUTH_OK event and so no username - so don't tweet it
         if (int(sessionid) < 0):
-            print "sessionId < 0 -> no previous AUTH_OK event to get username"
+            print("sessionId < 0 -> no previous AUTH_OK event to get username")
             return
         
         # This is flawed in that most p0f variables returned will be OK but uptime needs the source port specified   
@@ -356,9 +356,9 @@ def sendTweetCLI(sessionid,username,ip,cli):
             
         # Construct Tweet
         # todo - if os = windows, do not add bteh
-        msg = "ssh:OTHER:sid=" + `sessionid` + ":IP=" + ip + ":" + asNum + "(" + asRegisteredCode + ")" + ":"\
+        msg = "ssh:OTHER:sid=" + repr(sessionid) + ":IP=" + ip + ":" + asNum + "(" + asRegisteredCode + ")" + ":"\
         + countryCode + ":" + city + ":" + "%.2f" % longitude + ":" + os + ":" + hops\
-        + ":fw=" + fw + ":nat=" + nat + ":bteh=" + `bteh`\
+        + ":fw=" + fw + ":nat=" + nat + ":bteh=" + repr(bteh)\
         + ": " + username + "@hpot $ " + cli
 
         # legacy Tweet code
@@ -374,8 +374,8 @@ def sendTweetCLI(sessionid,username,ip,cli):
             
         sendTweet(msg)       
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : sendTweetCLI() exception caught = " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : sendTweetCLI() exception caught = " + repr(e) + " ip=" + ip)
 
 # wrapper for sending Tweets
 def sendTweet(tweet_raw):
@@ -398,17 +398,17 @@ def sendTweet(tweet_raw):
         if len(tweet) >= MAXTWEET_LEN:
             tweet=tweet[0:MAXTWEET_LEN]
             tweet=tweet + "+"				# + indicates tweet was truncated
-            syslog.syslog("kojoney_tail.py : sendTweet() [truncated to " + `len(tweet)` + " chars] : tweet=" + tweet)
+            syslog.syslog("kojoney_tail.py : sendTweet() [truncated to " + repr(len(tweet)) + " chars] : tweet=" + tweet)
         else:     
             syslog.syslog("kojoney_tail.py : sendTweet() [no truncation] : " + tweet)
         
         # actually send the tweet
         status = TweetClient.PostUpdate(tweet)    
-        print "notify     : Tweet sent : " + tweet
+        print("notify     : Tweet sent : " + tweet)
         
         # log the Tweet - have a .txt extension so Windoze can open it up
         fpOut = open(r'/home/var/log/tweets.log.txt','a')
-        print >> fpOut,"TWEET=" + tweet 
+        print("TWEET=" + tweet, file=fpOut) 
         fpOut.close()
 
         # send an e-mail if the exploit contains particularly interesting keywords
@@ -417,8 +417,8 @@ def sendTweet(tweet_raw):
         
         time.sleep(2)					# crude rate limit 
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : sendTweet() exception caught = " + `e` + " tweet=" + tweet)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : sendTweet() exception caught = " + repr(e) + " tweet=" + tweet)
         
 # Send a Tweet from honeytweeter for interesting Snort events
 def sendTweetSnort(event):
@@ -432,8 +432,8 @@ def sendTweetSnort(event):
          
         sendTweet(msg)        
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : sendTweetSnort() exception caught = " + `e`)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : sendTweetSnort() exception caught = " + repr(e))
 
 
 # Send a Tweet from honeytweeter for interesting netflow events
@@ -448,8 +448,8 @@ def sendTweetFlow(event,flow):
                 
         sendTweet(msg)
         
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : sendTweetFlow() exception caught = " + `e`)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : sendTweetFlow() exception caught = " + repr(e))
 
 
 # cliNum is ignored 
@@ -464,7 +464,7 @@ def makeMsg(cliNum,ip,msg):
     #print a 
     fpOut = open(r'/home/var/log/kojoney_tail.log','a')
     #syslog.syslog(a)
-    print >> fpOut,a
+    print(a, file=fpOut)
     fpOut.close()
 
 # 15 degrees = 1 hour - rounded down
@@ -499,7 +499,7 @@ def calcBootTime(uptime):
     else:  
         bte = now - int(uptime)
          	
-    bootTime['epoch'] = `bte`
+    bootTime['epoch'] = repr(bte)
     #print "bootTime['epoch'] = " + `bootTime['epoch']`
     
     timeTuple = time.localtime(bte)
@@ -507,7 +507,7 @@ def calcBootTime(uptime):
     #print "bootTime['timeStr'] = " + time.asctime(timeTuple)
     
     # record time of last visit by this IP
-    bootTime['lastVisit'] = `now`
+    bootTime['lastVisit'] = repr(now)
     timeTuple = time.localtime(now)
     bootTime['lastVisitStr'] = time.asctime(timeTuple) 
     
@@ -555,8 +555,8 @@ def getSrcIPSnort(line):
     
         return sock
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : getSrcIPSnort() exception caught = " + `e` + "line=" + line.strip("\n"))
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : getSrcIPSnort() exception caught = " + repr(e) + "line=" + line.strip("\n"))
         return None
 
 # extract destination IP from Snort log
@@ -592,8 +592,8 @@ def getDstIPSnort(line):
     
         return sock
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : getDstIPSnort() exception caught = " + `e` + "line=" + line.strip("\n"))
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : getDstIPSnort() exception caught = " + repr(e) + "line=" + line.strip("\n"))
         return None
 
 # Process Snort log entries
@@ -605,7 +605,7 @@ def getDstIPSnort(line):
 # create the phase from the snort message i.e look for EXPLOIT
 def processSnort(line):
     try:        
-        print "snort(ids) : " + line.strip('\n')
+        print("snort(ids) : " + line.strip('\n'))
         
         # Extract the Snort event message
         fields=line.split(' ')
@@ -653,8 +653,8 @@ def processSnort(line):
             makeMsg(0,"0",msg)
             sendTweetSnort(msg)
             
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : processSnort() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : processSnort() exception caught = " + repr(e) + "line=" + line)
 
 # Add Snort alerts to a file to see of the (later) Netflow can be found for correlation
 #def add2FlowWatchList(flow,event):
@@ -666,7 +666,7 @@ def processSnort(line):
 # todo : extract the destination IP and perform ipintel functions on it
 def processAmunDownload(line):
     try:        
-        print "amun_dload : " + line.strip('\n')
+        print("amun_dload : " + line.strip('\n'))
   
         if line.find("ftp connect to") != -1 or line.find("TFTP Request") != -1:            
             msg = "amun:REINF:" + line.strip('\n')    
@@ -678,8 +678,8 @@ def processAmunDownload(line):
         #else :
         #    syslog.syslog("processAmunDownload(): " + line)	# log the entry    
             
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : processAmunDownload() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : processAmunDownload() exception caught = " + repr(e) + "line=" + line)
 
 
 # Look for src port for data to Kojoney so that p0f can be accurate
@@ -717,14 +717,14 @@ def processFW(line):
             
         #if (dstPort != "43" and srcPort != "43" and srcPort != "4321" and dstPort != "4321") :	# what is 4321 ?
         event = "iptables:MISC:" + flow1 + ":" + getIntelStr(srcIP,dstIP) + ":" + flow2
-        print "iptables   : " + event
+        print("iptables   : " + event)
         # Log to kojoney_tail.log    
         makeMsg(0,"0",event)
     
         # Anomaly : Low TTL
         if int(ttl) < 25:
             event = "iptables:ANOMALY:TTL<25:" + flow1 + ":" + getIntelStr(srcIP,dstIP) + ":" + flow2
-            print "iptables   : " + event
+            print("iptables   : " + event)
             makeMsg(0,"0",event)
          
         # todo : crude OS fingerprinting ?
@@ -735,8 +735,8 @@ def processFW(line):
         
         # too large and too frequent a message to Tweet without truncation / filtering
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : processFW() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : processFW() exception caught = " + repr(e) + "line=" + line)
 
 # Process p0f log
 # todo : extract src IP and preform getInteStr() on it
@@ -747,14 +747,14 @@ def processp0f(line):
     
     try:        
         
-        print "p0f        : " + line[27:].strip('\n')	# skip the date portion
+        print("p0f        : " + line[27:].strip('\n'))	# skip the date portion
         event = "INTEL:p0f:"  + line[27:].strip('\n')
         
         # Log to kojoney_tail.log - remove if too much info + do not Tweet     
         makeMsg(0,"0",event)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : processp0f() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : processp0f() exception caught = " + repr(e) + "line=" + line)
 
 # Process Apache error log 
 # todo : extract src IP and preform getInteStr() on it
@@ -762,7 +762,7 @@ def processp0f(line):
 def processWeb(line):
     
     try:            
-        print "web        : " + line.strip('\n')	
+        print("web        : " + line.strip('\n'))	
         
         # only log errors and not debug,notice and info messages
         if line.find("[error]") != -1:
@@ -770,8 +770,8 @@ def processWeb(line):
             # Log to kojoney_tail.log - remove if too much info + do not Tweet     
             makeMsg(0,"0",event)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : processWeb() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : processWeb() exception caught = " + repr(e) + "line=" + line)
 
         
 # Process Netflows log entries
@@ -816,9 +816,9 @@ def processFlows(line):
         a,duration_msecs = fields[12].split("=")
         
         if proto == "6" :	# TCP
-            flow = rtr + ":" + srcIP + "(" + srcPort + ")" + "->" + dstIP + "(" + dstPort + ")" + " B=" + bytes + " D=" + duration_msecs + " P=" + pkts + " pr=" + proto + " AVG=" + `avg` + " F=" + flags
+            flow = rtr + ":" + srcIP + "(" + srcPort + ")" + "->" + dstIP + "(" + dstPort + ")" + " B=" + bytes + " D=" + duration_msecs + " P=" + pkts + " pr=" + proto + " AVG=" + repr(avg) + " F=" + flags
         else : 			# flags are not relevant
-            flow = rtr + ":" + srcIP + "(" + srcPort + ")" + "->" + dstIP + "(" + dstPort + ")" + " B=" + bytes + " D=" + duration_msecs + " P=" + pkts + " pr=" + proto + " AVG=" + `avg` 
+            flow = rtr + ":" + srcIP + "(" + srcPort + ")" + "->" + dstIP + "(" + dstPort + ")" + " B=" + bytes + " D=" + duration_msecs + " P=" + pkts + " pr=" + proto + " AVG=" + repr(avg) 
         
         # Ignore all flows to/from the local LAN
         if srcIP.find("192.168.1.") != -1 or dstIP.find("192.168.1.") != -1 :
@@ -832,10 +832,10 @@ def processFlows(line):
             #print "netflow    : ignoring Twitter / Sandbox APIs " + flow
             return
         elif srcIP == "172.31.0.67" and dstPort == "25" and proto == "6" :
-            print "netflow    : ignoring SMTP session " + flow
+            print("netflow    : ignoring SMTP session " + flow)
             return
         else:
-            print "netflow    : " + flow + ":" + getIntelStr(srcIP,dstIP)	
+            print("netflow    : " + flow + ":" + getIntelStr(srcIP,dstIP))	
     
         # Business Logic - anomalous behaviour
         # --------------
@@ -899,8 +899,8 @@ def processFlows(line):
             pass
             #print "Netflow not interesting..."
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : processFlows() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : processFlows() exception caught = " + repr(e) + "line=" + line)
 
 # add try: exception to this
 # get intel on not the hpot IP 
@@ -948,8 +948,8 @@ def getIntelStr(ip1,ip2):
          
         return intelStr        
 
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : getIntelStr() exception caught = " + `e` + "ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : getIntelStr() exception caught = " + repr(e) + "ip=" + ip)
         return "intell=exception!"
 
 def processSSH(line):
@@ -998,7 +998,7 @@ def processSSH(line):
             makeMsg(0,ip,msg)
             
             # Write Security Visualisation Data to secViz file      
-            print "Calling writeSecViz3()"
+            print("Calling writeSecViz3()")
             writeSecViz3(ip,Username)
         
             # Compute localtime based on longitude
@@ -1041,7 +1041,7 @@ def processSSH(line):
                 makeMsg(0,ip,msg)
                 
                 # Has this IP been seen before ?
-                if PreviousIPs.has_key(ip):			# IP has been seen before 
+                if ip in PreviousIPs:			# IP has been seen before 
                     msg = "INTEL:IP was last seen " + PreviousIPs[ip]['lastVisitStr'] + " with a bootTime of " + PreviousIPs[ip]['timeStr']
                     makeMsg(0,ip,msg)
                     
@@ -1055,8 +1055,8 @@ def processSSH(line):
                     msg = "INTEL:first time visit from " + ip + ", user " + Username 
                     makeMsg(0,ip,msg)       
                      
-            except Exception,e:
-                syslog.syslog("Exception in processSSH() p0f for authOK section of code " + `e` + " ip=" + ip);
+            except Exception as e:
+                syslog.syslog("Exception in processSSH() p0f for authOK section of code " + repr(e) + " ip=" + ip);
     
                 
         # Extract haxxor's SSH client    
@@ -1096,7 +1096,7 @@ def processSSH(line):
         # Request (OK or not OK) to download malware    
         elif line.find("Saved the file ") != -1:
             fields=line.split(',')
-            print fields
+            print(fields)
             a = fields[2].split()
             ip = a[0].rstrip(']')
             fullFilename = a[4]
@@ -1146,14 +1146,14 @@ def processSSH(line):
             countryCode = geoIP['countryCode']      
             writeSecViz1(ip,Username,countryCode,cliInfoStr)
                                                  
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py exception : processSSH() : " + `e` + " ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py exception : processSSH() : " + repr(e) + " ip=" + ip)
     
 def genAmunSuffix():
     now = time.time()
     tuple = time.localtime(now)
     #filepath = "/usr/local/src/amun/logs/" + filename + "." + `tuple.tm_year` + "-" + "%02d" % tuple.tm_mon + "-" + "%02d" % tuple.tm_mday
-    suffix = `tuple.tm_year` + "-" + "%02d" % tuple.tm_mon + "-" + "%02d" % tuple.tm_mday
+    suffix = repr(tuple.tm_year) + "-" + "%02d" % tuple.tm_mon + "-" + "%02d" % tuple.tm_mday
     
     return suffix
        
@@ -1165,22 +1165,22 @@ def genAmunSuffix():
 # Make pidfile so we can be monitored by monit        
 pid =  makePidFile("kojoney_tail")
 if pid == None:
-    syslog.syslog("Failed to create pidfile for pid " + `pid`)
+    syslog.syslog("Failed to create pidfile for pid " + repr(pid))
     sys.exit(0)
 else:
-    syslog.syslog("kojoney_tail started with pid " + `pid`)
+    syslog.syslog("kojoney_tail started with pid " + repr(pid))
                 
 # Send an email to say kojoney_tail has started
-makeMsg(0,"0","system,kojoney_tail started with pid=" + `pid`)
-a = "kojoney_tail started with pid=" + `pid`
+makeMsg(0,"0","system,kojoney_tail started with pid=" + repr(pid))
+a = "kojoney_tail started with pid=" + repr(pid)
 
 statusAlert("process started",a)
 
 # Create a connection to Twitter
 try:
     TweetClient = twitter.Api(username="honeytweeter",password="fuckfacebook")                
-except Exception,e:
-    syslog.syslog("kojoney_tail.py exception connecting to Twitter : main() : " + `e`)
+except Exception as e:
+    syslog.syslog("kojoney_tail.py exception connecting to Twitter : main() : " + repr(e))
     
 # Set the Kojoney filename to scan
 filename = '/var/log/kojoney.log'

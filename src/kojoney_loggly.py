@@ -16,7 +16,7 @@ txnId2 = 0
 def writeToSyslogFake(msg):
     syslogFmt = time.ctime() + "mars kojoney_logglyd[666]: " + '"' + msg + '"'
     fpOut = open("/home/var/log/blackrain-json.log","a")
-    print >> fpOut,syslogFmt
+    print(syslogFmt, file=fpOut)
     fpOut.close()
     
 
@@ -47,7 +47,7 @@ def sendToSplunkPlatform(sensorId,line,log):
             sdata['subsystem'] = "Twitter"
 
         # Splunk
-        print "\nkey-value pairs for Splunk Platform Project :-"
+        print("\nkey-value pairs for Splunk Platform Project :-")
         splunkMsg = "'" + time.ctime() + ' ' + sensorId 
         for i in sdata:
             splunkMsg = splunkMsg + ' ' + i.__str__() + '=' + '"' + sdata[i].__str__() + '"'
@@ -60,9 +60,9 @@ def sendToSplunkPlatform(sensorId,line,log):
         # crude form of rate-limiter
         time.sleep(0.5)
                                  
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_loggly.py : sendToSplunkPlatform() : exception : " + e.__str__() + " line=" + line
-        print msg
+        print(msg)
         
 # process a Tweet Queue message and submit to ELK
 def sendToLoggly(sensorId,line):
@@ -70,7 +70,7 @@ def sendToLoggly(sensorId,line):
     try :
         global txnId                    
         
-        print "sendToLoggly() : line=" + line
+        print("sendToLoggly() : line=" + line)
 
         # honeytweeter
         #shakey = "e25e6042-e490-4910-a246-94cefbdd11b9"               
@@ -302,9 +302,9 @@ def sendToLoggly(sensorId,line):
         #writeToSyslogFake(sdata)
         return sdata
                                          
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_loggly.py : sendToLoggly() : exception : " + e.__str__() + " line=" + line
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
         

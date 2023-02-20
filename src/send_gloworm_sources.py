@@ -160,11 +160,11 @@ a = len(files)
 
 filesExist=checkFilesExist.gatherNonZeroFiles(files,1)
 b = len(filesExist)
-print filesExist
+print(filesExist)
 
 if a != b:
-    msg = "Some expected source files could not be found : expected=" + `a` + " actual=" + `b`
-    print "\nWARNING : " + msg
+    msg = "Some expected source files could not be found : expected=" + repr(a) + " actual=" + repr(b)
+    print("\nWARNING : " + msg)
     syslog.syslog("send_gloworm_sources.py : " + msg)
     
 #recipients =['ipbb.mvtc@googlemail.com']
@@ -174,5 +174,5 @@ text = "This e-mail is generated automatically by the BlackRain Honeynet\n"
 #send_mail.send_mail('richard_crouch@btconnect.com',recipients,"BlackRain : Source code" , text, filesExist, 'smtp.btconnect.com')
 googleMail.sendViaGmail('uber.koob@gmail.com','fuckfacebook',recipients,"BlackRain : Source code",text,filesExist)
 
-syslog.syslog("send_gloworm_sources.py : Finished, " + `b` + " BlackRain source files backed up to Gmail")
+syslog.syslog("send_gloworm_sources.py : Finished, " + repr(b) + " BlackRain source files backed up to Gmail")
                             

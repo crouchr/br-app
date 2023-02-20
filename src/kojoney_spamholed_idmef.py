@@ -45,7 +45,7 @@ def sendSpamholedIDMEF(srcIP,dstIP,dstPort,text,count,passthrough,logEntry):
             
         # Additional Data
         fieldsOffset = fieldsSet
-        print "fieldsOffset = " + fieldsOffset.__str__()
+        print("fieldsOffset = " + fieldsOffset.__str__())
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").type", "string")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").meaning", "connection count")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").data", count)
@@ -58,8 +58,8 @@ def sendSpamholedIDMEF(srcIP,dstIP,dstPort,text,count,passthrough,logEntry):
         #print result.__str__()
         return
         
-    except Exception,e:
-        print "Exception : " + e.__str__()
+    except Exception as e:
+        print("Exception : " + e.__str__())
         return
 
 def sendSpamholedEhloIDMEF(srcIP,dstIP,dstPort,text,ehloStr,logEntry):
@@ -102,7 +102,7 @@ def sendSpamholedEhloIDMEF(srcIP,dstIP,dstPort,text,ehloStr,logEntry):
         #idmef.Set("alert.additional_data(0).data", ehloStr)
         
         fieldsOffset = fieldsSet
-        print "fieldsOffset = " + fieldsOffset.__str__()
+        print("fieldsOffset = " + fieldsOffset.__str__())
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").type", "string")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").meaning", "HELO/EHLO sent by Spammer")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").data", ehloStr)
@@ -111,8 +111,8 @@ def sendSpamholedEhloIDMEF(srcIP,dstIP,dstPort,text,ehloStr,logEntry):
         #print result.__str__()
         return
         
-    except Exception,e:
-        print "Exception : " + e.__str__()
+    except Exception as e:
+        print("Exception : " + e.__str__())
         return
 
 def sendSpamholedMailfromIDMEF(srcIP,dstIP,dstPort,text,spammerEmail,logEntry):
@@ -157,7 +157,7 @@ def sendSpamholedMailfromIDMEF(srcIP,dstIP,dstPort,text,spammerEmail,logEntry):
         #idmef.Set("alert.additional_data(0).data", spammerEmail)
         
         fieldsOffset = fieldsSet
-        print "fieldsOffset = " + fieldsOffset.__str__()
+        print("fieldsOffset = " + fieldsOffset.__str__())
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").type", "string")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").meaning", "Spammer email address")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").data", spammerEmail)                               
@@ -166,8 +166,8 @@ def sendSpamholedMailfromIDMEF(srcIP,dstIP,dstPort,text,spammerEmail,logEntry):
         #print result.__str__()
         return
         
-    except Exception,e:
-        print "Exception : " + e.__str__()
+    except Exception as e:
+        print("Exception : " + e.__str__())
         return
         
 if __name__ == '__main__' :

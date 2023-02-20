@@ -20,10 +20,10 @@ def blackhole(txnId,sensorId,attacker):
         
     try :
         # do not blackhole items on whitelist
-        print "*** kojoney_defend.py : calling hiddenIP() ***"
+        print("*** kojoney_defend.py : calling hiddenIP() ***")
         if kojoney_hiddenip.hiddenIP(attacker) == True :
             msg = "kojoney_defend.py : blackhole() : warning : attacker " + attacker + " is on hiddenIP() whitelist and must not be blackholed"
-            print msg
+            print(msg)
             syslog.syslog(msg)
             return None
             
@@ -53,10 +53,10 @@ def blackhole(txnId,sensorId,attacker):
         #return None	# do not Tweet - not interesting to average punter
         return tweet
                                                                                      
-    except Exception,e:
-        msg = "kojoney_defend.py : blackhole() exception caught = " + `e`
+    except Exception as e:
+        msg = "kojoney_defend.py : blackhole() exception caught = " + repr(e)
         syslog.syslog(msg)
-        print msg
+        print(msg)
         return None
                   
                                                                                                                                                                          
@@ -72,7 +72,7 @@ def ageBlackholedRoutes(bh_duration):
             blackholeAge  = now - blackholeBorn
             #print " -> blackholeAge for " + attacker + " is " + blackholeAge.__str__() + " seconds"
             if blackholeAge > bh_duration :
-                print attacker + " has now aged out"
+                print(attacker + " has now aged out")
                 agedAttackers.append(attacker)
                 #del BlackholedRoutes[attacker]
                 
@@ -98,10 +98,10 @@ def ageBlackholedRoutes(bh_duration):
             del BlackholedRoutes[attacker] 
             #print "attacker " + attacker + " removed from list of blackholes"
     
-    except Exception,e:
-        msg = "kojoney_defend.py : ageBlackholedRoutes() exception caught = " + `e`
+    except Exception as e:
+        msg = "kojoney_defend.py : ageBlackholedRoutes() exception caught = " + repr(e)
         syslog.syslog(msg)
-        print msg
+        print(msg)
         #sys.exit()         
   
 # add new blackholes to dictionary    
@@ -130,15 +130,15 @@ def getRouteTable():
                 #print line
                 #print "attacker is " + "[" + attacker + "]"
 
-                if BlackholedRoutes.has_key(attacker) == False : # attacker not seen before
-                    print "new blackhole route added to monitor list " + attacker 
+                if (attacker in BlackholedRoutes) == False : # attacker not seen before
+                    print("new blackhole route added to monitor list " + attacker) 
                     BlackholedRoutes[attacker] = time.time()
                          
              
-    except Exception,e:
-        msg = "kojoney_defend.py : getRouteTable() exception caught = " + `e`
+    except Exception as e:
+        msg = "kojoney_defend.py : getRouteTable() exception caught = " + repr(e)
         syslog.syslog(msg)
-        print msg
+        print(msg)
         #sys.exit()         
   
 syslog.openlog("kojoney_defend",syslog.LOG_PID,syslog.LOG_LOCAL2)         # Set syslog program name 
@@ -160,9 +160,9 @@ if __name__ == "__main__" :
             #print " "
             time.sleep(10)
     
-        except Exception,e:
-            msg = "kojoney_defend.py : main() exception caught = " + `e`
-            print msg
+        except Exception as e:
+            msg = "kojoney_defend.py : main() exception caught = " + repr(e)
+            print(msg)
             syslog.syslog(msg)
             sys.exit()
    

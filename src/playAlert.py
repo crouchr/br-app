@@ -33,8 +33,8 @@ def playAlert(level):
         pass
 
 def playSound(filename,volume):
-    cmd = 'mpg123 -q -g ' + `volume` + " " + filename + " &"
-    print cmd
+    cmd = 'mpg123 -q -g ' + repr(volume) + " " + filename + " &"
+    print(cmd)
     syslog.syslog('playSound() : ' + cmd)
     os.system(cmd)
     return

@@ -213,10 +213,10 @@ def snortTwittify(tweet):
                                                                 
         return tweet
                                                                                                                                                                                                                                                  
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_snort_funcs : snortTwittify() : exception : " + e.__str__()
         syslog.syslog(msg)
-        print msg                                                                                                                                                                                 
+        print(msg)                                                                                                                                                                                 
         return None                                                                                                                                                                                                   
 
 
@@ -234,7 +234,7 @@ def suppressSnortAlert(line):
         
         #if line.find("NIDS_SU") == -1 and line.find("snort[") == -1 :
         if line.find("mars snort") == -1 and line.find("spade snort") == -1 and line.find("shadowIDS snort") == -1 :
-            print "!!! Not a Snort format syslog : " + line.__str__()
+            print("!!! Not a Snort format syslog : " + line.__str__())
             return True
                                                                                 
         # !!! : proper way is to do the filtering in Snort / Suricata config - do it here for the  moment            
@@ -373,8 +373,8 @@ def suppressSnortAlert(line):
                                                                                                                                                    
         return False
         
-    except Exception,e:
-        syslog.syslog("kojoney_snort_funcs.py : suppressSnortAlert() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_snort_funcs.py : suppressSnortAlert() : " + repr(e) + " line=" + line)
                 
 
 if __name__ == '__main__' :
@@ -387,6 +387,6 @@ if __name__ == '__main__' :
         suppress = suppressSnortAlert(line)
         
         if suppress == False :
-            print "VALID -> " + line.rstrip("\n")
+            print("VALID -> " + line.rstrip("\n"))
         
         

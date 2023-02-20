@@ -49,9 +49,9 @@ def process(line):
         
         return line
         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_snortalog_prefilter.py : process() : " + e.__str__() + " line=" + line
-        print msg
+        print(msg)
         syslog.syslog(msg)
                 
 
@@ -65,20 +65,20 @@ if __name__ == '__main__' :
     file  = open(inFilename,'r')
     fpOut = open(outFilename,'w')
     
-    print "input file  : " + inFilename
-    print "output file : " + outFilename
+    print("input file  : " + inFilename)
+    print("output file : " + outFilename)
                 
     while True:
         line  = file.readline() 
         
         if not line:
-            print "No data to process, so exiting..."
+            print("No data to process, so exiting...")
             sys.exit(0)
         else:
             result = process(line)
             if result == None:
-                print "Filtered out line : " + line
+                print("Filtered out line : " + line)
             else:
                 #print "** Add to filtered Snort syslog file : " + line
-                print >> fpOut,line
+                print(line, file=fpOut)
                     

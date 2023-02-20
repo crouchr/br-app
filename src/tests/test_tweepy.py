@@ -28,12 +28,12 @@ def test_tweepy(test_msg, expected_result):
 
     now = time.time()
     msg = time.asctime(time.localtime(now)) + " : " + test_msg.__str__()
-    print msg
-    print len(msg)
+    print(msg)
+    print(len(msg))
     #api.update_status(sys.argv[1],lat="51.6",long="43.6")
-    result = api.update_status(msg,lat="51.6",long="0.1")
+    result = api.update_status(msg,lat="51.6",int="0.1")
     #api.update_status(sys.argv[1],lat=GLEBE_LAT,long=GLEBE_LONG)
-    print
+    print()
     assert result.id is not None
 
 

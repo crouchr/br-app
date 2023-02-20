@@ -18,9 +18,9 @@ Geo_ip_dbase = "/usr/local/share/GeoIP/GeoLiteCity.dat"
 try:
     #print "Opening GeoIP City database..."
     Gi=GeoIP.open(Geo_ip_dbase,GeoIP.GEOIP_STANDARD)
-except Exception,e:
-    print "Exception" + `e` 
-    syslog.syslog("ipintellib.py() : Exception " + `e` + " caught whilst opening GeoIP City database " + Geo_ip_dbase)
+except Exception as e:
+    print("Exception" + repr(e)) 
+    syslog.syslog("ipintellib.py() : Exception " + repr(e) + " caught whilst opening GeoIP City database " + Geo_ip_dbase)
     sys.exit(-1)
     
 # Get version of the library  
@@ -91,7 +91,7 @@ def geo_ip(ip):
         #print resultDict         
         return resultDict     
     
-    except Exception,e:
+    except Exception as e:
         resultDict['result']       = False
         resultDict['countryName']  = '?'
         resultDict['countryCode']  = '?'
@@ -165,7 +165,7 @@ def ip2asn(ip):
             return resultDict
  
         # is the IP in the cache already ?
-        if WhoisCache.has_key(ip) == True :
+        if (ip in WhoisCache) == True :
             msg = "ipintellib.py : WHOIS_CACHE_HIT: " + ip 
             #print msg
             #syslog.syslog(msg)
@@ -198,8 +198,8 @@ def ip2asn(ip):
         resultDict['registeredName'] = 'whois-failed' 
         return resultDict
             
-    except Exception,e:
-        syslog.syslog("Exception " + `e` + " in ip2asn(): ip=" + ip)
+    except Exception as e:
+        syslog.syslog("Exception " + repr(e) + " in ip2asn(): ip=" + ip)
 	resultDict['as']             = 'AS-none'
         resultDict['netblock']       = 'whois-failed'
         resultDict['countryCode']    = 'whois-failed'
@@ -271,9 +271,9 @@ def ip2asnAtom(ip):
             #print resultDict
             return resultDict   
         
-    except Exception,e:
-        msg = "Exception " + `e` + " in ip2asnAtom(): ip=" + ip + " raw2=" + raw2
-        print msg
+    except Exception as e:
+        msg = "Exception " + repr(e) + " in ip2asnAtom(): ip=" + ip + " raw2=" + raw2
+        print(msg)
         syslog.syslog(msg)
 	return None
 
@@ -323,8 +323,8 @@ def ip2reputation(ip):
                 
         #print reputation
 
-    except Exception,e:
-    	syslog.syslog("Exception " + `e` + " in ip2reputation(): ip=" + ip + " nf=" + `nf` + " raw2=" + raw2);
+    except Exception as e:
+    	syslog.syslog("Exception " + repr(e) + " in ip2reputation(): ip=" + ip + " nf=" + repr(nf) + " raw2=" + raw2);
     	#print "ip2reputation(): Caught exception for following raw data for IP=" + ip
 	#print "command-line:" + cmdLine
 	#print "raw2:" + raw2
@@ -338,7 +338,7 @@ def interestingReputation(reputation):
     interesting = False
     
     #print reputation.values()
-    for i in reputation.values():
+    for i in list(reputation.values()):
         #print type(i)
         if type(i) == bool:
             continue 
@@ -395,8 +395,8 @@ def ip2name(ip):
             
         # print dns
 
-    except Exception,e:
-        syslog.syslog("Exception " + `e` + " in ip2name(): ip=" + ip + " raw=" + raw);
+    except Exception as e:
+        syslog.syslog("Exception " + repr(e) + " in ip2name(): ip=" + ip + " raw=" + raw);
     	#print "ip2name(): Caught exception for following raw data for IP=" + ip
 	#print "command-line:" + cmdLine
 	#print "raw:" + raw
@@ -451,7 +451,7 @@ def tcpToName(port):
         '135': 'NetBIOS?'
     }
 
-    if portList.has_key(port):
+    if port in portList:
         return portList[port]
     else:
         return port
@@ -482,7 +482,7 @@ def abuseToMsg(code):
         '255.255.255.255' : 'OK'
     }
 
-    if codeList.has_key(code):
+    if code in codeList:
         return codeList[code]
     else:
         return code
@@ -506,7 +506,7 @@ def spamhausToMsg(code):
         '255.255.255.255' : 'OK'
     }
 
-    if codeList.has_key(code):
+    if code in codeList:
         return codeList[code]
     else:
         return code
@@ -519,7 +519,7 @@ def cymruToMsg(code):
         '255.255.255.255' : 'OK'
     }
 
-    if codeList.has_key(code):
+    if code in codeList:
         return codeList[code]
     else:
         return code
@@ -531,7 +531,7 @@ def deadbeefToMsg(code):
         '255.255.255.255' : 'OK'
     }
 
-    if codeList.has_key(code):
+    if code in codeList:
         return codeList[code]
     else:
         return code
@@ -543,7 +543,7 @@ def hijackedToMsg(code):
         '255.255.255.255' : 'OK'
     }
 
-    if codeList.has_key(code):
+    if code in codeList:
         return codeList[code]
     else:
         return code
@@ -555,7 +555,7 @@ def torToMsg(code):
         '255.255.255.255' : 'OK'
     }
 
-    if codeList.has_key(code):
+    if code in codeList:
         return codeList[code]
     else:
         return code
@@ -567,7 +567,7 @@ def rblToMsg(code):
         '255.255.255.255' : 'OK'
     }
 
-    if codeList.has_key(code):
+    if code in codeList:
         return codeList[code]
     else:
         return code
@@ -588,7 +588,7 @@ def getSlash24(ip):
         a = ip.split(".")
         b = a[0] + "." + a[1] + "." + a[2] + ".0/24"
         return b
-    except Exception,e:
+    except Exception as e:
         syslog.syslog("ipintellib.py : Exception in getSlash24() " + e.__str__() + " ip=" + ip.__str__()) 
         return "0.0.0.0/24"
 
@@ -652,37 +652,37 @@ def int2bin(n,count=6) :
 # initialisation
 
 def main():
-    print "\n\n\n\n"
-    print "================================="
-    print "IP Reputation Library Test Module"
-    print "================================="
-    print "Library version : " + getVersion()
+    print("\n\n\n\n")
+    print("=================================")
+    print("IP Reputation Library Test Module")
+    print("=================================")
+    print("Library version : " + getVersion())
 
     srcAs        = {}
     bgpNextHopAs = {}
     dstAs        = {}
 
-    print "Hard-coded tests"
-    print "----------------"
+    print("Hard-coded tests")
+    print("----------------")
     
     # getSlash24
     ipStr = "217.41.27.169"	
     a = getSlash24(ipStr)	     	
-    print ipStr + " is in /24 : " + a
+    print(ipStr + " is in /24 : " + a)
 
     ipStr = "fred"		# failure case	
     a = getSlash24(ipStr)	     	
-    print ipStr + " is in /24 : " + a
+    print(ipStr + " is in /24 : " + a)
 
     # IP to DNS name
     ipStr = "217.41.27.169"			# My IP
     dnsInfo  = ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
 
     # DNS name to IP
     ipStr = "www.openbsd.org"
     dnsInfo  = ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
     filename = pkg_resources.resource_filename(__name__, "ipintellib.test.in.csv")
     
     # input file : file of IPs (hand-crafted)
@@ -701,8 +701,8 @@ def main():
 
     lineCounter=-1            
     
-    print "Test data taken from file"
-    print "-------------------------"
+    print("Test data taken from file")
+    print("-------------------------")
     
     while True:
         try:
@@ -718,10 +718,10 @@ def main():
                 continue
         
             fields = line1.split(',')
-            print "----------------------------------------------"
+            print("----------------------------------------------")
     
             ipStr = fields[0].strip()
-            print "ipStr is [" + ipStr + "]"    
+            print("ipStr is [" + ipStr + "]")    
         
             dnsInfo    = ip2name(ipStr)	        # resolve get DNS name	
             asInfo     = ip2asn(ipStr)        	# get AS information from WHOIS whob
@@ -744,15 +744,15 @@ def main():
                          #",images.rbl.msrbl.net="   + reputation['images.rbl.msrbl.net'] + \
                          #",spam.rbl.msrbl.net="     + reputation['spam.rbl.msrbl.net']  
 
-            print result        
+            print(result)        
         
             #if interestingReputation(reputation):
             #    print reputation
                 
-            print >> fpOut0,result
+            print(result, file=fpOut0)
         
-        except Exception,e :
-            print "Exception : " + e.__str__()     
+        except Exception as e :
+            print("Exception : " + e.__str__())     
 
 ########
 # MAIN #

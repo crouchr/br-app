@@ -51,12 +51,12 @@ def decodeSection(payload):
         
         
         
-print "This one works OK"        
+print("This one works OK")        
 rawPayload="110a0ce9e9a9588d842c27445018fda056f60000504f4e47206875622e31373030392e6e65740d0a0000000000000000"
-print "decodes to " + decodeSection(rawPayload)
+print("decodes to " + decodeSection(rawPayload))
 
-print "This one fails"        
+print("This one fails")        
 rawPayload="^QX0ce9e9a9590b842c28685018fc7c5678^P"
-print "decodes to " + decodeSection(rawPayload)
+print("decodes to " + decodeSection(rawPayload))
 
                                                                                                                                                     

@@ -33,7 +33,7 @@ def hiddenIP(ipAddress,lanAllowed=False) :
             a = re.findall(pat,ip)
             if len(a) <= 0 :
                 msg = "kojoney_hiddenip.py : hiddenIP() : error : " + ip + " is not a valid IP address, ipAddress=" + ipAddress.__str__()
-                print msg
+                print(msg)
                 #syslog.syslog(msg)	# THIS IS STILL A BUG
                 #msg = "type of ipAddress is " + type(ipAddress)
                 #syslog.syslog(msg)
@@ -169,9 +169,9 @@ def hiddenIP(ipAddress,lanAllowed=False) :
 
         return False
         
-    except Exception,e:
-        msg = "kojoney_hiddenip.py : hiddenIP() : exception " + `e` + " ip=" + ipAddress.__str__()
-        print msg
+    except Exception as e:
+        msg = "kojoney_hiddenip.py : hiddenIP() : exception " + repr(e) + " ip=" + ipAddress.__str__()
+        print(msg)
         syslog.syslog(msg)
         return None
                                
@@ -184,21 +184,21 @@ if __name__ == '__main__' :
     
     # Test : nonsense input   
     result = hiddenIP("not a valid IP")	
-    print "hiddenIP() -> " + result.__str__()
+    print("hiddenIP() -> " + result.__str__())
 
 
     IPLIST = "1.2.3.4"
     result = hiddenIP(IPLIST)	
-    print "hiddenIP() -> " + IPLIST.__str__() + " => " + result.__str__()
+    print("hiddenIP() -> " + IPLIST.__str__() + " => " + result.__str__())
  
 
     IPLIST = ["1.2.3.4"]
     result = hiddenIP(IPLIST)	
-    print "hiddenIP() -> " + IPLIST.__str__() + " => " + result.__str__()
+    print("hiddenIP() -> " + IPLIST.__str__() + " => " + result.__str__())
     
     IPLIST = ["1.2.3.4","6.6.6.6"]
     result = hiddenIP(IPLIST)	
-    print "hiddenIP() -> " + IPLIST.__str__() + " => " + result.__str__()
+    print("hiddenIP() -> " + IPLIST.__str__() + " => " + result.__str__())
          
     # Test : Set the input file to scan
     filename = 'test_hiddenip.txt'
@@ -215,7 +215,7 @@ if __name__ == '__main__' :
             sys.exit()
         else :					# new data has been found
             result = hiddenIP(ip)		# LAN allowed = False
-            print "hiddenIP(" + ip + ") -> " + `result`
+            print("hiddenIP(" + ip + ") -> " + repr(result))
         
         #if msg != None:
         #    print "*** Tweet : " + msg

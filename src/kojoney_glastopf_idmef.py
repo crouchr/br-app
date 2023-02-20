@@ -62,7 +62,7 @@ def sendWebAppIDMEF(attackType,url,service,dstPort,completion,srcIP,dstIP,apache
         
         # Additional Data
         fieldsOffset = fieldsSet
-        print "fieldsOffset = " + fieldsOffset.__str__() 
+        print("fieldsOffset = " + fieldsOffset.__str__()) 
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").type", "string")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").meaning", "Apache CLF Record")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").data", apacheCLF)
@@ -70,19 +70,19 @@ def sendWebAppIDMEF(attackType,url,service,dstPort,completion,srcIP,dstIP,apache
         client.SendIDMEF(idmef)
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_glastopf_idmef.py : sendWebAppIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 
 def sendWebAppURLIDMEF(attackType,url,dstService,srcIP,dstIP,dstPort,completion,apacheCLF,attackerIP,logEntry):
     try:
-        print "sendWebAppURLIDMEF() : srcIP      : " + srcIP
-        print "sendWebAppURLIDMEF() : dstIP      : " + dstIP
-        print "sendWebAppURLIDMEF() : apacheCLF  : " + apacheCLF
-        print "sendWebAppURLIDMEF() : attackerIP : " + attackerIP
-        print "sendWebAppURLIDMEF() : url        : " + url
+        print("sendWebAppURLIDMEF() : srcIP      : " + srcIP)
+        print("sendWebAppURLIDMEF() : dstIP      : " + dstIP)
+        print("sendWebAppURLIDMEF() : apacheCLF  : " + apacheCLF)
+        print("sendWebAppURLIDMEF() : attackerIP : " + attackerIP)
+        print("sendWebAppURLIDMEF() : url        : " + url)
                 
         # Create a new Prelude client.
         client = PreludeEasy.ClientEasy("blackrain")
@@ -122,7 +122,7 @@ def sendWebAppURLIDMEF(attackType,url,dstService,srcIP,dstIP,dstPort,completion,
         
         # Additional Data
         fieldsOffset = fieldsSet
-        print "fieldsOffset = " + fieldsOffset.__str__() 
+        print("fieldsOffset = " + fieldsOffset.__str__()) 
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").type", "string")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").meaning", "Apache CLF Record")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").data", apacheCLF)
@@ -130,16 +130,16 @@ def sendWebAppURLIDMEF(attackType,url,dstService,srcIP,dstIP,dstPort,completion,
         client.SendIDMEF(idmef)
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_glastopf_idmef.py : sendWebAppURLIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 
 def sendWebAppFile(attackType,fileMD5,logEntry):
     try:        
         cymruHash = kojoney_cymru_hash.cymruHash(fileMD5)
-        print "cymruHash : "  + cymruHash
+        print("cymruHash : "  + cymruHash)
                 
         # Create a new Prelude client.
         client = PreludeEasy.ClientEasy("blackrain")
@@ -181,9 +181,9 @@ def sendWebAppFile(attackType,fileMD5,logEntry):
         client.SendIDMEF(idmef)
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_glastopf_idmef.py : sendWebAppFile() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
         

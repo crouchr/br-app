@@ -27,6 +27,6 @@ for tweet in tweet_iter:
     # check whether this is a valid tweet
     if tweet.get('text'):
     # yes it is! print out the contents, and any URLs found inside
-        print "(%s) @%s %s" % (tweet["created_at"], tweet["user"]["screen_name"], tweet["text"])
+        print("(%s) @%s %s" % (tweet["created_at"], tweet["user"]["screen_name"], tweet["text"]))
         for url in tweet["entities"]["urls"]:
-            print " - found URL: %s" % url["expanded_url"]
+            print(" - found URL: %s" % url["expanded_url"])

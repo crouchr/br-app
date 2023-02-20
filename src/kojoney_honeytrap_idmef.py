@@ -43,7 +43,7 @@ def sendHoneytrapIDMEF(srcIP,dstIP,dstPort,p0f,logEntry):
 
         # Additional Data
         fieldsOffset = fieldsSet
-        print "fieldsOffset = " + fieldsOffset.__str__()
+        print("fieldsOffset = " + fieldsOffset.__str__())
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").type", "string")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").meaning", "p0f info")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").data", p0f)
@@ -51,7 +51,7 @@ def sendHoneytrapIDMEF(srcIP,dstIP,dstPort,p0f,logEntry):
         client.SendIDMEF(idmef)
         return
     
-    except Exception,e:
+    except Exception as e:
         return
         
 if __name__ == '__main__' :

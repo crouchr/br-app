@@ -30,33 +30,33 @@ def getMacAddress(interface="eth0"):
         else:
             return None		# couldn't find mac address
                                                                          
-    except Exception,e:
-        syslog.syslog("Exception " + `e` + " in getMacAddress(), raw=" + raw);
+    except Exception as e:
+        syslog.syslog("Exception " + repr(e) + " in getMacAddress(), raw=" + raw);
         return None
                                                                 
 ########
 # MAIN #
 ########        
 if __name__ == '__main__': 
-    print "\nTest 1"
+    print("\nTest 1")
     mac = getMacAddress()
-    print "mac1 = " + `mac`
+    print("mac1 = " + repr(mac))
     
-    print "\nTest 2"
+    print("\nTest 2")
     mac = getMacAddress("eth0")
-    print "mac2 = " + `mac`
+    print("mac2 = " + repr(mac))
     
-    print "\nTest 3"
+    print("\nTest 3")
     mac = getMacAddress("eth1")
-    print "mac3 = " + `mac`
+    print("mac3 = " + repr(mac))
 
-    print "\nTest 4"
+    print("\nTest 4")
     mac = getMacAddress("eth2")
-    print "mac4 = " + `mac`
+    print("mac4 = " + repr(mac))
 
-    print "\nTest 5"
+    print("\nTest 5")
     mac = getMacAddress("eth3")
-    print "mac5 = " + `mac`
+    print("mac5 = " + repr(mac))
 
     
   

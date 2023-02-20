@@ -115,18 +115,18 @@ def LoadMacData(MacFile):
 					#uppercase incoming strings just in case one of the files uses lowercase
 					MacHeader=line[:8].upper()
 					Manuf=line[8:].strip()
-					if (not EtherManuf.has_key(MacHeader)):
+					if (MacHeader not in EtherManuf):
 						EtherManuf[MacHeader] = Manuf
 						LoadCount += 1
-				elif (len(line) >= 7) and (re.search('^[0-9A-F]{6}[ \t]', line) <> None):
+				elif (len(line) >= 7) and (re.search('^[0-9A-F]{6}[ \t]', line) != None):
 					MacHeader=str.upper(line[0:2] + ':' + line[2:4] + ':' + line[4:6])
 					Manuf=line[7:].strip()
-					if (not EtherManuf.has_key(MacHeader)):
+					if (MacHeader not in EtherManuf):
 						EtherManuf[MacHeader] = Manuf
 						LoadCount += 1
 
 			MacHandle.close()
-			if EtherManuf.has_key('00:00:00'):
+			if '00:00:00' in EtherManuf:
 				del EtherManuf['00:00:00']		#Not really Xerox
 				LoadCount -= 1
 			Debug(str(LoadCount) + More + " mac prefixes loaded from" + str(MacFile))
@@ -202,7 +202,7 @@ def LoadNmapServiceFP(ServiceFileName):
 						#Debug(Remainder + ", i and s flag")
 					else:
 						Debug("Unrecognized nmap-service-probes flag combination")
-						print MatchEnd + 1, len(Remainder)
+						print(MatchEnd + 1, len(Remainder))
 						Debug(Remainder + ", unknown flags")
 						#quit()
 
@@ -246,14 +246,14 @@ def LoadNmapServiceFP(ServiceFileName):
 							CompileSuccess += 1
 							if (len(PortArray) == 0):
 								#No ports declared yet; we'll place this search pair under the special port "all"
-								if (not(ServiceFPs.has_key('all'))):
+								if (not('all' in ServiceFPs)):
 									ServiceFPs['all'] = [ ]
 								ServiceFPs['all'].append(SearchTuple)
 								LoadCount += 1
 							else:
 								#Register this search pair for every port requested
 								for OnePort in PortArray:
-									if (not(ServiceFPs.has_key(int(OnePort)))):
+									if (not(int(OnePort) in ServiceFPs)):
 										ServiceFPs[int(OnePort)] = [ ]
 									ServiceFPs[int(OnePort)].append(SearchTuple)
 									LoadCount += 1
@@ -350,12 +350,12 @@ def ReportId(Type, IPAddr, Proto, State, Description):
 	elif (Type == "MA"):
 		State = State.upper()
 		MacAddr[IPAddr] = State
-		if EtherManuf.has_key(State[:8]):
+		if State[:8] in EtherManuf:
 			Description = EtherManuf[State[:8]]
 
 	OutString = Type + "," + IPAddr + "," + Proto + "," + State + "," + Description
 
-	print OutString
+	print(OutString)
 	if (LogFile != None):
 		LogFile.write(OutString + '\n')
 		LogFile.flush()
@@ -398,12 +398,12 @@ def RememberDNS(IPAddr, Hostname, RecType):
 	if (Hostname == ''):
 		return
 
-	if (not DNSRecord.has_key(IPAddr + "," + RecType)):		#If we haven't seen this hostname for this IPAddr,
+	if (IPAddr + "," + RecType not in DNSRecord):		#If we haven't seen this hostname for this IPAddr,
 		DNSRecord[IPAddr + "," + RecType] = [ Hostname ]	#make an array with just this hostname
 	elif not (Hostname in DNSRecord[IPAddr + "," + RecType] ):	#If we _do_ have existing hostnames for this IP, but this new Hostname isn't one of them
 		DNSRecord[IPAddr + "," + RecType].append(Hostname)	#Add this Hostname to the list
 
-	if not(HostIPs.has_key(Hostname)):
+	if not(Hostname in HostIPs):
 		if not(isFQDN(Hostname)):	#We don't want to remember ips for names like "www", "ns1.mydom", "localhost", etc.
 			return
 		HostIPs[Hostname] = [ ]
@@ -455,7 +455,7 @@ def processpacket(p):
 			if (p['ARP.psrc'] != None) and (p['ARP.hwsrc'] != None):
 				IPAddr=p['ARP.psrc']
 				MyMac=p['ARP.hwsrc'].upper()
-				if (not MacAddr.has_key(IPAddr)) or (MacAddr[IPAddr] != MyMac):
+				if (IPAddr not in MacAddr) or (MacAddr[IPAddr] != MyMac):
 					ReportId("MA", IPAddr, 'Ethernet', MyMac, '')
 			else:
 				UnhandledPacket(p)
@@ -475,7 +475,7 @@ def processpacket(p):
 			Code = p['ICMP'].code
 
 			if (Type == 0):						#Echo reply
-				if (not(OSDescription.has_key(sIP))):
+				if (not(sIP in OSDescription)):
 					ReportId("IP", sIP, "IP", "live", 'icmp echo reply')
 			elif (Type == 3) and (type(p[IPerror]) == IPerror):	#Unreachable, check that we have an actual embedded packet
 				#if (type(p[IPerror]) != IPerror):
@@ -484,18 +484,18 @@ def processpacket(p):
 				#	quit()
 				OrigdIP = p[IPerror].dst
 				if (Code == 0):					#Net unreachable
-					if (not(OSDescription.has_key(OrigdIP))):
+					if (not(OrigdIP in OSDescription)):
 						ReportId("IP", OrigdIP, "IP", "dead", 'net unreachable')
-					if (not(IsRouter.has_key(sIP))):
+					if (not(sIP in IsRouter)):
 						ReportId("RO", sIP, "NetUn", "router", "")
 				elif (Code == 1):				#Host unreachable
-					if (not(OSDescription.has_key(OrigdIP))):
+					if (not(OrigdIP in OSDescription)):
 						ReportId("IP", OrigdIP, "IP", "dead", 'host unreachable')
-					if (not(IsRouter.has_key(sIP))):
+					if (not(sIP in IsRouter)):
 						ReportId("RO", sIP, "HostUn", "router", "")
 				elif (Code == 3) and (p[IPerror].proto == 17):	#Port unreachable and embedded protocol = 17, UDP, as it should be
 					DNSServerLoc = p[IPerror].src + ",UDP_53"
-					if (p[UDPerror].sport == 53) and (ManualServerDescription.has_key(DNSServerLoc)) and (ManualServerDescription[DNSServerLoc] == "dns/server"):
+					if (p[UDPerror].sport == 53) and (DNSServerLoc in ManualServerDescription) and (ManualServerDescription[DNSServerLoc] == "dns/server"):
 						#If orig packet coming from 53 and coming from a dns server, don't do anything (closed port on client is a common effect)
 						#Don't waste time on port unreachables going back to a dns server; too common, and ephemeral anyways.
 						pass
@@ -503,16 +503,16 @@ def processpacket(p):
 						#If orig packet coming from something other than 53, or coming from 53 and NOT coming from a dns server, log as closed
 						OrigDPort = str(p[UDPerror].dport)
 						OrigDstService = OrigdIP + ",UDP_" + OrigDPort
-						if ((not LiveUDPService.has_key(OrigDstService)) or (LiveUDPService[OrigDstService] == True)):
+						if ((OrigDstService not in LiveUDPService) or (LiveUDPService[OrigDstService] == True)):
 							LiveUDPService[OrigDstService] = False
 							ReportId("US", OrigdIP, "UDP_" + OrigDPort, "closed", "port unreachable")
 				elif (Code == 3) and (p[IPerror].proto == 6) and (p[TCPerror].dport == 113):	#Port unreachable and embedded protocol = 6, TCP, which it shouldn't.  May be the same firewall providing the TCP FR's
 					pass
 				elif (Code == 6):				#Net unknown
-					if (not(OSDescription.has_key(OrigdIP))):
+					if (not(OrigdIP in OSDescription)):
 						ReportId("IP", OrigdIP, "IP", "dead", 'net unknown')
 				elif (Code == 7):				#Host unknown
-					if (not(OSDescription.has_key(OrigdIP))):
+					if (not(OrigdIP in OSDescription)):
 						ReportId("IP", OrigdIP, "IP", "dead", 'host unknown')
 				elif (Code == 9):				#Network Administratively Prohibited
 					pass					#Can't tell much from this type of traffic.  Possibly list as firewall?
@@ -531,7 +531,7 @@ def processpacket(p):
 				pass
 			elif (Type == 11):					#Time exceeded
 				if (Code == 0):					#TTL exceeded
-					if (not(IsRouter.has_key(sIP))):
+					if (not(sIP in IsRouter)):
 						#FIXME - put original target IP as column 5?
 						ReportId("RO", sIP, "TTLEx", "router", "")
 				else:
@@ -546,18 +546,18 @@ def processpacket(p):
 			#print p['IP'].src + ":" + sport + " -> ", p['IP'].dst + ":" + dport,
 			if (p['TCP'].flags & 0x17) == 0x12:	#SYN/ACK (RST and FIN off)
 				CliService = dIP + ",TCP_" + sport
-				if not SynAckSentToTCPClient.has_key(CliService):
+				if CliService not in SynAckSentToTCPClient:
 					SynAckSentToTCPClient[CliService] = True
 
 				#If we've seen a syn sent to this port and have either not seen any SA/R, or we've seen a R in the past:
 				#The last test is for a service that was previously closed and is now open; report each transition once.
 				Service = sIP + ",TCP_" + sport
-				if ( (SynSentToTCPService.has_key(Service)) and ((not LiveTCPService.has_key(Service)) or (LiveTCPService[Service] == False)) ):
+				if ( (Service in SynSentToTCPService) and ((Service not in LiveTCPService) or (LiveTCPService[Service] == False)) ):
 					LiveTCPService[Service] = True
 					ReportId("TS", sIP, "TCP_" + sport, "listening", '')
 			elif (p['TCP'].flags & 0x17) == 0x02:	#SYN (ACK, RST, and FIN off)
 				Service = dIP + ",TCP_" + dport
-				if not SynSentToTCPService.has_key(Service):
+				if Service not in SynSentToTCPService:
 					SynSentToTCPService[Service] = True
 				#Debug("trying to fingerprint " + sIP)
 				try:
@@ -573,24 +573,24 @@ def processpacket(p):
 							PDescription = PDescription + " hops away)"
 													#[N][2] param appears to be distance away in hops (but add 1 to this to get real hop count?)
 						PDescription = PDescription.replace(',', ';')		#Commas are delimiters in output
-						if (not(OSDescription.has_key(sIP))) or (OSDescription[sIP] != PDescription):
+						if (not(sIP in OSDescription)) or (OSDescription[sIP] != PDescription):
 							OSDescription[sIP] = PDescription
 							ReportId("IP", sIP, "IP", "live", PDescription)
 				except:
 					PDescription = 'p0f failure'
-					if (not(OSDescription.has_key(sIP))) or (OSDescription[sIP] != PDescription):
+					if (not(sIP in OSDescription)) or (OSDescription[sIP] != PDescription):
 						Debug("P0f failure in " + sIP + ":" + sport + " -> " + dIP + ":" + dport)
 						OSDescription[sIP] = PDescription
 						ReportId("IP", sIP, "IP", "live", PDescription)
 			elif (p['TCP'].flags & 0x07) == 0x01:	#FIN (SYN/RST off)
 				CliService = sIP + ",TCP_" + dport
-				if ( (SynAckSentToTCPClient.has_key(CliService)) and ((not LiveTCPClient.has_key(CliService)) or (LiveTCPClient[CliService] == False)) ):
+				if ( (CliService in SynAckSentToTCPClient) and ((CliService not in LiveTCPClient) or (LiveTCPClient[CliService] == False)) ):
 					LiveTCPClient[CliService] = True
 					ReportId("TC", sIP, "TCP_" + dport, "open", '')
 			elif (p['TCP'].flags & 0x07) == 0x04:	#RST (SYN and FIN off)
 				#FIXME - handle rst going in the other direction?
 				Service = sIP + ",TCP_" + sport
-				if ( (SynSentToTCPService.has_key(Service)) and ((not LiveTCPService.has_key(Service)) or (LiveTCPService[Service] == True))  ):
+				if ( (Service in SynSentToTCPService) and ((Service not in LiveTCPService) or (LiveTCPService[Service] == True))  ):
 					LiveTCPService[Service] = False
 					ReportId("TS", sIP, "TCP_" + sport, "closed", '')
 			elif ((p['TCP'].flags & 0x3F) == 0x15) and (sport == "113"):	#FIN, RST, ACK (SYN, PSH, URG off)
@@ -601,12 +601,12 @@ def processpacket(p):
 				FromPort = sIP + ",TCP_" + sport
 				ToPort = dIP + ",TCP_" + dport
 				Payload = str(p['Raw.load'])			#For some reason this doesn't handle p['Raw'].load
-				if ( (LiveTCPService.has_key(FromPort)) and (LiveTCPService[FromPort] == True) and (LiveTCPService.has_key(ToPort)) and (LiveTCPService[ToPort] == True)):
-					print "Logic failure: both " + FromPort + " and " + ToPort + " are listed as live services."
+				if ( (FromPort in LiveTCPService) and (LiveTCPService[FromPort] == True) and (ToPort in LiveTCPService) and (LiveTCPService[ToPort] == True)):
+					print("Logic failure: both " + FromPort + " and " + ToPort + " are listed as live services.")
 					UnhandledPacket(p)
-				elif ((LiveTCPService.has_key(FromPort)) and (LiveTCPService[FromPort] == True)):	#If the "From" side is a known TCP server:
-					if (not NmapServerDescription.has_key(FromPort) ):		#Check nmap fingerprint strings for this server port
-						if (ServiceFPs.has_key(int(sport))):
+				elif ((FromPort in LiveTCPService) and (LiveTCPService[FromPort] == True)):	#If the "From" side is a known TCP server:
+					if (FromPort not in NmapServerDescription ):		#Check nmap fingerprint strings for this server port
+						if (int(sport) in ServiceFPs):
 							for OneTuple in ServiceFPs[int(sport)]:
 								MatchObj = OneTuple[0].search(Payload)
 								if (MatchObj != None):
@@ -628,8 +628,8 @@ def processpacket(p):
 									NmapServerDescription[sIP + ",TCP_" + sport] = OutputDescription
 									break					#Exit for loop, no need to check any more fingerprints now that we've found a match
 
-					if (not NmapServerDescription.has_key(FromPort)):		#If the above loop didn't find a server description
-						if (ServiceFPs.has_key('all')):				#Now recheck against regexes not associated with a specific port (port 'all').
+					if (FromPort not in NmapServerDescription):		#If the above loop didn't find a server description
+						if ('all' in ServiceFPs):				#Now recheck against regexes not associated with a specific port (port 'all').
 							for OneTuple in ServiceFPs['all']:
 								MatchObj = OneTuple[0].search(Payload)
 								if (MatchObj != None):
@@ -642,7 +642,7 @@ def processpacket(p):
 									NmapServerDescription[sIP + ",TCP_" + sport] = OutputDescription
 									break
 
-					if (not ManualServerDescription.has_key(FromPort) ):
+					if (FromPort not in ManualServerDescription ):
 						if (sport == "22") and (Payload != None) and (Payload.find('SSH-') > -1):
 							if ( (Payload.find('SSH-1.99-OpenSSH_') > -1) or (Payload.find('SSH-2.0-OpenSSH_') > -1) ):
 								ReportId("TS", sIP, "TCP_" + sport, "listening", "ssh/openssh")
@@ -743,9 +743,9 @@ def processpacket(p):
 						else:
 							UnhandledPacket(p)
 							#LogNewPayload(ServerPayloadDir, FromPort, Payload)
-				elif ((LiveTCPService.has_key(ToPort)) and (LiveTCPService[ToPort] == True)):		#If the "To" side is a known TCP server:
+				elif ((ToPort in LiveTCPService) and (LiveTCPService[ToPort] == True)):		#If the "To" side is a known TCP server:
 					ClientKey = sIP + ",TCP_" + dport	#Note: CLIENT ip and SERVER port
-					if (not ClientDescription.has_key(ClientKey)):
+					if (ClientKey not in ClientDescription):
 						if (dport == "22") and (Payload != None) and ( (Payload.find('SSH-2.0-OpenSSH_') > -1) or (Payload.find('SSH-1.5-OpenSSH_') > -1)  ):
 							ReportId("TC", sIP, "TCP_" + dport, "open", "ssh/openssh")
 						#As cute as it is to catch this, it miscatches any relay that's carrying a pine-generated mail.
@@ -794,7 +794,7 @@ def processpacket(p):
 
 			#Multicast DNS, placed next to normal dns, out of numerical order
 			if (dport == "5353") and ( (p['IP'].ttl == 1) or (p['IP'].ttl == 255) ):
-				if ((not LiveUDPService.has_key(SrcClient)) or (LiveUDPService[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPService) or (LiveUDPService[SrcClient] == False)):
 					LiveUDPService[SrcClient] = True
 					if (dIP == "224.0.0.251"):
 						ReportId("UC", sIP, "UDP_" + dport, "open", "mdns/broadcastclient")
@@ -807,7 +807,7 @@ def processpacket(p):
 					#	UnhandledPacket(p)
 			#FIXME - add check for "if isinstance(p['DNS'],  whatevertype):	here and at all p[] accesses.
 			elif (sport == "53") and (isinstance(p['DNS'], DNS)) and (p['DNS'].qr == 1):		#qr == 1 is a response
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					LiveUDPService[SrcService] = True
 					#FIXME - Also report the TLD from one of the query answers to show what it's willing to answer for?
 					ReportId("US", sIP, "UDP_" + sport, "open", "dns/server")
@@ -831,7 +831,7 @@ def processpacket(p):
 								DNSIPAddr = OneAn.rdata
 								DNSHostname = OneAn.rrname.lower()
 								#Check new hostname to see if it's in the list.
-								if (not DNSRecord.has_key(DNSIPAddr + ",A")) or (not(DNSHostname in DNSRecord[DNSIPAddr + ",A"])):
+								if (DNSIPAddr + ",A" not in DNSRecord) or (not(DNSHostname in DNSRecord[DNSIPAddr + ",A"])):
 									ReportId("DN", DNSIPAddr, "A", DNSHostname, "")
 							elif (OneAn.rclass == 1) and (OneAn.type == 2):			#"IN" class and "NS" answer
 								pass							#Perhaps later
@@ -851,14 +851,14 @@ def processpacket(p):
 									Debug("Odd PTR rrname: " + OneAn.rrname)
 								else:
 									DNSHostname = OneAn.rdata.lower()
-									if (not DNSRecord.has_key(DNSIPAddr + ",PTR")) or (not(DNSHostname in DNSRecord[DNSIPAddr + ",PTR"])):
+									if (DNSIPAddr + ",PTR" not in DNSRecord) or (not(DNSHostname in DNSRecord[DNSIPAddr + ",PTR"])):
 										ReportId("DN", DNSIPAddr, "PTR", DNSHostname, "")
 							elif (OneAn.rclass == 1) and (OneAn.type == 15):		#"IN" class and "MX" answer
 								pass							#Possibly later
 							elif (OneAn.rclass == 1) and (OneAn.type == 28):		#"IN" class and "AAAA" answer
 								DNSIPAddr = OneAn.rdata.upper()
 								DNSHostname = OneAn.rrname.lower()
-								if (not DNSRecord.has_key(DNSIPAddr + ",AAAA")) or (not(DNSHostname in DNSRecord[DNSIPAddr + ",AAAA"])):
+								if (DNSIPAddr + ",AAAA" not in DNSRecord) or (not(DNSHostname in DNSRecord[DNSIPAddr + ",AAAA"])):
 									ReportId("DN", DNSIPAddr, "AAAA", DNSHostname, "")
 
 							#Move to the next DNS object in the "an" block
@@ -868,9 +868,9 @@ def processpacket(p):
 							Alias = OneCNAME.rrname.lower()
 							Existing = OneCNAME.rdata.lower()
 							if isFQDN(Alias) and isFQDN(Existing):
-								if HostIPs.has_key(Existing):
+								if Existing in HostIPs:
 									for OneIP in HostIPs[Existing]:				#Loop through each of the IPs for the canonical name, and
-										if (not DNSRecord.has_key(OneIP + ",CNAME")) or (not(Alias in DNSRecord[OneIP + ",CNAME"])):
+										if (OneIP + ",CNAME" not in DNSRecord) or (not(Alias in DNSRecord[OneIP + ",CNAME"])):
 											ReportId("DN", OneIP, "CNAME", Alias, "")	#report them as kind-of A records for the Alias.
 								#If we don't have a A/PTR record for "Existing", just ignore it.  Hopefully we'll get the Existing A/PTR in the next few answers, and will re-ask for the CNAME later, at which point we'll get a full cname record.
 								#else:
@@ -888,34 +888,34 @@ def processpacket(p):
 				else:	#rcode indicates an error
 					UnhandledPacket(p)
 			elif (dport == "53") and (type(p['DNS']) == DNS) and (p['DNS'].qr == 0):	#dns query
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					LiveUDPClient[SrcClient] = True
 					ReportId("UC", sIP, "UDP_" + dport, "open", "dns/client")
 			elif (sport == "67") and (dport == "68"):		#Bootp/dhcp server talking to client
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					LiveUDPService[SrcService] = True
 					ReportId("US", sIP, "UDP_" + sport, "open", "bootpordhcp/server")
 			elif (sport == "68") and (dport == "67"):		#Bootp/dhcp client talking to server
 				if (sIP != "0.0.0.0"):				#If the client is simply renewing an IP, remember it.
-					if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+					if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "bootpordhcp/client")
 				#else:						#If you want to record which macs are asking for addresses, do it here.
 				#	pass
 			elif (sport == "123") and (dport == "123") and (p['NTP'].stratum != ''):
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					LiveUDPService[SrcService] = True
 					ReportId("US", sIP, "UDP_" + sport, "open", "ntp/generic")
 			elif (dport == "123") and ( (dIP == "216.115.23.75") or (dIP == "216.115.23.76") or (dIP == "69.59.240.75") ):
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					LiveUDPClient[SrcClient] = True
 					ReportId("UC", sIP, "UDP_" + dport, "open", "ntp/vonageclient")
 			elif (sport == "123") and ( (sIP == "216.115.23.75") or (sIP == "216.115.23.76") or (sIP == "69.59.240.75") ):
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					LiveUDPService[SrcService] = True
 					ReportId("US", sIP, "UDP_" + sport, "open", "ntp/vonageserver")
 			elif (dport == "137"):			#netbios-ns
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (p['Ethernet'].dst.upper() == "FF:FF:FF:FF:FF:FF"):			#broadcast
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "netbios-ns/broadcastclient")
@@ -927,43 +927,43 @@ def processpacket(p):
 						ReportId("UC", sIP, "UDP_" + dport, "open", "netbios-ns/unicastclient")
 						UnhandledPacket(p)
 			elif (sport == "500") and (dport == "500") and (p['ISAKMP'].init_cookie != ''):
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					LiveUDPService[SrcService] = True
 					ReportId("US", sIP, "UDP_" + sport, "open", "isakmp/generic")
 			elif (dport == "512"):			#BIFF
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (Payload != None) and (Payload.find('@') > -1):
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "biff/client")
 					else:
 						UnhandledPacket(p)
 			elif ( (dport == "1026") or (dport == "1027") or (dport == "1028") ):	#winpopup spam client
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (Payload != None) and ( (Payload.find('Download Registry Update from:') > -1) or (Payload.find('CRITICAL ERROR MESSAGE! - REGISTRY DAMAGED AND CORRUPTED.') > -1) or (Payload.find('Your system registry is corrupted and needs to be cleaned immediately.') > -1) or (Payload.find('CRITICAL SYSTEM ERRORS') > -1) ):
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "winpopup/spamclient")
 					else:
 						UnhandledPacket(p)
 			elif (dport == "1434"):		#Probable mssql attack
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (Payload != None) and (Payload.find('Qh.dll') > -1):
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "mssql/clientattack")
 					else:
 						UnhandledPacket(p)
 			elif (sport == "1900") and (dport == "1900") and (dIP == "239.255.255.250"):		#SSDP
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (Payload != None) and (Payload.find('NOTIFY') > -1):
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "ssdp/client")
 					else:
 						UnhandledPacket(p)
 			elif (dport == "3865") and (dIP == "255.255.255.255"):		#XPL, http://wiki.xplproject.org.uk/index.php/Main_Page
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					LiveUDPClient[SrcClient] = True
 					ReportId("UC", sIP, "UDP_" + dport, "open", "xpl/client")
 			elif (sport == "5061") and (dport == "5061") and ( (dIP == "216.115.30.28") or (dIP == "69.59.227.77") or (dIP == "69.59.232.33") or (dIP == "69.59.240.84") ):		#Vonage SIP client
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (Payload != None) and (Payload.find('.vonage.net:5061 SIP/2.0') > -1):
 						LiveUDPClient[SrcClient] = True
 						SipMatch = SipPhoneMatch.search(Payload)
@@ -974,80 +974,80 @@ def processpacket(p):
 					else:
 						UnhandledPacket(p)
 			elif (sport == "5061") and (dport == "5061") and ( (sIP == "216.115.30.28") or (sIP == "69.59.227.77") or (sIP == "69.59.232.33") or (sIP == "69.59.240.84") ):	#Vonage SIP server
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					if (Payload != None) and (Payload.find('.vonage.net:5061>') > -1):
 						LiveUDPService[SrcService] = True
 						ReportId("US", sIP, "UDP_" + sport, "open", "sip/vonage_server")
 					else:
 						UnhandledPacket(p)
 			elif (sport == "6515") and (dport == "6514") and (dIP == "255.255.255.255"):		#mcafee ASaP broadcast, looking for a proxy out.  http://www.myasap.de/intl/EN/content/virusscan_asap/faq_new.asp
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (Payload != None) and (Payload.find('<rumor version=') > -1):
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "asap/client")
 					else:
 						UnhandledPacket(p)
 			elif ( (sport == "9052") or (sport == "9053") or (sport == "9054") ) and ( (sIP == "205.188.146.72") or (sIP == "205.188.157.241") or (sIP == "205.188.157.242") or (sIP == "205.188.157.243") or (sIP == "205.188.157.244") or (sIP == "64.12.51.145") or (sIP == "64.12.51.148") or (sIP == "149.174.54.131") ):	#Possibly AOL dns response
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					if (Payload != None) and (Payload.find('dns-01') > -1):
 						LiveUDPService[SrcService] = True
 						ReportId("US", sIP, "UDP_" + sport, "open", "aoldns/server")
 					else:
 						UnhandledPacket(p)
 			elif (sport == "27005") and ( (dport == "27016") or (dport == "27017") ):				#Halflife client live game
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					LiveUDPClient[SrcClient] = True
 					ReportId("UC", sIP, "UDP_" + dport, "open", "halflife/client")
 			elif (dport == "27013") and (dIP == "207.173.177.12"):				#variable payload, so can't (Payload != None) and (Payload.find('Steam.exe') > -1)				#Halflife client
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					LiveUDPClient[SrcClient] = True
 					ReportId("UC", sIP, "UDP_" + dport, "open", "halflife/client")
 			elif (sport == "27013") and (sIP == "207.173.177.12"):							#halflife server
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					LiveUDPService[SrcService] = True
 					ReportId("US", sIP, "UDP_" + sport, "open", "halflife/server")
 			elif ( (sport == "27016") or (sport == "27017") ) and (dport == "27005"):				#halflife server live game
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					LiveUDPService[SrcService] = True
 					ReportId("US", sIP, "UDP_" + sport, "open", "halflife/server")
 			elif ( (dport == "27015") or (dport == "27016") or (dport == "27025") or (dport == "27026") ):		#Variable payload, so can't: (Payload != None) and (Payload.find('basic') > -1)	#Halflife client
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					LiveUDPClient[SrcClient] = True
 					ReportId("UC", sIP, "UDP_" + dport, "open", "halflife/client")
 			elif (dport == "27017") and ( (dIP == "69.28.148.250") or (dIP == "69.28.156.250") or (dIP == "72.165.61.161") or (dIP == "72.165.61.185") or (dIP == "72.165.61.186") or (dIP == "72.165.61.188") or (dIP == "68.142.64.164") or (dIP == "68.142.64.165") or (dIP == "68.142.64.166") ):	#Steamfriends client
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (Payload != None) and (Payload.find('VS01') > -1):
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "steamfriends/client")
 					else:
 						UnhandledPacket(p)
 			elif (sport == "27017") and ( (sIP == "69.28.148.250") or (sIP == "69.28.156.250") or (sIP == "72.165.61.161") or (sIP == "72.165.61.185") or (sIP == "72.165.61.186") or (sIP == "72.165.61.188") or (sIP == "68.142.64.164") or (sIP == "68.142.64.165") or (sIP == "68.142.64.166") ):	#Steamfriends server
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					if (Payload != None) and (Payload.find('VS01') > -1):
 						LiveUDPService[SrcService] = True
 						ReportId("US", sIP, "UDP_" + sport, "open", "steamfriends/server")
 					else:
 						UnhandledPacket(p)
 			elif ( (sport == "21020") or (sport == "21250") or (sport == "27016") or (sport == "27017") or (sport == "27018") or (sport == "27030") or (sport == "27035") or (sport == "27040") or (sport == "28015") ):							#halflife server
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					if (Payload != None) and (Payload.find('Team Fortress') > -1):
 						LiveUDPService[SrcService] = True
 						ReportId("US", sIP, "UDP_" + sport, "open", "halflife/server")
 					else:
 						UnhandledPacket(p)
 			elif (sport == "27019"):							#halflife server
-				if ((not LiveUDPService.has_key(SrcService)) or (LiveUDPService[SrcService] == False)):
+				if ((SrcService not in LiveUDPService) or (LiveUDPService[SrcService] == False)):
 					LiveUDPService[SrcService] = True
 					ReportId("US", sIP, "UDP_" + sport, "open", "halflife/server")
 			elif ( (dport == "1265") or (dport == "20100") or (dport == "21550") or (dport == "27000") or (dport == "27017") or (dport == "27018") or (dport == "27019") or (dport == "27022") or (dport == "27030") or (dport == "27035") or (dport == "27050") or (dport == "27078") or (dport == "27080") or (dport == "28015") or (dport == "28100") or (dport == "45081") ):		#Halflife client
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (Payload != None) and (Payload.find('Source Engine Query') > -1):
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "halflife/client")
 					else:
 						UnhandledPacket(p)
 			elif (dport == "24441"):			#Pyzor
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (Payload != None) and (Payload.find('User:') > -1):
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "pyzor/client")
@@ -1055,11 +1055,11 @@ def processpacket(p):
 						UnhandledPacket(p)
 			#FIXME - interesting issue; the ttl<5 test will catch traceroutes coming into us, but not ones we're creating to go out.  Hmmm.
 			elif ( (dport >= "33434") and (dport <= "33524") ) and (p['IP'].ttl <= 5):	#udptraceroute client
-				if ((not LiveUDPClient.has_key(sIP + "UDP_33434")) or (LiveUDPClient[sIP + "UDP_33434"] == False)):
+				if ((sIP + "UDP_33434" not in LiveUDPClient) or (LiveUDPClient[sIP + "UDP_33434"] == False)):
 					LiveUDPClient[sIP + "UDP_33434"] = True
 					ReportId("UC", sIP, "UDP_33434", "open", "udptraceroute/client")
 			elif (dport == "40348"):
-				if ((not LiveUDPClient.has_key(SrcClient)) or (LiveUDPClient[SrcClient] == False)):
+				if ((SrcClient not in LiveUDPClient) or (LiveUDPClient[SrcClient] == False)):
 					if (Payload != None) and (Payload.find('HLS') > -1):
 						LiveUDPClient[SrcClient] = True
 						ReportId("UC", sIP, "UDP_" + dport, "open", "halflife/client")
@@ -1079,7 +1079,7 @@ def processpacket(p):
 	elif p['Ethernet'].type == 0x86DD:		#IPv6
 		UnhandledPacket(p)
 	else:
-		print "Unregistered ethernet type:", p['Ethernet'].type
+		print("Unregistered ethernet type:", p['Ethernet'].type)
 		UnhandledPacket(p)
 
 
@@ -1117,7 +1117,7 @@ while (ParamPointer < len(sys.argv)):
 			Debug("'-i' command line option requested, but no interface following it, exiting.")
 			Usage()
 		elif (PcapFilename != ''):
-			print "Both '-i' and '-r' requested, exiting."
+			print("Both '-i' and '-r' requested, exiting.")
 			Usage()
 		else:
 			InterfaceName = sys.argv[ParamPointer + 1]

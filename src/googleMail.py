@@ -65,7 +65,7 @@ def sendViaGmail(sender,password,recipient,subject,message,files):
         
         msg = "sendViaGmail() sent email => To:" + person + " Subject:" + subject
         syslog.syslog(msg)
-        print msg
+        print(msg)
         
         time.sleep(5)
  
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     
     fileList = []
 
-    print "Sending test email with NO attachment..."
+    print("Sending test email with NO attachment...")
     sendViaGmail(sender,password,recipient,subject,message,fileList)
 
     #sys.exit(0)
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     #fileList = ['c:\\temp\\tiny.csv-NMAP.csv','c:\\temp\\tiny.csv-BGPG.csv','c:\\temp\\tiny.csv-DNS.csv']
     fileList = ['googleMail.py']
     
-    print "Sending test email WITH attachments..."
+    print("Sending test email WITH attachments...")
     sendViaGmail(sender,password,recipient,subject,message,fileList)
 
-    print "Finished."
+    print("Finished.")

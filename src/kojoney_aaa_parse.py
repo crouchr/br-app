@@ -41,7 +41,7 @@ def processAcct(line):
        
         line = line.rstrip("\n")
         
-        print line
+        print(line)
         if line.find("service=shell") == -1 :		# exit if this is not honeyrtr
             return
         if line.find("async") != -1 :			# do not log for console port
@@ -50,14 +50,14 @@ def processAcct(line):
             return
             
         fields = line.split()
-        print fields
+        print(fields)
         
         tweet = "RTR_ACCT," + fields[6] + " " + fields[7] + " ip=" + fields[8] +  " " + ' '.join(fields[15:])                                                                                                                                             
         tweet = aaaTwittify(tweet)
         return tweet
         
-    except Exception,e:
-        syslog.syslog("kojoney_aaa_parse.py : processAcct() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_aaa_parse.py : processAcct() : " + repr(e) + " line=" + line)
                                                                                                                                                  
 
 # tac_plus format Authentication
@@ -80,7 +80,7 @@ def processAuth(line):
             return tweet
         elif line.find("Login aborted") != -1 :
             fields = line.split()
-            print fields
+            print(fields)
             tweet = "RTR_AUTH," + ' '.join(fields[6:])	# the IP is th erouter IP not the attacker IP                                                                                                                                             
             tweet = aaaTwittify(tweet)
             return tweet
@@ -88,8 +88,8 @@ def processAuth(line):
             syslog.syslog("kojoney_aaa_parse.py : processAuth() : unreachable code for line=" + line)
             return None    
         
-    except Exception,e:
-        syslog.syslog("kojoney_aaa_parse.py : processAuth() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_aaa_parse.py : processAuth() : " + repr(e) + " line=" + line)
                 
 
 if __name__ == '__main__' :
@@ -107,5 +107,5 @@ if __name__ == '__main__' :
         tweet = processAcct(line)
         
         if tweet != None:
-            print "tweet:" + tweet
+            print("tweet:" + tweet)
         

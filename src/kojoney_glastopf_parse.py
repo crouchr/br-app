@@ -20,7 +20,7 @@ def processGlastopf(txnId,sensorId,line):
     asMsg = ""
     
     try :
-        print "-------------\nprocessGlastopf() : line read is " + line
+        print("-------------\nprocessGlastopf() : line read is " + line)
         dstIP   = "192.168.1.62" # bug - not portable
         request = "No URL found"
         apacheCLF = "None"
@@ -36,7 +36,7 @@ def processGlastopf(txnId,sensorId,line):
         
         # ATTACK : Successful attack
         if line.find("attack from") != -1 or line.find("Mail attack found from") != -1 :
-            print "WebApp attack detected : " + line
+            print("WebApp attack detected : " + line)
             apacheCLF = fakeApacheCLF(line)					# fake an Apache CLF record
             fields    = line.split(" - ")
             #print fields
@@ -60,7 +60,7 @@ def processGlastopf(txnId,sensorId,line):
                 srcIP = ips[0]
                 if "request" in line:
                     request = line.split("request: ")[1]
-                print "Successful WebApp attack : AttackType=" + attackType + " srcIP=" + srcIP + " URLrequest=" + request
+                print("Successful WebApp attack : AttackType=" + attackType + " srcIP=" + srcIP + " URLrequest=" + request)
             
             if "unknown" in line.lower():
                 completion = "failed"
@@ -170,9 +170,9 @@ def processGlastopf(txnId,sensorId,line):
                     
         return None
 
-    except Exception,e:
-                msg = "kojoney_glastopf_parse.py : processGlastopf() : " + `e` + " line=" + line
-                print msg
+    except Exception as e:
+                msg = "kojoney_glastopf_parse.py : processGlastopf() : " + repr(e) + " line=" + line
+                print(msg)
                 syslog.syslog(msg)
 
 
@@ -233,15 +233,15 @@ def fakeApacheCLF(line):
         #print "fakeApacheCLF constructed : " + apacheCLF.__str__()
         #if writeFlag == True :
         apacheLog = open("/home/var/log/httpd/access_log","a")  
-        print >> apacheLog,apacheCLF
-        print "ApacheCLF : " + apacheCLF
+        print(apacheCLF, file=apacheLog)
+        print("ApacheCLF : " + apacheCLF)
         apacheLog.close()
         
         return apacheCLF      
           
-    except Exception,e :
-      msg = "kojoney_glastopf_parse.py : fakeApacheCLF() : " + `e` + " line=" + line
-      print msg
+    except Exception as e :
+      msg = "kojoney_glastopf_parse.py : fakeApacheCLF() : " + repr(e) + " line=" + line
+      print(msg)
       syslog.syslog(msg)
       return None
 

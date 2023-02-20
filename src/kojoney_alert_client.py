@@ -13,15 +13,15 @@ def sendAlert(subject,msg,emailFlag,appleFlag) :
 
         subject = "BlackRain:" + subject
         alertJob = "subject|" + subject + "|msg|" + msg + "|" + time.ctime()
-        print "alertJob " + '"' + alertJob + '"' + " added to queue" 
+        print("alertJob " + '"' + alertJob + '"' + " added to queue") 
         
         fpOut = open("/tmp/kojoney_alert_queue.txt",'a')
-        print >> fpOut,alertJob
+        print(alertJob, file=fpOut)
         fpOut.close()
          
-    except Exception, e:
+    except Exception as e:
         msg = "sendAlert() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
 
         

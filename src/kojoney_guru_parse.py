@@ -18,13 +18,13 @@ def processguru(line):
             msg  = line.split(",")	# third fields
             tweet = msg[0] + "," + msg[1]
             tweet = guruTwittify(tweet)
-            print "kojoney_guru_parse.py : processguru() : tweet = " + tweet
+            print("kojoney_guru_parse.py : processguru() : tweet = " + tweet)
             return tweet
         else:
             return None
 
-    except Exception,e:
-        syslog.syslog("kojoney_guru_parse.py : processguru() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_guru_parse.py : processguru() : " + repr(e) + " line=" + line)
                 
 
 if __name__ == '__main__' :
@@ -37,5 +37,5 @@ if __name__ == '__main__' :
         tweet = processguru(line)
         
         if tweet != None:
-            print "tweet:" + tweet
+            print("tweet:" + tweet)
         

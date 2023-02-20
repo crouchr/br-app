@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import time
 
 #ACCESS_TOKEN = 'bhCSxrbWx9tRwoycO-Jf1Dh-KDBUQ01c_BbrTsPfaJVtRzvPdOT8JgKcKnuEjQYZLt5MZs1YKxM='
@@ -14,11 +14,11 @@ class StormLog(object):
         self.project_id = project_id
         self.access_token = access_token
                         
-        self.pass_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        self.pass_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
         self.pass_manager.add_password(None, self.url, 'x', access_token)
-        self.auth_handler = urllib2.HTTPBasicAuthHandler(self.pass_manager)
-        self.opener = urllib2.build_opener(self.auth_handler)
-        urllib2.install_opener(self.opener)
+        self.auth_handler = urllib.request.HTTPBasicAuthHandler(self.pass_manager)
+        self.opener = urllib.request.build_opener(self.auth_handler)
+        urllib.request.install_opener(self.opener)
                                                                     
     def send(self, event_text, sourcetype='syslog', host=None, source=None):
         params = {'project': self.project_id,'sourcetype': sourcetype}
@@ -26,16 +26,16 @@ class StormLog(object):
             params['host'] = host
         if source:
             params['source'] = source
-        url = '%s?%s' % (self.url, urllib.urlencode(params))
+        url = '%s?%s' % (self.url, urllib.parse.urlencode(params))
         try:
-            req = urllib2.Request(url, event_text)
-            response = urllib2.urlopen(req)
+            req = urllib.request.Request(url, event_text)
+            response = urllib.request.urlopen(req)
             return response.read()
-        except (IOError, OSError), ex:
+        except (IOError, OSError) as ex:
             raise            
 
 if __name__ == '__main__':
-    print "Started at " + time.ctime()
+    print("Started at " + time.ctime())
     msg = time.ctime()     
     
                 

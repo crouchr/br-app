@@ -11,14 +11,14 @@ def extractCGI(url):
             a = url.split("?")
             cgi = a[0]
             arg = a[1]
-            print "URL:" + url + " -> cgi=" + cgi + " arg=" + arg
+            print("URL:" + url + " -> cgi=" + cgi + " arg=" + arg)
             return cgi,arg
         else:
             return None,None
                                                               
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_idmef_common.py : extractCGI() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
                                                                                                                                 
@@ -30,7 +30,7 @@ def extractDomain(url):
             domain = a[1].split('/')[0]
             if ":" in domain :
                 domain = domain.split(":")[0]
-            print "url = " + url + " , domain = " + domain                                                                                                                                     
+            print("url = " + url + " , domain = " + domain)                                                                                                                                     
             #ips = re.findall("\d+\.\d+\.\d+\.\d+",domain)
             #if len(ips) > 0 :
             #    ip = ips[0]
@@ -40,9 +40,9 @@ def extractDomain(url):
         else:
             return None
                                                                                                                                           
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_idmef_common.py : extractDomain() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None,None
                                                                                                                                                                                                                                                     
@@ -51,8 +51,8 @@ def extractDomain(url):
 #
 def setIDMEFcommon(idmef,analyserClass,sensorId,srcIP,dstIP,dstPort,attackerIP,logEntry) :
     try:
-        print "kojoney_idmef_common.py : setIDMEFcommon() : srcIP      = " + srcIP.__str__()
-        print "kojoney_idmef_common.py : setIDMEFcommon() : dstIP      = " + dstIP.__str__()
+        print("kojoney_idmef_common.py : setIDMEFcommon() : srcIP      = " + srcIP.__str__())
+        print("kojoney_idmef_common.py : setIDMEFcommon() : dstIP      = " + dstIP.__str__())
         #print "kojoney_idmef_common.py : setIDMEFcommon() : attackerIP = " + attackerIP.__str__()
         
         idmef.Set("alert.analyzer(0).model", "Blackrain")
@@ -70,7 +70,7 @@ def setIDMEFcommon(idmef,analyserClass,sensorId,srcIP,dstIP,dstPort,attackerIP,l
         idmef.Set("alert.additional_data(0).type", "string")
         idmef.Set("alert.additional_data(0).meaning", "Original log entry")
         idmef.Set("alert.additional_data(0).data", logEntry)
-        print "kojoney_idmef_common.py : setIDMEFcommon() : logEntry   = " + logEntry.__str__()
+        print("kojoney_idmef_common.py : setIDMEFcommon() : logEntry   = " + logEntry.__str__())
          
         fieldsSet = 1
         
@@ -161,9 +161,9 @@ def setIDMEFcommon(idmef,analyserClass,sensorId,srcIP,dstIP,dstPort,attackerIP,l
         #print "fieldsSet = " + fieldsSet.__str__()    
         return fieldsSet
                                                             
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_idmef_common.py : setIDMEFcommon() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 

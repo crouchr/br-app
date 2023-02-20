@@ -39,7 +39,7 @@ def processArgus(txnId,sensorId,line):
         addInfo2 = None
         
         line = line.rstrip("\n")
-        print "processArgus() : line read is " + line
+        print("processArgus() : line read is " + line)
         
         # Ignore file headers
         if line.find("StartTime") != -1 :
@@ -93,7 +93,7 @@ def processArgus(txnId,sensorId,line):
         # Not interested in scan from LAN - includes syslog bursts from ADSL router etc false positives
         #if srcip.find("192.168.1.") != -1 :
         #    return None
-        print "*** kojoney_argus_parse.py : calling hiddenIP() ***"         
+        print("*** kojoney_argus_parse.py : calling hiddenIP() ***")         
         if kojoney_hiddenip.hiddenIP(srcip) == True :
             return None
                     
@@ -128,7 +128,7 @@ def processArgus(txnId,sensorId,line):
             FLOW_TYPE = "AFLOW_IN"
         else:
             FLOW_TYPE = "AFLOW"        
-        print "FLOW_TYPE : " + FLOW_TYPE
+        print("FLOW_TYPE : " + FLOW_TYPE)
             
         msg = srcip + ":" + sport + " " + dir + " " + dstip + ":" + dport + " state=" + state + " pkts=" + pkts + " bytes=" + bytes + p0f
         tweet = FLOW_TYPE + "," + msg	
@@ -171,9 +171,9 @@ def processArgus(txnId,sensorId,line):
         else:    
             return None        
 
-    except Exception,e:
-        syslog.syslog("kojoney_argus_parse.py : processArgus() : " + `e` + " line=" + line)
-        print "processArgus() : exception : " + e.__str__()
+    except Exception as e:
+        syslog.syslog("kojoney_argus_parse.py : processArgus() : " + repr(e) + " line=" + line)
+        print("processArgus() : exception : " + e.__str__())
         return None
 
                                
@@ -199,12 +199,12 @@ if __name__ == '__main__' :
         if not line:		# no data to process
             sys.exit()
         else :			# new data has been found
-            print line
+            print(line)
             tweets = processArgus(222,"TEST",line)
             
         if tweets != None and len(tweets) != 0 :
             for tweet in tweets :
-                print "*** Tweet : " + tweet
+                print("*** Tweet : " + tweet)
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

@@ -23,7 +23,7 @@ def processHoneytrap(txnId,sensorId,line):
     
     try :
         line = line.rstrip("\n")
-        print "processHoneytrap() : line read is " + line
+        print("processHoneytrap() : line read is " + line)
 
         # Only interested in certain events
         #if line.find("Connection from ") == -1 and line.find(" attack string from ") == -1 :
@@ -59,7 +59,7 @@ def processHoneytrap(txnId,sensorId,line):
         dstip = "192.168.1.60"	# bug -> hard-coded dst IP
         
         # Not interested in events originating from LAN 
-        print "*** kojoney_honeytrap_parse.py : calling hiddenIP() ***" 
+        print("*** kojoney_honeytrap_parse.py : calling hiddenIP() ***") 
         if kojoney_hiddenip.hiddenIP(srcip) == True :
             return None
         
@@ -70,7 +70,7 @@ def processHoneytrap(txnId,sensorId,line):
             p0f = ""
 
         tweet = "HTRAP," + srcip + ":" + srcPort + " -> " + dstip + ":" + dport + " [bytes=" + bytes + p0f + "]"	# bug -> hard-coded dest IP !!!
-        print tweet
+        print(tweet)
         
         geoIP = ipintellib.geo_ip(srcip)                                
         countryCode = geoIP['countryCode'].__str__()    
@@ -89,9 +89,9 @@ def processHoneytrap(txnId,sensorId,line):
         return None	# no need to Tweet now we have SIEM
         #return tweet
 
-    except Exception,e:
-        msg = "kojoney_honeytrap_parse.py : processHoneytrap() : " + `e` + " line=" + line
-        print msg
+    except Exception as e:
+        msg = "kojoney_honeytrap_parse.py : processHoneytrap() : " + repr(e) + " line=" + line
+        print(msg)
         syslog.syslog(msg)
         return None
                                
@@ -102,26 +102,26 @@ def processHoneytrap(txnId,sensorId,line):
         
 if __name__ == '__main__' :
        
-    print "Started"
+    print("Started")
     
 # Set the input file to scan
     filename = '/home/var/log/honeytrap.log'
     file = open(filename,'r')
-    print filename
+    print(filename)
     
     while True:
     
         line  = file.readline()
            
         if not line:		# no data to process
-            print "No more data to process, so exit."
+            print("No more data to process, so exit.")
             sys.exit()
         else :
             line = line.rstrip('\n')			# new data has been found
             msg = processHoneytrap(124,"TEST",line)
             
         if msg != None:
-            print "   Tweet : " + msg
+            print("   Tweet : " + msg)
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

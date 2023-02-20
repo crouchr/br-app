@@ -12,7 +12,7 @@ import googleMail		# RCH library
        
 # ----------------------------------------------
 
-print "Synchronise clocks..."
+print("Synchronise clocks...")
 os.system("ntpdate uk.pool.ntp.org")
 
 syslog.openlog("send_drone_reports")         # Set syslog program name          
@@ -94,7 +94,7 @@ files = [\
 
 # build a list of all files that are larger than 256 bytes
 filesExist = checkFilesExist.gatherNonZeroFiles(files,256)
-print filesExist
+print(filesExist)
 
 powerusers =['honeytweeter@gmail.com']
 #ipbb.mvtc@googlemail.com
@@ -172,7 +172,7 @@ To be removed from this distribution list, e-mail the BlackRain admin : honeytwe
 """
 
 #send_mail.send_mail('the.crouches@btconnect.com',powerusers,"*** DroneTracer *** : Daily Power User Report(s)" , text, files, 'smtp.btconnect.com')
-print "Sending e-mail to " + `powerusers` + " ..."
+print("Sending e-mail to " + repr(powerusers) + " ...")
 
 # This e-mail needs to come from a gmail account since I am tied to BT line otherwise 
 #send_mail.send_mail('richard_crouch@btconnect.com' , powerusers , "BlackRain : Data Capture Report" , text , filesExist , 'smtp.btconnect.com')
@@ -223,5 +223,5 @@ googleMail.sendViaGmail('uber.koob@gmail.com' , 'fuckfacebook' , powerusers , "B
 
 syslog.syslog("send_drone_reports.py finished")
 
-print "done."
+print("done.")
 

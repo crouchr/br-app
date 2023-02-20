@@ -14,10 +14,10 @@
 # of the API class will work.
 
 import simplejson
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import functools
-import urlparse
+import urllib.parse
 import syslog
 import time
 import kojoney_bitly
@@ -28,7 +28,7 @@ VT_DELAY = 20		# Use 2 if testing else use 20 : delay in seconds => API allows o
 
 try:
     import posthandler
-    post_opener = urllib2.build_opener(posthandler.MultipartPostHandler)
+    post_opener = urllib.request.build_opener(posthandler.MultipartPostHandler)
 except ImportError:
     posthandler = None
                           
@@ -49,9 +49,9 @@ class VirusTotalAPI(object):
                                                                                                             
     def _call_api(self, function, **kwargs):
         url = self.api_url + function + ".json"
-        data = urllib.urlencode(kwargs)
-        req = urllib2.Request(url,data)
-        returned = urllib2.urlopen(req).read()
+        data = urllib.parse.urlencode(kwargs)
+        req = urllib.request.Request(url,data)
+        returned = urllib.request.urlopen(req).read()
         return simplejson.loads(returned)
                                                                                                                                               
     def _special_scan_file(self, **kwargs):
@@ -74,7 +74,7 @@ def getVirusTotalUrl(url,vendor,dump=False):
         api=VirusTotalAPI(VT_API_KEY)
     
         resultURL = api.get_url_report(resource=url)
-        print "resultURL=" + resultURL.__str__()
+        print("resultURL=" + resultURL.__str__())
         apiStatus = resultURL['result']
         if apiStatus == 0 :	
             return "CLEAN"	        
@@ -84,7 +84,7 @@ def getVirusTotalUrl(url,vendor,dump=False):
             return "VT_API_ERR " + apiStatus.__str__()	# -2 = too many submissions per minute (4 / min max)     
         
         filescan_id = resultURL['filescan_id'].__str__()
-        print "*** filescan_id : " + filescan_id
+        print("*** filescan_id : " + filescan_id)
             	        
         a = resultURL['report']
         dateFirstSeen = a[0]
@@ -100,7 +100,7 @@ def getVirusTotalUrl(url,vendor,dump=False):
             for vendor in b:
                 total = total + 1
                 if dump == True:
-                    print vendor + " : " + b[vendor]
+                    print(vendor + " : " + b[vendor])
                 if b[vendor] == "malicious site" :
                     matches = matches + 1
             # code join
@@ -115,10 +115,10 @@ def getVirusTotalUrl(url,vendor,dump=False):
           
         return result
         
-    except Exception,e:
+    except Exception as e:
         msg = "getVirusTotalURL() : exception : " + e.__str__()
         syslog.syslog(msg)
-        print msg
+        print(msg)
         return "ERROR"
         
 # --------------------------------------------------      
@@ -149,7 +149,7 @@ def getVirusTotalFile(malwareMD5,vendor,dump=False):
         api=VirusTotalAPI(VT_API_KEY)
     
         resultMalware = api.get_file_report(resource=malwareMD5)
-        print "resultMalware=" + resultMalware.__str__()
+        print("resultMalware=" + resultMalware.__str__())
         apiStatus = resultMalware['result']
         if apiStatus == 0 :	# not found in VT database
             result['data']    = "Unseen by VirusTotal"
@@ -191,7 +191,7 @@ def getVirusTotalFile(malwareMD5,vendor,dump=False):
                     matchList.append(c)
                     matches = matches + 1
                     if dump == True:
-                        print vendor + " : " + b[vendor]
+                        print(vendor + " : " + b[vendor])
             # code join
             #result['matches'] = matches.__str__() + "/" + total.__str__()
         else:
@@ -216,19 +216,19 @@ def getVirusTotalFile(malwareMD5,vendor,dump=False):
         if result['matches'] > 0 :
             for i in result['data']:
                 #print i
-                if i.has_key("Kaspersky"):
+                if "Kaspersky" in i:
                     result['single'] = "Kaspersky" + "=" + i['Kaspersky']
                     break
-                elif i.has_key("Symantec"):
+                elif "Symantec" in i:
                     result['single'] = "Symantec" + "=" + i['Symantec']
                     break
-                elif i.has_key("Norman"):
+                elif "Norman" in i:
                     result['single'] = "Norman" + "=" + i['Norman']
                     break
-                elif i.has_key("TrendMicro"):
+                elif "TrendMicro" in i:
                     result['single'] = "TrendMicro" + "=" + i['TrendMicro']
                     break
-                elif i.has_key("Ikarus"):
+                elif "Ikarus" in i:
                     result['single'] = "Ikarus" + "=" + i['Ikarus']
                     break    
                     
@@ -243,10 +243,10 @@ def getVirusTotalFile(malwareMD5,vendor,dump=False):
           
         return result
         
-    except Exception,e:
+    except Exception as e:
         msg = "getVirusTotalFile() : exception : " + e.__str__()
         syslog.syslog(msg)
-        print msg
+        print(msg)
         result['status'] = False
         result['data'] = e.__str__()
         return result
@@ -256,7 +256,7 @@ def test():
         filename = '/home/var/log/kojoney_analyst.txt'
         fp = open(filename,'r')
           
-        print "virustotal.py : Seek to START of Analyst Job file " + filename
+        print("virustotal.py : Seek to START of Analyst Job file " + filename)
                                                                                                                         
         while True:
             line  = fp.readline().rstrip()
@@ -272,37 +272,37 @@ def test():
             #    print " "
                 
             if fields[1] == "PHPFILE" :
-                print "-----------------------------------------------------------------------------------"
-                print "FILE line : " + line
+                print("-----------------------------------------------------------------------------------")
+                print("FILE line : " + line)
                 malwareMD5 = fields[2]
                 result = getVirusTotalFile(malwareMD5,"ALL",True)
-                print " " 
-                print result['status']
+                print(" ") 
+                print(result['status'])
                 if result['status'] == True:
-                    print result['md5']
+                    print(result['md5'])
                     #print result['data']
-                    print result['date']
-                    print result['single']
-                    print result['matches']
-                    print result['total']
-                    print result['permalink']
-                    print result['bitly']
-                    print "Summary : " + result['summary']
-                print " "
+                    print(result['date'])
+                    print(result['single'])
+                    print(result['matches'])
+                    print(result['total'])
+                    print(result['permalink'])
+                    print(result['bitly'])
+                    print("Summary : " + result['summary'])
+                print(" ")
                 
-    except Exception,e:
+    except Exception as e:
         msg = "test() : exception : " + e.__str__()
         syslog.syslog(msg)
-        print msg
+        print(msg)
         return "ERROR"
                                                                                                                                                                                                          
 if __name__ == '__main__' :
-    print " "
+    print(" ")
     syslog.openlog("virustotal")
     syslog.syslog("Started, entry point = test()")
     test()
 else:    
-    print " "
+    print(" ")
     syslog.openlog("virustotal")
     syslog.syslog("Started")
     pass

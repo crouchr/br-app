@@ -40,8 +40,8 @@ def sendBlackholeIDMEF(srcIP,text):
         
         client.SendIDMEF(idmef)
         return
-    except Exception,e:
-        print "exception : " + e.__str__()
+    except Exception as e:
+        print("exception : " + e.__str__())
         return
         
 if __name__ == '__main__' :

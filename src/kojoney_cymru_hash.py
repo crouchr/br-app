@@ -11,7 +11,7 @@ def cymruHash(md5):
         raw = pipe.read().rstrip("\n")
         #print raw
         a = raw.split(" ")
-        print a
+        print(a)
         
         if "NO_DATA" in raw :
             return "0"		# not seen by their AV 
@@ -19,17 +19,17 @@ def cymruHash(md5):
             return a[2]		# % of AV systems picking up the malware
         else:  			# what is this use case ?  
             return None
-    except Exception,e:
+    except Exception as e:
         syslog.syslog("kojoney_cymru_hash.py:cymruHash() : " + e.__str__())
         return None
         
 
 if __name__ == '__main__' :
     a = cymruHash("e1112134b6dcc8bed54e0e34d8ac272795e73d74")
-    print a
+    print(a)
 
     a = cymruHash("e1112134333cc8bed54e0e34d8ac272795e73d74")
-    print a
+    print(a)
         
 #$ whois -h hash.cymru.com e1112134b6dcc8bed54e0e34d8ac272795e73d74
 #e1112134b6dcc8bed54e0e34d8ac272795e73d74 1221154281 53

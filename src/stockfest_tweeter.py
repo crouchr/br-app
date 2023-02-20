@@ -46,14 +46,14 @@ def sendTweet(username,tweet):
         # Add now to tweet so it is always unique
         #if username == OpsTwitter :
         tweet = "id=" + now.__str__() + ":" + tweet
-        print username
+        print(username)
         
         a = len(tweet)
-        print "Length of Tweet is " + a.__str__()
+        print("Length of Tweet is " + a.__str__())
         if (a > MaxTweetLen):
            msg = "Truncated Tweet : Tweet too long, it is " + a.__str__() + " characters long, MaxTweetLen is " + MaxTweetLen.__str__() 
-           print msg
-           print tweet
+           print(msg)
+           print(tweet)
            tweet = tweet[:156] + "..."
        
        #return False 
@@ -73,10 +73,10 @@ def sendTweet(username,tweet):
         auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
         api = tweepy.API(auth)
-        api.update_status(tweet,lat=GLEBE_LAT,long=GLEBE_LONG)    
-        print "*** Tweet sent to " + username + " ::: [" + tweet + "]"
+        api.update_status(tweet,lat=GLEBE_LAT,int=GLEBE_LONG)    
+        print("*** Tweet sent to " + username + " ::: [" + tweet + "]")
         syslog.syslog("Tweeted to " + username + ":" + tweet)
-    except Exception,e:
+    except Exception as e:
         syslog.syslog("sendTweet() exception = " + e.__str__())
         return False
         
@@ -91,27 +91,27 @@ def main():
     tweets = []
     
     now = time.time()
-    print now
-    print time.asctime(time.localtime(now))
-    print "MaxTweetLen is " + MaxTweetLen.__str__()
+    print(now)
+    print(time.asctime(time.localtime(now)))
+    print("MaxTweetLen is " + MaxTweetLen.__str__())
     
     # Calculate epoch of the event : 15:00 July 10th 2011
     event = (2011,7,10,15,0,0,-1,-1,True) 
     event = (2011,6,13,15,00,0,-1,-1,True) 
     eventEpoch = time.mktime(event)
-    print "eventEpoch = " + eventEpoch.__str__()
-    print time.localtime(eventEpoch)
-    print time.asctime(time.localtime(eventEpoch))
+    print("eventEpoch = " + eventEpoch.__str__())
+    print(time.localtime(eventEpoch))
+    print(time.asctime(time.localtime(eventEpoch)))
     
     # Calculate when to start Tweeting : 1 pm
     campaignStart = (2011,6,13,3,0,0,-1,-1,True) 
     campaignEpoch = time.mktime(campaignStart)
-    print "campaignEpoch = " + campaignEpoch.__str__()
-    print time.localtime(campaignEpoch)
-    print time.asctime(time.localtime(campaignEpoch))
+    print("campaignEpoch = " + campaignEpoch.__str__())
+    print(time.localtime(campaignEpoch))
+    print(time.asctime(time.localtime(campaignEpoch)))
 
     if campaignEpoch >= eventEpoch :
-        print "Invalid epoch times, exiting..."
+        print("Invalid epoch times, exiting...")
         sys.exit()
   
     # Fill list with tweets to be sent
@@ -125,25 +125,25 @@ def main():
             continue
         if a <= MaxTweetLen:
             tweets.append(line)
-            print "Tweet added OK : " + line
+            print("Tweet added OK : " + line)
         else:
-            print "Error : len=" + a.__str__() + " for tweet=" + line
+            print("Error : len=" + a.__str__() + " for tweet=" + line)
     # print tweets    
 
     numOfTweets = len(tweets)
-    print "Number of valid tweets  = " + numOfTweets.__str__()
+    print("Number of valid tweets  = " + numOfTweets.__str__())
 
     secsTillCampaign = campaignEpoch - now
-    print "Number of seconds until automated Twitter campaign starts is " + secsTillCampaign.__str__()
-    print "Waiting..."
+    print("Number of seconds until automated Twitter campaign starts is " + secsTillCampaign.__str__())
+    print("Waiting...")
     time.sleep(secsTillCampaign)
         
     while True:
         for tweet in tweets:
-            print "-----------------------------------------"
+            print("-----------------------------------------")
             i = tweets.index(tweet)
             msg = "SOTG_OPS : Current tweet index = " + i.__str__()
-            print msg
+            print(msg)
             
             # Send Tweet
             if sendTweet(MainTwitter,tweet) == True:
@@ -182,18 +182,18 @@ def main():
                 #sendTweet(OpsTwitter,msg)
                 syslog.syslog(msg)
                 
-                print "Waiting..."
+                print("Waiting...")
                 time.sleep(timeToWait)
                 #time.sleep(1)
             
                 
             
             
-        print " "
-        print "===================================================="
-        print "=                    Next cycle                    ="
-        print "===================================================="
-        print " "
+        print(" ")
+        print("====================================================")
+        print("=                    Next cycle                    =")
+        print("====================================================")
+        print(" ")
             
         #tweet(line)
         #time.sleep(60)

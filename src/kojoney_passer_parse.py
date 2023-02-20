@@ -41,14 +41,14 @@ import ipintellib
 
 def passerViz(line):
     try:
-        print "---"    
+        print("---")    
         version = "?"
         os = "?"
                 
         #print "Entered passerViz() : " + line
         line = line.rstrip("\n")
         fields = line.split(",")
-        print fields
+        print(fields)
         
         ip   = fields[1]
         port = fields[2]
@@ -56,15 +56,15 @@ def passerViz(line):
 
         geoIP = ipintellib.geo_ip(ip)
         cc = geoIP['countryCode']
-        print cc
+        print(cc)
         
-        print "info(raw)   = " + info
+        print("info(raw)   = " + info)
         infoRaw = info
         
         info = info.replace("/",":")
         
-        print "ip     = " + ip
-        print "port   = " + port
+        print("ip     = " + ip)
+        print("port   = " + port)
         info = info.replace("protocol ","protocol_")
         info = info.replace(":::",":")
         info = info.replace(" beta","beta")
@@ -93,10 +93,10 @@ def passerViz(line):
         info = info.replace("SCS sshd","SCS_SSHD")
         info = info.replace("osiris host IDS agent","OSIRIS_AGENT")
         
-        print "info(post)  = " + info
+        print("info(post)  = " + info)
         
         infofields = info.split(" ")
-        print "infofields = " + infofields.__str__()
+        print("infofields = " + infofields.__str__())
         
         for i in infofields :
             #print "i = " + i.__str__()
@@ -125,19 +125,19 @@ def passerViz(line):
                 program = program.replace("microsoft-ds:p:","")
                 #program = program.replace("ssh:p:","SSH")
                 program = program.replace("nagios-nsca:p:","")                
-                print "program found in " + i.__str__() + " is " + program.__str__()
+                print("program found in " + i.__str__() + " is " + program.__str__())
         
             if i.find("v:") >= 0 :
                 version = i.rstrip(":")
                 version = version.lstrip(":")
                 version = version.replace("v:","")
-                print "version  found in " + i.__str__() + " is " + version.__str__()
+                print("version  found in " + i.__str__() + " is " + version.__str__())
         
             if i.find("i:") >= 0 :
                 info = i.rstrip(":")
                 info = info.lstrip(":")
                 info = info.replace("protocol_","")
-                print "info     found in " + i.__str__() + " is " + info.__str__()
+                print("info     found in " + i.__str__() + " is " + info.__str__())
 
             if i.find("o:") >= 0 :
                 os = i.rstrip(":")
@@ -148,7 +148,7 @@ def passerViz(line):
                 os = os.replace("IOS","I")
                 os = os.replace("o:","")
                 os = os.rstrip("\n")
-                print "os       found in " + i.__str__() + " is " + os.__str__()
+                print("os       found in " + i.__str__() + " is " + os.__str__())
 
         now = time.time()
         nowLocal = time.gmtime(now)
@@ -160,21 +160,21 @@ def passerViz(line):
         fp = open("/home/var/secviz/passer.csv","a")
                     
         msg1 = port + "," + program + "," + tstamp + "," + infoRaw
-        print msg1
-        print >> fp, msg1
+        print(msg1)
+        print(msg1, file=fp)
         
         msg2 = program + version + "," + program + "," + tstamp + "," + infoRaw
-        print msg2 
-        print >> fp, msg2
+        print(msg2) 
+        print(msg2, file=fp)
         
         msg3 = ip + ":" + cc + ":" + os + "," + program + version + "," + tstamp + "," + infoRaw
-        print msg3
-        print >> fp, msg3
+        print(msg3)
+        print(msg3, file=fp)
         
         fp.close()
           
-    except Exception,e:
-        msg = "kojoney_passer_parse.py : passerViz() : " + `e` + " line=" + line
+    except Exception as e:
+        msg = "kojoney_passer_parse.py : passerViz() : " + repr(e) + " line=" + line
         syslog.syslog(msg)
         return None
 
@@ -205,7 +205,7 @@ def processPasser(line):
         #print fields
         
         # make sure that the IP is not part of network services e.g. Twitter, Slackware etc.        
-        print "*** kojoney_passer_parse.py : calling hiddenIP() ***" 
+        print("*** kojoney_passer_parse.py : calling hiddenIP() ***") 
         if kojoney_hiddenip.hiddenIP(fields[1],False) == True :
             return None
         
@@ -221,8 +221,8 @@ def processPasser(line):
         else:
             return None
 
-    except Exception,e:
-        syslog.syslog("kojoney_passer_parse.py : processPasser() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_passer_parse.py : processPasser() : " + repr(e) + " line=" + line)
         return None
                                
 # -------------------------------------------------------
@@ -250,7 +250,7 @@ if __name__ == '__main__' :
             msg = processPasser(line)
             
         if msg != None:
-            print "*** Tweet : " + msg
+            print("*** Tweet : " + msg)
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

@@ -2,7 +2,7 @@
 
 # Tail the /var/log/messages file and send data to SplunkCloud LaaS
 
-import sys, time, os , syslog , urlparse , re 
+import sys, time, os , syslog , urllib.parse , re 
 import kojoney_loggly
 import kojoney_splunk
 
@@ -22,7 +22,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -36,7 +36,7 @@ def processLine(line,log):
         line  = line.rstrip("\n")
         line2 = line.lower()
         
-        print line
+        print(line)
         
         # Do not scan Tweets for error messages
         if "SENDTWEET" in line :
@@ -50,14 +50,14 @@ def processLine(line,log):
         if "error" not in line2 and "reload" not in line2 and "shutdown" not in line2 and "exception" not in line2 and "failed" not in line2 and "failure" not in line2 and "died" not in line2  and "warning" not in line2 and "corrupt" not in line2 :
             return None
         else:
-            print "Send honeypot platform error message to SplunkCloud\n=>" + line
+            print("Send honeypot platform error message to SplunkCloud\n=>" + line)
         
         # Send to SplunkCloud 'Platform' Project (LaaS provider) 
         kojoney_loggly.sendToSplunkPlatform(sensorId,line,log)
                     
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_splunk_platform.py : processLine() : " + e.__str__()
-        print msg
+        print(msg)
         #syslog.syslog(msg)
     
 
@@ -86,7 +86,7 @@ def main():
         st_size = st_results[6]
         file.seek(st_size)
         
-        print "system     : Seek to end of /var/log/messages"
+        print("system     : Seek to end of /var/log/messages")
         
         while True:
             where = file.tell()
@@ -101,9 +101,9 @@ def main():
             # this can be a float for sub-second sleep    
             time.sleep(0.3)	# 10th of a second
     
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_splunk_platform.py : exception : " + e.__str__()
-        print msg
+        print(msg)
     
     
 if __name__ == '__main__' :

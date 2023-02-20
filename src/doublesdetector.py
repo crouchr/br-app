@@ -52,7 +52,7 @@ def detectDoubles( directories ):
 
     sys.stderr.write('Comparing files...')
     # Remove keys (filesize) in the dictionnary which have only 1 file
-    for (filesize,listoffiles) in fileslist.items():
+    for (filesize,listoffiles) in list(fileslist.items()):
         if len(listoffiles) == 1:
             del fileslist[filesize]
 
@@ -64,15 +64,15 @@ def detectDoubles( directories ):
         for filepath in listoffiles:
             sys.stderr.write('.')
             sha = fileSHA(filepath)
-            if filessha.has_key(sha):
+            if sha in filessha:
                 filessha[sha].append(filepath)
             else:
                 filessha[sha] = [filepath]
-    if filessha.has_key('0'):
+    if '0' in filessha:
         del filessha['0']
 
     # Remove keys (sha) in the dictionnary which have only 1 file
-    for (sha,listoffiles) in filessha.items():
+    for (sha,listoffiles) in list(filessha.items()):
         if len(listoffiles) == 1:
             del filessha[sha]
     sys.stderr.write('\n')
@@ -84,16 +84,16 @@ def callback(fileslist,directory,files):
         filepath = os.path.join(directory,fileName)
         if os.path.isfile(filepath):
             filesize = os.stat(filepath)[6]
-            if fileslist.has_key(filesize):
+            if filesize in fileslist:
                 fileslist[filesize].append(filepath)
             else:
                 fileslist[filesize] = [filepath]
 
 if len(sys.argv)>1 :
     doubles = detectDoubles(" ".join(sys.argv[1:]))
-    print 'The following files are identical:'
-    print '\n'.join(["----\n%s" % '\n'.join(doubles[filesha]) for filesha in doubles.keys()])
-    print '----'
+    print('The following files are identical:')
+    print('\n'.join(["----\n%s" % '\n'.join(doubles[filesha]) for filesha in list(doubles.keys())]))
+    print('----')
 else:
-    print message
+    print(message)
 

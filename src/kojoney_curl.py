@@ -5,8 +5,8 @@
 #
 import os , syslog
 
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
         
 if __name__ == '__main__' :
 
@@ -20,8 +20,8 @@ if __name__ == '__main__' :
     wsRequest['baseIP']         = "192.168.1.55"
 
     url = 'http://www.mooghill.com/rocknroll/stub_DoSensorRegister.php'
-    data = urllib.urlencode(wsRequest)
-    response = urllib2.urlopen(url, data)
+    data = urllib.parse.urlencode(wsRequest)
+    response = urllib.request.urlopen(url, data)
     page = response.read()
     
-    print page    
+    print(page)    

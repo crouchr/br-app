@@ -9,23 +9,23 @@ import sys, syslog
 import ipintellib	
 
 def test():
-    print "\n\n\n\n"
-    print "=========================="
-    print "p0f logfile to Reputation "
-    print "=========================="
-    print "Library version : " + ipintellib.getVersion()
+    print("\n\n\n\n")
+    print("==========================")
+    print("p0f logfile to Reputation ")
+    print("==========================")
+    print("Library version : " + ipintellib.getVersion())
 
-    print "Hard-coded tests"
-    print "----------------"
+    print("Hard-coded tests")
+    print("----------------")
     # IP to DNS name
     ipStr = "217.41.27.169"			# My IP
     dnsInfo  = ipintellib.ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
 
     # DNS name to IP
     ipStr = "www.openbsd.org"
     dnsInfo  = ipintellib.ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
     
     # input file : file of IPs (hand-crafted)
     fpIn   = open(r'/home/var/log/p0f.log','r')
@@ -56,12 +56,12 @@ def test():
             continue
         if line1.find("distance") == -1:	# all valid lines have 'distance' in them"
             continue
-        print "----------------------------------------------"
+        print("----------------------------------------------")
         
         fields = line1.split(' ')
-        print fields
+        print(fields)
         numb = len(fields)
-        print "numb fields is " + `numb`
+        print("numb fields is " + repr(numb))
         
         os         = fields[8]
         # re-write this using regular expressions and make a function so that it can be reused
@@ -82,7 +82,7 @@ def test():
             sys.exit("Failed to parse")
           
         
-        print "line=" + `lineCounter` + ": *** haxx0r : ip=" + ipStr + " port=" + port + " os=" + os
+        print("line=" + repr(lineCounter) + ": *** haxx0r : ip=" + ipStr + " port=" + port + " os=" + os)
         
         dnsInfo    = ipintellib.ip2name(ipStr)	        # resolve get DNS name	
         asInfo     = ipintellib.ip2asn(ipStr)        	# get AS information from WHOIS whob
@@ -106,8 +106,8 @@ def test():
                          ",spam.rbl.msrbl.net="     + reputation['spam.rbl.msrbl.net']  
 
         
-        print result        
-        print >> fpOut0,ipStr + "," + "os" + reputation['zen.spamhaus.org']
+        print(result)        
+        print(ipStr + "," + "os" + reputation['zen.spamhaus.org'], file=fpOut0)
      
 
 ########

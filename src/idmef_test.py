@@ -61,13 +61,13 @@ def sendIDMEF(sensorId,srcIP,dstIP,dstPort,attackerIP,logEntry):
         client.SendIDMEF(idmef)
         return fieldsSet
 
-    except Exception,e:
+    except Exception as e:
         msg = "idmef_test.py : sendIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
         
 if __name__ == '__main__' :
     fieldsSet = sendIDMEF("dedbef","8.8.8.8","192.168.1.60","10023","8.8.8.8","This is the test log entry")
-    print fieldsSet.__str__()
+    print(fieldsSet.__str__())
     

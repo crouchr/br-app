@@ -36,11 +36,11 @@ a = len(files)
 
 filesExist=checkFilesExist.gatherNonZeroFiles(files,1)
 b = len(filesExist)
-print filesExist
+print(filesExist)
 
 if a != b:
-    msg = "Some expected source files could not be found : expected=" + `a` + " actual=" + `b`
-    print "\nWARNING : " + msg
+    msg = "Some expected source files could not be found : expected=" + repr(a) + " actual=" + repr(b)
+    print("\nWARNING : " + msg)
     syslog.syslog("send_blackrain_sources.py : " + msg)
     
 #recipients =['ipbb.mvtc@googlemail.com']
@@ -49,8 +49,8 @@ recipients =['uber.koob@gmail.com']
 
 text = "This e-mail is generated automatically by 'mars'\n"
 
-print "recipients = " + recipients.__str__()
+print("recipients = " + recipients.__str__())
 send_mail.send_mail('richard_crouch@btconnect.com',recipients,"BlackRain Sensor : Source code" , text, filesExist, 'smtp.btconnect.com')
 
-syslog.syslog("send_blackrain_sources.py : Finished, " + `b` + " BlackRain Sensor source files backed up to " + `recipients`)
+syslog.syslog("send_blackrain_sources.py : Finished, " + repr(b) + " BlackRain Sensor source files backed up to " + repr(recipients))
 

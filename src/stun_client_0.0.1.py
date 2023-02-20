@@ -62,7 +62,7 @@ ChangedAddressError = "Meet an error, when do Test1 on Changed IP and Port"
 
 def GenTranID():
     a =''
-    for i in xrange(32):
+    for i in range(32):
         a+=random.choice('0123456789ABCDEF')
     #return binascii.a2b_hex(a)
     return a
@@ -80,11 +80,11 @@ def Test(s, host, port, source_ip, source_port, send_data=""):
         recieved = False
         count = 3
         while not recieved:
-            print "sendto",(host, port)
+            print("sendto",(host, port))
             s.sendto(data,(host, port))
             try:
                 buf, addr = s.recvfrom(2048)
-                print "recvfrom",addr
+                print("recvfrom",addr)
                 recieved = True
             except Exception:
                 recieved = False
@@ -138,15 +138,15 @@ def Test(s, host, port, source_ip, source_port, send_data=""):
     return retVal
 
 def Initialize():
-    items = dictAttrToVal.items()
+    items = list(dictAttrToVal.items())
     global dictValToAttr
     dictValToAttr = {}
-    for i in xrange(len(items)):
+    for i in range(len(items)):
         dictValToAttr.update({items[i][1]:items[i][0]})
-    items = dictMsgTypeToVal.items()
+    items = list(dictMsgTypeToVal.items())
     global dictValToMsgType
     dictValToMsgType = {}
-    for i in xrange(len(items)):
+    for i in range(len(items)):
         dictValToMsgType.update({items[i][1]:items[i][0]})
     
 
@@ -157,9 +157,9 @@ def GetNATType(s, source_ip, source_port):
     host = "stun.ekiga.net" 
     port = 3478
 
-    print "Do Test1"
+    print("Do Test1")
     ret = Test(s, host, port, source_ip, source_port)
-    print "Result:",ret
+    print("Result:",ret)
     type = None
     exIP = ret['ExternalIP']
     exPort = ret['ExternalPort']
@@ -179,25 +179,25 @@ def GetNATType(s, source_ip, source_port):
             
         else:
             changeRequest = ''.join([ChangeRequest,'0004',"00000006"])
-            print "Do Test2"
+            print("Do Test2")
             ret = Test(s, host, port, source_ip, source_port, changeRequest)
-            print "Result:",ret
+            print("Result:",ret)
             
             if ret['Resp'] == True:
                 type = FullCone
             else:
-                print "Do Test1"
+                print("Do Test1")
                 ret = Test(s, changedIP, changedPort, source_ip, source_port)
-                print "Result:",ret
+                print("Result:",ret)
                 
                 if not ret['Resp']:
                     type = ChangedAddressError
                 else:
                     if exIP == ret['ExternalIP'] and exPort == ret['ExternalPort']:
                         changePortRequest = ''.join([ChangeRequest,'0004',"00000002"])
-                        print "Do Test3"
+                        print("Do Test3")
                         ret = Test(s, changedIP, port, source_ip, source_port, changePortRequest)
-                        print "Result:",ret
+                        print("Result:",ret)
                         if ret['Resp'] == True:
                             type = RestricNAT
                         else:
@@ -221,9 +221,9 @@ if __name__ == '__main__':
         s.bind((source_ip, source_port))
         
         NatType, exIP, exPort = GetNATType(s, source_ip, source_port)
-        print "NAT Type:", NatType
-        print "External IP:", exIP
-        print "External Port:", exPort
+        print("NAT Type:", NatType)
+        print("External IP:", exIP)
+        print("External Port:", exPort)
         import time
         time.sleep(60)
     

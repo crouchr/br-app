@@ -50,7 +50,7 @@ def BuildCurrentProcessTable():
             ps = ps.split(" ")
             ps = ps[0]
             if len(ps) <= 0 :
-                print "process shortened to zero length, so ignore : " + line
+                print("process shortened to zero length, so ignore : " + line)
                 continue	# next process
             #print "post2-ps=" + ps.__str__()
             
@@ -78,7 +78,7 @@ def BuildCurrentProcessTable():
             if float(mem) > 40.0 :
                 msg = "Warning ! : MEMORY_HOG : process [" + ps[0:64] + "]... memory consumption at " + mem.__str__() + "%"
                 syslog.syslog(msg)
-                print msg
+                print(msg)
                 addInfo = "Memory consumption measured at " + mem + " %"
                 sendMonitorIDMEF(SENSOR_IP,"Honeypot core process memory hog",ps,addInfo)
                     
@@ -87,10 +87,10 @@ def BuildCurrentProcessTable():
                    
         #print ProcessTable 
     
-    except Exception,e:
-        msg = "ps-monitor.py : buildCurrentProcessTable() exception caught = " + `e`
+    except Exception as e:
+        msg = "ps-monitor.py : buildCurrentProcessTable() exception caught = " + repr(e)
         syslog.syslog(msg)
-        print msg
+        print(msg)
         sys.exit()            
   
 
@@ -98,19 +98,19 @@ def checkProcess(id,process,restartScript):
     global ProcessTable
     
     try:    
-        if ProcessTable.has_key(process) :
+        if process in ProcessTable :
             pass
         else:
             msg = "PROCESS_DIED : error : " + id + "=" + "[" + process[0:64] + "]..." + " NOT RUNNING, restart using " + restartScript
-            print msg
+            print(msg)
             #print "[" + process + "]"
             
             result = os.system(restartScript + " & ")
             syslog.syslog(msg)
             sendMonitorIDMEF(SENSOR_IP,"Honeypot core process restarted",process)
             
-    except Exception,e:
-        syslog.syslog("ps-monitor.py : checkProcess() exception caught = " + `e`)
+    except Exception as e:
+        syslog.syslog("ps-monitor.py : checkProcess() exception caught = " + repr(e))
         sys.exit()            
 
 # Works for all events monitored by ps-monitor
@@ -144,10 +144,10 @@ def sendMonitorIDMEF(sensorIP,text,processName,addInfo=None):
         return
                        
     # example : sendMonitorIDMEF() : exception : TLS server certificate is NOT trusted.                                         
-    except Exception,e:
+    except Exception as e:
         msg = "sendMonitorIDMEF() : exception : " + e.__str__()
         syslog.syslog(msg)
-        print msg
+        print(msg)
         return
                                                          
 # main ------
@@ -157,14 +157,14 @@ syslog.openlog("ps-monitor",syslog.LOG_PID,syslog.LOG_LOCAL2)         # Set sysl
 #WAITTIME = 5
 WAITTIME = 60
 msg = "ps-monitor.py : Waiting for initial delay of " + WAITTIME.__str__() + " seconds..."
-print msg
+print(msg)
 syslog.syslog(msg)
 
 time.sleep(WAITTIME)	
 
 msg = "ps-monitor.py : Now monitoring core processes for availability and all processes for CPU & memory..."
 syslog.syslog(msg)
-print msg
+print(msg)
 
 # do not add command-line arguments to this
 while True:
@@ -225,7 +225,7 @@ while True:
         
         time.sleep(30)
     
-    except Exception,e:
-        syslog.syslog("ps-monitor.py : main() exception caught = " + `e`)
+    except Exception as e:
+        syslog.syslog("ps-monitor.py : main() exception caught = " + repr(e))
         sys.exit()
    

@@ -1,4 +1,4 @@
-import cookielib, urllib2, urllib, sys, logging
+import http.cookiejar, urllib.request, urllib.error, urllib.parse, urllib.request, urllib.parse, urllib.error, sys, logging
 
 # python 2.6
 #import json
@@ -47,9 +47,9 @@ class BlackrainAPI(object):
               filemode='w')
         
         try:
-            cookie_jar = cookielib.CookieJar()
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
-            urllib2.install_opener(opener)
+            cookie_jar = http.cookiejar.CookieJar()
+            opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie_jar))
+            urllib.request.install_opener(opener)
             logging.info('Blackrainclient API class created')    # rch typo
             logging.info('Cookie Jar created')
         except:
@@ -60,13 +60,13 @@ class BlackrainAPI(object):
     
     def establish_session(self):
         url = 'http://'+self.server+':'+self.port+'/BlackRainXchange/DoLogin'
-        logging.info("url = " + `url`)            # rch
+        logging.info("url = " + repr(url))            # rch
         new_session_values = {'sensorId': self.sensorId}
         status=-1
         try:
-            data = urllib.urlencode(new_session_values)
-            req  = urllib2.Request(url, data, self.post_headers)
-            response = urllib2.urlopen(req)
+            data = urllib.parse.urlencode(new_session_values)
+            req  = urllib.request.Request(url, data, self.post_headers)
+            response = urllib.request.urlopen(req)
             responseBody = response.read()
             if "successful" in responseBody:
                 status = Status.ACCESS_SUCCESS
@@ -75,7 +75,7 @@ class BlackrainAPI(object):
                 status = Status.ACCESS_DENIED
                 logging.info('Connection to:'+self.server+':'+self.port+' credentials denied')
         except:
-            logging.critical('Establish session fail: ' + `sys.exc_info()`)    # rch
+            logging.critical('Establish session fail: ' + repr(sys.exc_info()))    # rch
             status = Status.GENERAL_FAIL
             
         return status
@@ -117,9 +117,9 @@ class BlackrainAPI(object):
         logging.info(sensorRegistration)
         
         try:
-            data = urllib.urlencode(register_values)
-            req = urllib2.Request(url, data, self.post_headers)
-            response = urllib2.urlopen(req)
+            data = urllib.parse.urlencode(register_values)
+            req = urllib.request.Request(url, data, self.post_headers)
+            response = urllib.request.urlopen(req)
             responseBody = response.read()
             if "successful" in responseBody:
                 status = Status.PUSH_OK
@@ -131,7 +131,7 @@ class BlackrainAPI(object):
                 status = Status.PUSH_FAIL
                 logging.info('Connection to:'+self.server+':'+self.port+' error with the details submitted')
         except:
-            logging.critical('Push registration details fail: ' + `sys.exc_info()`) # rch
+            logging.critical('Push registration details fail: ' + repr(sys.exc_info())) # rch
             status = Status.GENERAL_FAIL
         #'if session denied, then auto establish session again'
         
@@ -140,15 +140,15 @@ class BlackrainAPI(object):
     def pull_registration_details(self):
                 
         url = 'http://'+self.server+':'+self.port+'/BlackRainXchange/GetConfig'
-        logging.info("url = " + `url`)            # rch
+        logging.info("url = " + repr(url))            # rch
         new_session_values = {}
         status=-1
         response_dict = {}
         
         try:
-            data = urllib.urlencode(new_session_values)
-            req  = urllib2.Request(url, data, self.post_headers)
-            response = urllib2.urlopen(req)
+            data = urllib.parse.urlencode(new_session_values)
+            req  = urllib.request.Request(url, data, self.post_headers)
+            response = urllib.request.urlopen(req)
             responseBody = response.read()
             if "successful" in responseBody:
                 status = Status.ACCESS_SUCCESS
@@ -157,7 +157,7 @@ class BlackrainAPI(object):
                 status = Status.ACCESS_DENIED
                 logging.info('Connection to:'+self.server+':'+self.port+' credentials denied')
         except:
-            logging.critical('Establish session fail: ' + `sys.exc_info()`)    # rch
+            logging.critical('Establish session fail: ' + repr(sys.exc_info()))    # rch
             status = Status.GENERAL_FAIL
             
         json_response = json.loads(responseBody)
@@ -175,7 +175,7 @@ class BlackrainAPI(object):
     def push_event_details(self, eventHeader, eventPayload):
         
         url = 'http://'+self.server+':'+self.port+'/BlackRainXchange/PushEvent'
-        logging.info("url = " + `url`)            # rch
+        logging.info("url = " + repr(url))            # rch
         push_event_values = {   'flowType':         eventHeader['flowType'],
                                 'flowRemoteIP':     eventHeader['flowRemoteIP'],
                                 'flowRemotePort':   eventHeader['flowRemotePort'],
@@ -201,9 +201,9 @@ class BlackrainAPI(object):
         status=-1
         
         try:
-            data = urllib.urlencode(push_event_values)
-            req  = urllib2.Request(url, data, self.post_headers)
-            response = urllib2.urlopen(req)
+            data = urllib.parse.urlencode(push_event_values)
+            req  = urllib.request.Request(url, data, self.post_headers)
+            response = urllib.request.urlopen(req)
             responseBody = response.read()
             if "successful" in responseBody:
                 status = Status.ACCESS_SUCCESS
@@ -212,7 +212,7 @@ class BlackrainAPI(object):
                 status = Status.ACCESS_DENIED
                 logging.info('Connection to:'+self.server+':'+self.port+' credentials denied')
         except:
-            logging.critical('Establish session fail: ' + `sys.exc_info()`)    # rch
+            logging.critical('Establish session fail: ' + repr(sys.exc_info()))    # rch
             status = Status.GENERAL_FAIL
             
         return status

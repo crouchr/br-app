@@ -109,16 +109,16 @@ def processSpadeSyslog(line):
         ipList = []
         ipList.append(srcIP)
         ipList.append(dstIP)
-        print "Candidate tweet: " + tweet
-        print "*** kojoney_spade_parse.py : calling hiddenIP() ***" 
+        print("Candidate tweet: " + tweet)
+        print("*** kojoney_spade_parse.py : calling hiddenIP() ***") 
         if kojoney_hiddenip.hiddenIP(ipList) == True:
             return None 
          
         return tweet
         
-    except Exception,e:
-        msg = "kojoney_spade_parse.py : processSpadeSyslog() : " + `e` + " line=" + line
-        print msg
+    except Exception as e:
+        msg = "kojoney_spade_parse.py : processSpadeSyslog() : " + repr(e) + " line=" + line
+        print(msg)
         syslog.syslog(msg)
                 
 
@@ -135,5 +135,5 @@ if __name__ == '__main__' :
         tweet = processSpadeSyslog(line)
         
         if tweet != None:
-            print "*** Send tweet:" + tweet
+            print("*** Send tweet:" + tweet)
         

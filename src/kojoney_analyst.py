@@ -24,7 +24,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -37,7 +37,7 @@ def analyseURL(url,test):
     try :
         result = -1
         urlCanon = url.lower()
-        print urlCanon
+        print(urlCanon)
         
         if urlCanon.find("tftp:") != -1 :	# wget can't do tftp - need a new function
             return None
@@ -47,23 +47,23 @@ def analyseURL(url,test):
             return None
         
         cmd = "wget -q -t 2 -nc -P /home/var/haxxor_webs/kojoney_analyst --no-check-certificate" + " " + url 
-        print "analyseURL() : cmd to be exectuted : " + cmd
+        print("analyseURL() : cmd to be exectuted : " + cmd)
         
         if test == True:
-            print "Test mode so do not download the file"
+            print("Test mode so do not download the file")
             return None
         
         result = os.system(cmd)		# returns int
-        print "wget result is " + `result`         
-        syslog.syslog("kojoney_analyst.py retrieveURL() : result=" + `result` + " for " + cmd)
+        print("wget result is " + repr(result))         
+        syslog.syslog("kojoney_analyst.py retrieveURL() : result=" + repr(result) + " for " + cmd)
         
         if result == 0 :		# success
             tweet = "ANALYST" + "," + "--" + "," + "Successfully downloaded file " + url
             return tweet
         return None
     
-    except Exception,e:
-        syslog.syslog("kojoney_analyse.py : analyseURL() exception caught = " + `e` + " url=" + url)
+    except Exception as e:
+        syslog.syslog("kojoney_analyse.py : analyseURL() exception caught = " + repr(e) + " url=" + url)
                                    
 # -------------------------------------------------------
 
@@ -74,15 +74,15 @@ def main():
     
     # Start of code        
     syslog.openlog("kojoney_analyst",syslog.LOG_PID,syslog.LOG_LOCAL2)         # Set syslog program name         
-    print "started, test=" + test.__str__()
+    print("started, test=" + test.__str__())
        
     # Make pidfile so we can be monitored by monit        
     pid =  makePidFile("kojoney_analyst")
     if pid == None:
-        syslog.syslog("Failed to create pidfile for pid " + `pid`)
+        syslog.syslog("Failed to create pidfile for pid " + repr(pid))
         sys.exit(0)
     else:
-        syslog.syslog("kojoney_analyst.py started with pid " + `pid`)
+        syslog.syslog("kojoney_analyst.py started with pid " + repr(pid))
                 
     # kojoney_guru populates the kojoney_analyst.txt file with URLs for kojoney_analyst to analyse
     filename  = '/home/var/log/kojoney_analyst.txt' 			
@@ -98,9 +98,9 @@ def main():
     if test == False :	# test mode starts at start of file
         st_size    = st_results[6]
         fp.seek(st_size)
-        print "system     : Seek to end of Analyst Job file"
+        print("system     : Seek to end of Analyst Job file")
     else:
-        print "system     : Test mode -> Seek to START of Analyst Job file"
+        print("system     : Test mode -> Seek to START of Analyst Job file")
 
     while True:
         tweet = None               
@@ -112,8 +112,8 @@ def main():
             #print "kojoney_analyst.py : nothing in Analyst Job file to process"
             fp.seek(where)
         else :			
-            print "\n*** NEW EVENT in Analyst jobfile to analyse..."
-            print line
+            print("\n*** NEW EVENT in Analyst jobfile to analyse...")
+            print(line)
             
             fields    = line.split(",")
             #print fields
@@ -122,7 +122,7 @@ def main():
             if jobType   == "URL":
                 url = fields[2]
                 tweet = analyseURL(url,test)
-                print "kojoney_analyst.py : jobType=" + jobType.__str__() + " url=" + url.__str__() 
+                print("kojoney_analyst.py : jobType=" + jobType.__str__() + " url=" + url.__str__()) 
             #elif jobType == "ANUBIS":
             #    tweet = analyseAnubisReport(fields[2],test) 
                 
@@ -130,7 +130,7 @@ def main():
                 if test != True:
                     twitter_funcs.addTweetToQueue(tweet)
                 else:
-                    print "Tweet : " + tweet
+                    print("Tweet : " + tweet)
                 
         if test != True:
             time.sleep(1)	# use 3 seconds : large delay since do not need to download malware in real-time

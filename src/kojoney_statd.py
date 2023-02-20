@@ -17,7 +17,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -158,8 +158,8 @@ def updateSnmpOIDsErrors(database,line):
             database['LAST_UPDATE_TIME'] = time.time()
             database['TOTAL']            = int(database['TOTAL']) + 1
                  
-    except Exception,e:    
-        syslog.syslog("kojoney_statd.py : updateSnmpOIDsErrors() : exception caught = " + `e` + " line=" + line)
+    except Exception as e:    
+        syslog.syslog("kojoney_statd.py : updateSnmpOIDsErrors() : exception caught = " + repr(e) + " line=" + line)
                                        
                                        
 def updateSnmpOIDsNetflow(database,line) :
@@ -339,8 +339,8 @@ def updateSnmpOIDsNetflow(database,line) :
       
         return                 
     
-    except Exception,e:    
-        syslog.syslog("kojoney_statd.py : updateSnmpOIDsNetflow() : exception caught = " + `e` + " line=" + line)
+    except Exception as e:    
+        syslog.syslog("kojoney_statd.py : updateSnmpOIDsNetflow() : exception caught = " + repr(e) + " line=" + line)
 
 def updateSnmpOIDsKippo(database,line) :
   
@@ -403,8 +403,8 @@ def updateSnmpOIDsKippo(database,line) :
 
         return                  
     
-    except Exception,e:    
-        syslog.syslog("kojoney_statd.py : updateSnmpOIDsKippo() : exception caught = " + `e` + " line=" + line)
+    except Exception as e:    
+        syslog.syslog("kojoney_statd.py : updateSnmpOIDsKippo() : exception caught = " + repr(e) + " line=" + line)
 
 def updateSnmpOIDsTelnet(database,line) :
   
@@ -446,8 +446,8 @@ def updateSnmpOIDsTelnet(database,line) :
 
         return                  
     
-    except Exception,e:    
-        syslog.syslog("kojoney_statd.py : updateSnmpOIDsTelnet() : exception caught = " + `e` + " line=" + line)
+    except Exception as e:    
+        syslog.syslog("kojoney_statd.py : updateSnmpOIDsTelnet() : exception caught = " + repr(e) + " line=" + line)
                                        
 def updateSnmpOIDsDns(database,line) :
   
@@ -504,8 +504,8 @@ def updateSnmpOIDsDns(database,line) :
 
         return                  
     
-    except Exception,e:    
-        syslog.syslog("kojoney_statd.py : updateSnmpOIDsDns() : exception caught = " + `e` + " line=" + line)
+    except Exception as e:    
+        syslog.syslog("kojoney_statd.py : updateSnmpOIDsDns() : exception caught = " + repr(e) + " line=" + line)
                                        
                             
 # Update shelved object with SNMP stats in it                                   
@@ -663,8 +663,8 @@ def updateSnmpOIDs(database,line):
             database['LAST_UPDATE_TIME'] = time.time()
             database['TOTAL']            = int(database['TOTAL']) + 1
                  
-    except Exception,e:    
-        syslog.syslog("kojoney_statd.py : updateSnmpOIDs() : exception caught = " + `e` + " line=" + line)
+    except Exception as e:    
+        syslog.syslog("kojoney_statd.py : updateSnmpOIDs() : exception caught = " + repr(e) + " line=" + line)
                                        
                                    
 # -------------------------------------------------------
@@ -675,10 +675,10 @@ syslog.openlog("kojoney_statd",syslog.LOG_PID,syslog.LOG_LOCAL2)         # Set s
 # Make pidfile so we can be monitored by monit        
 pid =  makePidFile("kojoney_statd")
 if pid == None:
-    syslog.syslog("Failed to create pidfile for pid " + `pid`)
+    syslog.syslog("Failed to create pidfile for pid " + repr(pid))
     sys.exit(0)
 else:
-    syslog.syslog("kojoney_statd.py started with pid " + `pid`)
+    syslog.syslog("kojoney_statd.py started with pid " + repr(pid))
     
 #snmpoidsShelfFile = '/home/var/log/snmp_shelf.dat'
 database = shelve.open(snmpoidsShelfFile)
@@ -1080,37 +1080,37 @@ telnetFile     = open(telnetFilename,'r')
 st_results = os.stat(filename)
 st_size    = st_results[6]
 file.seek(st_size)
-print "system     : Seek to end of Tweets queue : " + filename
+print("system     : Seek to end of Tweets queue : " + filename)
 
 # Find the size of the Netflow file and move to the end
 st_resultsNetflow = os.stat(netflowFilename)
 st_sizeNetflow    = st_resultsNetflow[6]
 netflowFile.seek(st_sizeNetflow)
-print "system     : Seek to end of Netflow file : " + netflowFilename
+print("system     : Seek to end of Netflow file : " + netflowFilename)
 
 # Find the size of the System events/errors file and move to the end
 st_resultsSyslog = os.stat(syslogFilename)
 st_sizeSyslog    = st_resultsSyslog[6]
 syslogFile.seek(st_sizeSyslog)
-print "system     : Seek to end of errors file : " + syslogFilename
+print("system     : Seek to end of errors file : " + syslogFilename)
 
 # Find the size of the Kippo events/errors file and move to the end
 st_resultsKippo = os.stat(kippoFilename)
 st_sizeKippo    = st_resultsKippo[6]
 kippoFile.seek(st_sizeKippo)
-print "system     : Seek to end of Kippo log file : " + kippoFilename
+print("system     : Seek to end of Kippo log file : " + kippoFilename)
 
 # Find the size of the DNS file and move to the end
 st_resultsDns = os.stat(dnsFilename)
 st_sizeDns    = st_resultsDns[6]
 dnsFile.seek(st_sizeDns)
-print "system     : Seek to end of DNSmasq log file : " + dnsFilename
+print("system     : Seek to end of DNSmasq log file : " + dnsFilename)
 
 # Find the size of the Telnetd file and move to the end
 st_resultsTelnet = os.stat(telnetFilename)
 st_sizeTelnet    = st_resultsTelnet[6]
 telnetFile.seek(st_sizeTelnet)
-print "system     : Seek to end of fake telnetd log file : " + telnetFilename
+print("system     : Seek to end of fake telnetd log file : " + telnetFilename)
 
 try:
     while True:        
@@ -1122,15 +1122,15 @@ try:
         l     = len(line)
         
         if (l > 0 and l <= 3) :		# caused by AMUN logs - need to fix at source but this adds some protection
-            print "Short line read, len=" + `l` + " so ignore..."
+            print("Short line read, len=" + repr(l) + " so ignore...")
         elif not line :			# no data to process
             #print "kojoney_statd.py : nothing in Tweets queue to process"          
             file.seek(where)
         else:
-            print "kojoney_statd.py : Tweet : "  + line                    
+            print("kojoney_statd.py : Tweet : "  + line)                    
             tweet = line.split("tweet=")[1]
             tweet = tweet.strip('"')
-            print "**** kojoney_statd.py tweet=" + tweet
+            print("**** kojoney_statd.py tweet=" + tweet)
             
             # Unlike Tweets, SNMP stats are based on uncorrelated events
             database = shelve.open(snmpoidsShelfFile)
@@ -1193,7 +1193,7 @@ try:
         # -----                                
         time.sleep(0.2)		
 
-except Exception,e:
+except Exception as e:
         
-        print "kojoney_statd.py : main() exception caught = " + `e` + " line=" + line
-        syslog.syslog("kojoney_statd.py : main() exception caught = " + `e` + " line=" + line)
+        print("kojoney_statd.py : main() exception caught = " + repr(e) + " line=" + line)
+        syslog.syslog("kojoney_statd.py : main() exception caught = " + repr(e) + " line=" + line)

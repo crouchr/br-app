@@ -11,7 +11,7 @@ curs = conn.cursor()
 
 #query = 'SELECT * from log'
 query = 'SELECT id,attacker,request,impact from log WHERE impact >= 30 ORDER BY impact'
-print query
+print(query)
 
 curs.execute(query)
 
@@ -34,10 +34,10 @@ for row in curs.fetchall():
     request  = row[2]
     impact   = row[3]
     
-    print "srcIP   = " + attacker.__str__()
-    print "  request = " + request.__str__()
-    print "  impact  = " + impact.__str__()    
-    print 
+    print("srcIP   = " + attacker.__str__())
+    print("  request = " + request.__str__())
+    print("  impact  = " + impact.__str__())    
+    print() 
     #for pair in zip(names, row):
     #    print '%s : %s' % pair
     #print

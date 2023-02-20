@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from anonBrowser import *
 import json
 import re
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 
 class reconPerson:
@@ -14,7 +14,7 @@ class reconPerson:
         self.tweets = self.get_tweets()
 
     def get_tweets(self):
-        query = urllib.quote_plus('from:' + self.handle+\
+        query = urllib.parse.quote_plus('from:' + self.handle+\
           ' since:2009-01-01 include:retweets'
                                   )
         tweets = []
@@ -51,7 +51,7 @@ class reconPerson:
                     continue
 
             try:
-                response = urllib2.urlopen(link)
+                response = urllib.request.urlopen(link)
                 full_link = response.url
                 interests['links'].append(full_link)
             except:

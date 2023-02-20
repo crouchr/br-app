@@ -19,7 +19,7 @@ def gatherNonZeroFiles(filelist,minfilesize):
     # Generate a syslog with a list of missing files
     if len(missingFiles) != 0 :
         msg = "checkFilesExist.py : gatherNonZeroFiles() : warning : missing files = " + ' '.join(missingFiles)
-        print msg
+        print(msg)
         syslog.syslog(msg)
             
     return realFiles    
@@ -29,7 +29,7 @@ def gatherNonZeroFiles(filelist,minfilesize):
 if __name__ == '__main__' :
     files = ['notexist.doc','/home/var/log/blackrain_amun.pcap','/nosuchthing.doc','/home/var/log/blackrain_honeyd.pcap']
     a = gatherNonZeroFiles(files,256)
-    print a     
+    print(a)     
  
 
 

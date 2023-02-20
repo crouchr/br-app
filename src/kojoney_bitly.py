@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import urllib,urllib2
-import urlparse
+import urllib.request, urllib.parse, urllib.error,urllib.request,urllib.error,urllib.parse
+import urllib.parse
 import string
 try:
    import simplejson
@@ -138,14 +138,14 @@ class Api(object):
             }
 
         params.update(more_params)
-        params = params.items() 
+        params = list(params.items()) 
                 
         verbParam = VERBS_PARAM[verb]   
         if verbParam:
             for val in paramVal:
                 params.append(( verbParam,val ))
    
-        encoded_params = urllib.urlencode(params)
+        encoded_params = urllib.parse.urlencode(params)
         return "%s%s?%s" % (BITLY_BASE_URL,verb,encoded_params)
        
     def _fetchUrl(self,url):
@@ -173,11 +173,11 @@ class Api(object):
         # bitly errors are relatively unlikely, so it is faster
         # to check first, rather than try and catch the exception
         if 'ERROR' in data or data['statusCode'] == 'ERROR':
-            raise BitlyError, data['errorMessage']
+            raise BitlyError(data['errorMessage'])
         for key in data['results']:
             if type(data['results']) is dict and type(data['results'][key]) is dict:
                 if 'statusCode' in data['results'][key] and data['results'][key]['statusCode'] == 'ERROR':
-                    raise BitlyError, data['results'][key]['errorMessage'] 
+                    raise BitlyError(data['results'][key]['errorMessage']) 
        
 class Stats(object):
     '''A class representing the Statistics returned by the bitly api.
@@ -209,20 +209,20 @@ if __name__ == '__main__':
     testURL2="www.cnn.com"
     a=Api(login="pythonbitly",apikey="R_06871db6b7fd31a4242709acaf1b6648")
     short=a.shorten(testURL1)    
-    print "Short URL = %s" % short
+    print("Short URL = %s" % short)
     short=a.shorten(testURL1,{'history':1})    
-    print "Short URL with history = %s" % short
+    print("Short URL with history = %s" % short)
     urlList=[testURL1,testURL2]
     shortList=a.shorten(urlList)
-    print "Short URL list = %s" % shortList
+    print("Short URL list = %s" % shortList)
     long=a.expand(short)
-    print "Expanded URL = %s" % long
+    print("Expanded URL = %s" % int)
     info=a.info(short)
-    print "Info: %s" % info
+    print("Info: %s" % info)
     stats=a.stats(short)
-    print "User clicks %s, total clicks: %s" % (stats.user_clicks,stats.total_clicks)
+    print("User clicks %s, total clicks: %s" % (stats.user_clicks,stats.total_clicks))
     errors=a.errors()
-    print "Errors: %s" % errors
+    print("Errors: %s" % errors)
     testURL3=["www.google.com"]
     short=a.shorten(testURL3) 
-    print "Short url in list = %s" % short
+    print("Short url in list = %s" % short)

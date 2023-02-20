@@ -65,7 +65,7 @@ def processFwSnortSyslog(line):
         sidNormal = "NIDS_SU snort[:" + sid + ":] Classification" 	# match routine has ":" bookends
         #print "sidNormal=" + sidNormal
         if kojoney_snort_funcs.suppressSnortAlert(sidNormal) == True :
-            print "ignore -> " + line
+            print("ignore -> " + line)
             return
         
 
@@ -120,9 +120,9 @@ def processFwSnortSyslog(line):
             
         return tweets
         
-    except Exception,e:
-        msg = "kojoney_fwsnort_parse.py : processFwSnortSyslog() : " + `e` + " line=" + line
-        print msg
+    except Exception as e:
+        msg = "kojoney_fwsnort_parse.py : processFwSnortSyslog() : " + repr(e) + " line=" + line
+        print(msg)
         syslog.syslog(msg)
                 
 
@@ -136,6 +136,6 @@ if __name__ == '__main__' :
         tweet = processFwSnortSyslog(line)
         
         if tweet != None:
-            print "tweet:" + tweet
+            print("tweet:" + tweet)
         
         

@@ -120,10 +120,10 @@ def CheckBin(program):
 def Main(args):
     # Ensure a profile (aka myOpts) is selected
     if not len(args) > 1:
-        print 'ERROR: no profile selected'
+        print('ERROR: no profile selected')
         sys.exit(ERR_UNKN)
     if not CheckBin('sar'):
-        print 'ERROR: sar not found on PATH (%s), install sysstat' %os.environ['PATH']
+        print('ERROR: sar not found on PATH (%s), install sysstat' %os.environ['PATH'])
         sys.exit(ERR_CRIT)
   
     # Profiles may need to be modified for different versions of the sysstat package
@@ -147,16 +147,16 @@ def Main(args):
             if len(args) > 2:
                 sar = SarNRPE(myOpts[args[1]],args[2])
             else:
-                print 'ERROR: no device specified'
+                print('ERROR: no device specified')
                 sys.exit(ERR_UNKN)
         else:
             sar = SarNRPE(myOpts[args[1]])
     else:
-        print 'ERROR: option not defined'
+        print('ERROR: option not defined')
         sys.exit(ERR_UNKN)
 
     # Output in NRPE format
-    print 'sar OK|', ' '.join(sar.stats)
+    print('sar OK|', ' '.join(sar.stats))
 
 if __name__ == '__main__':
     Main(sys.argv)

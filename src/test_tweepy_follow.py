@@ -22,11 +22,11 @@ api_dr=tweepy.API(auth)
 #public_timeline = api_dr.public_timeline()
 #print [tweet.text for tweet in public_timeline]
 
-print "\nhoneydrone6 Home Timeline"
+print("\nhoneydrone6 Home Timeline")
 home_timeline = api_dr.home_timeline()
 
 for tweet in home_timeline:
-    print "id=" + `tweet.id` + " text=" + tweet.text
+    print("id=" + repr(tweet.id) + " text=" + tweet.text)
     
 #print [tweet.text for tweet in home_timeline]
 

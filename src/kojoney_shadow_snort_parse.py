@@ -149,9 +149,9 @@ def processSnortSyslog(line):
          
         return tweet
         
-    except Exception,e:
-        msg = "kojoney_shadow_parse.py : processSnortSyslog() : " + `e` + " line=" + line
-        print msg
+    except Exception as e:
+        msg = "kojoney_shadow_parse.py : processSnortSyslog() : " + repr(e) + " line=" + line
+        print(msg)
         syslog.syslog(msg)
                 
 
@@ -168,6 +168,6 @@ if __name__ == '__main__' :
         tweet = processSnortSyslog(line)
         
         if tweet != None:
-            print "**** tweet=[" + tweet + "]"
+            print("**** tweet=[" + tweet + "]")
         
    

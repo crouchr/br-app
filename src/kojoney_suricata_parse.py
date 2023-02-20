@@ -274,8 +274,8 @@ def processSur(line):
         tweet = suricataTwittify(tweet)
         return tweet
         
-    except Exception,e:
-        syslog.syslog("kojoney_suricata_parsey.py : breakdownSuricataAlert() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_suricata_parsey.py : breakdownSuricataAlert() : " + repr(e) + " line=" + line)
                 
 
 if __name__ == '__main__' :
@@ -288,6 +288,6 @@ if __name__ == '__main__' :
         tweet = processSur(line)
         
         if tweet != None:
-            print "tweet:" + tweet
+            print("tweet:" + tweet)
         
         

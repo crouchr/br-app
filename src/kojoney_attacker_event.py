@@ -21,7 +21,7 @@ def generateAttackerEvent(txnId,attackerIP,p0fDict,sensorId,phase,eventSource,ev
     try :
         sdata = {}
         
-        print "generateAttackerEvent() : eventDesc=" + eventDesc.__str__() + ", eventSOurce=" + eventSource.__str__()
+        print("generateAttackerEvent() : eventDesc=" + eventDesc.__str__() + ", eventSOurce=" + eventSource.__str__())
         
         # There must be a non-local IP address involved for there to be an attacker
         if attackerIP == None or attackerIP == "0.0.0.0" :
@@ -101,24 +101,24 @@ def generateAttackerEvent(txnId,attackerIP,p0fDict,sensorId,phase,eventSource,ev
         
         
         fpOut = open(ATTACKER_EVENT_PATH,'a')
-        print >> fpOut,msg
+        print(msg, file=fpOut)
         fpOut.close()
-        print "generateAttackerEvent() : msg = " + msg
+        print("generateAttackerEvent() : msg = " + msg)
 
             
         # Generate Snort-format syslog file for post-processing with SnortaLog
         logMsg = makeSnortalogMsg(attackerIP,phase,eventSource,eventDesc)
         fpOut = open(ATTACKER_SNORT_FORMAT_PATH,'a')
-        print >> fpOut,logMsg
+        print(logMsg, file=fpOut)
         fpOut.close()
         
-        print "generateAttackerEvent() : Snort-format logMsg = " + logMsg
+        print("generateAttackerEvent() : Snort-format logMsg = " + logMsg)
 
         return None
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_attacker_event.py : generateAttackerEvent() : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 
@@ -144,9 +144,9 @@ def makeSnortalogMsg(attackerIP,phase,eventSource,eventDesc):
         
         return logMsg
         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_attacker_event.py : makeSnortalogMsg() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
                            
@@ -188,10 +188,10 @@ if __name__ == '__main__' :
             
             logMsg = makeSnortalogMsg(attackerIP,phase,eventSource,eventDesc)
             #print logMsg
-            print >> fpOut,logMsg
+            print(logMsg, file=fpOut)
     
     # End of file                              
-    print "No more data to process, closing files."
+    print("No more data to process, closing files.")
     fpOut.close()
     
     

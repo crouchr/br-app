@@ -35,7 +35,7 @@ def mailalert(sender,destination,smtpServer,subject,content,debugLevel):
             conn.close()
             return True
                                                 
-    except Exception, exc:
+    except Exception as exc:
         #print "Failed to send email"
         #sys.exit( "mail failed; %s" % str(exc) )
         return False
@@ -65,9 +65,9 @@ def main():
     status = mailalert(sender,destination,smtpServer,subject,content,debugLevel)
 
     if status == True:
-        print "E-mail sent OK"
+        print("E-mail sent OK")
     else:
-        print "E-mail FAILED"    
+        print("E-mail FAILED")    
 
 if __name__ == '__main__': main()
                                               

@@ -49,10 +49,10 @@ api=tweepy.API(auth)
 for term in ["tango down"]:
     public = api.search(term)
     for tweet in public:
-        print "-----------------------------------"
-        print tweet.from_user
-        print tweet.from_user_id
-        print tweet.text.encode('utf-8')
+        print("-----------------------------------")
+        print(tweet.from_user)
+        print(tweet.from_user_id)
+        print(tweet.text.encode('utf-8'))
         
 #print a.__str__()
 #api.update_status(sys.argv[1],lat=GLEBE_LAT,long=GLEBE_LONG)

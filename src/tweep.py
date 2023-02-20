@@ -43,7 +43,7 @@ ACCESS_SECRET = '9kWZw7JYrtNcCGpwhYb2qIsGgSqG88cCCUjjcYMwoE'
 
 # -------------------------------------
 
-print tweepy.__version__
+print(tweepy.__version__)
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
@@ -51,10 +51,10 @@ api=tweepy.API(auth)
 
 now = time.time()
 msg = time.asctime(time.localtime(now)) + " : " + sys.argv[1]
-print msg
+print(msg)
 
 #api.update_status(sys.argv[1],lat="51.6",long="43.6")
-api.update_status(msg,lat=None,long=None)
+api.update_status(msg,lat=None,int=None)
 #api.update_status(sys.argv[1],lat=GLEBE_LAT,long=GLEBE_LONG)
 
 

@@ -41,8 +41,8 @@ def mapPortNumber(port):
        else:
            #print "Could not locate port : " + port
            return ""
-    except Exception,e:
-        print "mapPortNumber() : exception : " + e.__str__()
+    except Exception as e:
+        print("mapPortNumber() : exception : " + e.__str__())
         return
     
 def sendArgusIDMEF(srcIP,dstIP,dstPort,protocol,dir,flags,pkts,bytes,p0f,hops,FLOW_TYPE):
@@ -145,8 +145,8 @@ def sendArgusIDMEF(srcIP,dstIP,dstPort,protocol,dir,flags,pkts,bytes,p0f,hops,FL
 
         client.SendIDMEF(idmef)
         return
-    except Exception,e:
-        print "sendArgusIDMEF() : exception : " + e.__str__()
+    except Exception as e:
+        print("sendArgusIDMEF() : exception : " + e.__str__())
         return
         
 if __name__ == '__main__' :

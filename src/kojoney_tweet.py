@@ -5,7 +5,7 @@
 import time, os , syslog , re , sys 
 #import twitter		# Google API python-twitter 
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 import ipintellib				# RCH library - master on mars
 import mailalert				# RCH library
@@ -62,7 +62,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -88,14 +88,14 @@ def statusAlert(subject,content):
         status = mailalert.mailalert(sender,destination,smtpServer,alertSubject,alertContent,debugLevel)        
         
         # uncomment the following line if you want to see the e-mail being sent
-        print "notify     : e-mail : subject=" + '"' + alertSubject + '"'  
+        print("notify     : e-mail : subject=" + '"' + alertSubject + '"')  
         
         # Add a record to syslog
         a = "Sent alert e-mail, Subject=" + alertSubject + " to " + destination[0]
         syslog.syslog(a)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : statusAlert() : " + `e`)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : statusAlert() : " + repr(e))
 
 # process kojoney_tail.log
 # this is too vebose - need to re-think this 
@@ -229,11 +229,11 @@ def processChannelTweet(line):
         # file needs to be touched
         fpOut = open(r'/home/var/log/kojoney_tail_tweets.csv','a')
         #secviz5_tweets.csv','a')
-        print >> fpOut,msg 
+        print(msg, file=fpOut) 
         fpOut.close()
 
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processChannelTweet() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processChannelTweet() exception caught = " + repr(e) + " line=" + line)
 
 
 
@@ -316,12 +316,12 @@ def processKeystrokes(line):
 
     try :
         line=line.strip("\n")
-        print "processKeystrokes() : line received from Honeypot : " + line
+        print("processKeystrokes() : line received from Honeypot : " + line)
                     
         if line.find("T=201") == -1 :         # find trojan bash anchor - not a very good one 
             return
             
-        print "processKeystrokes() : candidate syslog read from Honeypot : " + line
+        print("processKeystrokes() : candidate syslog read from Honeypot : " + line)
                                                                                  
         fields=line.split()
         #print fields
@@ -339,11 +339,11 @@ def processKeystrokes(line):
         msg = "UID:" + uid + " PID:" + pid + " {bash}\n" + prompt + " " + cmd
         #print msg
                 
-        print "tweet before compression : " + msg
+        print("tweet before compression : " + msg)
         sendTweet(msg)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processKeystrokes() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processKeystrokes() exception caught = " + repr(e) + " line=" + line)
 
 #May 10 06:48:30 mars sshd[1122]: Accepted password for test from 172.31.0.68 port 1028 ssh2 
 #May 10 08:52:50 mars sshd[1291]: Failed password for test from 172.31.0.68 port 1029 ssh2 
@@ -353,7 +353,7 @@ def processMessages(line):
 
     try :
         line=line.strip("\n")
-        print "processMessages() : line read from Honeypot syslogs : " + line
+        print("processMessages() : line read from Honeypot syslogs : " + line)
                     
         if line.find("from 192.168.1.") != -1 :         # do not log legitimate local LAN access 
             return
@@ -363,7 +363,7 @@ def processMessages(line):
         if line.find("Accepted password for") == -1 :
             return
         
-        print "processMessages() : candidate line read from /var/log/messages : " + line
+        print("processMessages() : candidate line read from /var/log/messages : " + line)
                                                                                  
         # Parse
         # -----    
@@ -375,7 +375,7 @@ def processMessages(line):
         #username = fields[9]    
         pat = r'password for (\w+)'             # locate a number of IP addresses
         username = re.findall(pat,line)[0]     
-        print "kojoney_tweet.py : processMessages() : username is " + username
+        print("kojoney_tweet.py : processMessages() : username is " + username)
         
                                                                                                                                          
         srcIP   = ips[0]
@@ -386,7 +386,7 @@ def processMessages(line):
                                                                                                                                                                                          
         # Get OS type of SRC IP    
         
-        print "kojoney_tweet.py : processMessages() : p0f input is srcIP=" + srcIP + " dstIP=" + dstIP + " dstPort=" + dstPort
+        print("kojoney_tweet.py : processMessages() : p0f input is srcIP=" + srcIP + " dstIP=" + dstIP + " dstPort=" + dstPort)
         
         p0fInfo = p0fcmd.getP0fInfo(srcIP,"0",dstIP,dstPort);           # 0 = wildcard the srcPort
         if p0fInfo['result'] == True :                                  # p0f data is available   
@@ -422,14 +422,14 @@ def processMessages(line):
                 ",WHOIS=" + asNum + " (" + asRegisteredCode + ")" + \
                 ",GeoIP=" + countryCode + " " + city + " " + "%.2f" % longitude + "E"
                 
-        print "tweet before compression : " + msg
-        sendTweet(msg,lat=latitude,long=longitude)
+        print("tweet before compression : " + msg)
+        sendTweet(msg,lat=latitude,int=longitude)
         
         # Modify the defcon number 
         kojoney_funcs.writeDefconEvent("botwall","intrusion from " + srcIP + " account=" + username) 
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processMessages() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processMessages() exception caught = " + repr(e) + " line=" + line)
 
 
 #Jun 15 10:15:09 mars passwd[28828]: password for `test' changed by `test' 
@@ -450,7 +450,7 @@ def processSecure(line):
             
         if line.find(" password for ") == -1 :
             return
-        print "processSecure() : candidate line read from /var/log/secure : " + line
+        print("processSecure() : candidate line read from /var/log/secure : " + line)
                                                                                  
         # Parse
         # -----    
@@ -458,7 +458,7 @@ def processSecure(line):
         #ips = re.findall(pat,line)     
                                                                                                                  
         fields=line.split(" ")
-        print fields                            # locate username
+        print(fields)                            # locate username
         msg = ' '.join(fields[5:])
         
         #username = fields[8]    
@@ -496,11 +496,11 @@ def processSecure(line):
 
         msg  = "PASSWD_CHANGE," + msg
                 
-        print "tweet before compression : " + msg
+        print("tweet before compression : " + msg)
         sendTweet(msg)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processSecure() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processSecure() exception caught = " + repr(e) + " line=" + line)
                                          
 # process sebek raw file 
 # line = line read from raw sebek logs
@@ -509,11 +509,11 @@ def processSebekTweet(line):
     ftpInfo = {}
     
     line=line.strip("\n")
-    print "entered processSebekTweet() with line=" + line
+    print("entered processSebekTweet() with line=" + line)
 
     try:
         filtered = filter_sebek.filterSebek(line)
-        print "processSebekTweet() : filtered = " + filtered
+        print("processSebekTweet() : filtered = " + filtered)
         
         # missing step is to normalise the sebek line i.e. to remove [BS] etc.
 
@@ -525,12 +525,12 @@ def processSebekTweet(line):
         
             # file needs to be touched - is this the daily file ?
             fpOut = open(r'/home/var/log/kojoney_tail_tweets.csv','a')
-            print >> fpOut,msg 
+            print(msg, file=fpOut) 
             fpOut.close()
             
             # for sebek lines containing "wget", perform additional analysis on destination URL
             if filtered.find("wget") != -1 :
-                print "kojoney_tweet.py : processSebekTweet() : wget found"
+                print("kojoney_tweet.py : processSebekTweet() : wget found")
                 url = extract_url.extractURL(filtered)	# Normalise URL
                 o = urlparse(url)
                 domain = "127.0.0.1"
@@ -548,13 +548,13 @@ def processSebekTweet(line):
                     # Get IP from DNS info
                     dnsInfo = ipintellib.ip2name(domain)
                     srcIP   = dnsInfo['name'].rstrip('.')	                   # right-strip the trailing .
-                    print "kojoney_tweet.py : processSebekTweet() : IP=" + srcIP
+                    print("kojoney_tweet.py : processSebekTweet() : IP=" + srcIP)
                 
                     # WHOIS         
                     asInfo = ipintellib.ip2asn(srcIP)                               # 
                     asNum = asInfo['as']		                                # AS123   
                     asRegisteredCode = asInfo['registeredCode']                     # Short-form e.g.ARCOR
-                    print "kojoney_tweet.py : processSebekTweet() : AS name=" + asRegisteredCode
+                    print("kojoney_tweet.py : processSebekTweet() : AS name=" + asRegisteredCode)
  
                     # GeoIP information - faster than WHOIS for looking up Country Code information
                     geoIP = ipintellib.geo_ip(srcIP)                                
@@ -577,19 +577,19 @@ def processSebekTweet(line):
                     # + " " + city + " " + "%.2f" % longitude + "E"
 
                     #msg = "test message 2"                
-                    print msg
+                    print(msg)
                     
-                    sendTweet(msg,lat=latitude,long=longitude)
+                    sendTweet(msg,lat=latitude,int=longitude)
                     # file needs to be touched - see above
                     fpOut = open(r'/home/var/log/kojoney_tail_tweets.csv','a')
-                    print >> fpOut,msg + ":lat=" + `latitude` + " long=" + `long` 
+                    print(msg + ":lat=" + repr(latitude) + " long=" + repr(int), file=fpOut) 
                     fpOut.close()
                     
             # for sebek lines containing an IP address, perform additional analysis
             # only searches for 1 IP address
             pat = r'\d+\.\d+\.\d+\.\d+'             # locate a number of IP addresses
             ips = re.findall(pat,filtered)     
-            print "first IP address found = " + `ips[0]`
+            print("first IP address found = " + repr(ips[0]))
             if len(ips) != 0 :
                     ip = ips[0]
                     # Get DNS name
@@ -614,11 +614,11 @@ def processSebekTweet(line):
                     ",CC=" + countryCode
                     # + " " + city + " " + "%.2f" % longitude + "E"
                 
-                    print msg
-                    sendTweet(msg,lat=latitude,long=longitude)
+                    print(msg)
+                    sendTweet(msg,lat=latitude,int=longitude)
                     # file needs to be touched - see above
                     fpOut = open(r'/home/var/log/kojoney_tail_tweets.csv','a')
-                    print >> fpOut,msg + ":lat=" + `latitude` + " long=" + `long` 
+                    print(msg + ":lat=" + repr(latitude) + " long=" + repr(int), file=fpOut) 
                     #print >> fpOut,msg 	# bug - add GeoIP information
                     fpOut.close()
                     
@@ -627,8 +627,8 @@ def processSebekTweet(line):
             #print "tweet filtered out : " + line
             pass
             
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processSebekTweet() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processSebekTweet() exception caught = " + repr(e) + " line=" + line)
 
 def processVisualisationTweet(line):
     #print "entered processVisualisationTweet()"
@@ -658,8 +658,8 @@ def processVisualisationTweet(line):
         #print "tweet=" + tweet
         twitter_funcs.sendTweet(tweet,"honeytweeter")
         
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processVisualisationTweet() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processVisualisationTweet() exception caught = " + repr(e) + " line=" + line)
 
 # Wrapper
 # Extract first non-honeypot IP from a Tweet
@@ -840,7 +840,7 @@ def processVisualisationTweet(line):
 def processSnort(line):
     try :
         line = line.rstrip("\n")
-        print "line=" + line
+        print("line=" + line)
         #if line.find("Message: snort") != -1 :
             
             # Filter out noisy alerts e.g SSH brutefore messages
@@ -858,8 +858,8 @@ def processSnort(line):
         
         #return None
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processSnort() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processSnort() exception caught = " + repr(e) + " line=" + line)
 
 # Suricata IDS events
 # this is superceded
@@ -900,7 +900,7 @@ def processSnort(line):
 def processNetflow(line):
     try :
         line = line.rstrip("\n")
-        print "kojoney_tweey.py : processNetflow() line=" + line
+        print("kojoney_tweey.py : processNetflow() line=" + line)
         #if line.find("Message: snort") != -1 :
             
         if line.find("exception caught") != -1 :
@@ -956,7 +956,7 @@ def processNetflow(line):
                         
         # event is interesting so create Tweet    
         fields = line.split(" ")
-        print fields
+        print(fields)
         msg = ' '.join(fields[5:])
         tweet = msg
         tweet = twittify(tweet)   
@@ -964,14 +964,14 @@ def processNetflow(line):
         
         #return None
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processNetflow() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processNetflow() exception caught = " + repr(e) + " line=" + line)
 
 # Tweet all defcon changes for the time being
 def processDefcon(line):
     try :
         line = line.rstrip("\n")
-        print "kojoney_tweet.py : processDefcon() line=" + line
+        print("kojoney_tweet.py : processDefcon() line=" + line)
             
         #if line.find("exception caught") != -1 :
         #    return None
@@ -986,8 +986,8 @@ def processDefcon(line):
         
         #return None
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processNetflow() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processNetflow() exception caught = " + repr(e) + " line=" + line)
 
                 
 # -------------        
@@ -998,16 +998,16 @@ syslog.openlog("kojoney_tweet",syslog.LOG_PID,syslog.LOG_LOCAL2)		# Set syslog p
 # Make pidfile so we can be monitored by monit        
 pid =  makePidFile("kojoney_tweet")
 if pid == None:
-    syslog.syslog("Failed to create pidfile for pid " + `pid`)
+    syslog.syslog("Failed to create pidfile for pid " + repr(pid))
     sys.exit(0)
 else:
-    syslog.syslog("kojoney_tweet.py started with pid " + `pid`)
+    syslog.syslog("kojoney_tweet.py started with pid " + repr(pid))
                 
 # Send an email to say kojoney_tail has started
 now = time.time()
 nowLocal = time.gmtime(now)
 #makeMsg(0,"0","system,kojoney_viz started with pid=" + `pid` + " at localtime " + time.asctime(nowLocal))
-a = "kojoney_tweet started with pid=" + `pid`
+a = "kojoney_tweet started with pid=" + repr(pid)
 
 # ------------ BRX --------------
 blackrain_logging.setLogging(mode='a')
@@ -1161,103 +1161,103 @@ fileConpot          = open(filenameConpot,'r')
 st_resultsMessages = os.stat(filenameMessages)
 st_sizeMessages = st_resultsMessages[6]
 fileMessages.seek(st_sizeMessages)
-print "system     : Seek to end of " + filenameMessages
+print("system     : Seek to end of " + filenameMessages)
 
 # Look for HIDS events in Ossec alerts log file
 st_resultsOssec = os.stat(filenameOssec)
 st_sizeOssec = st_resultsOssec[6]
 fileOssec.seek(st_sizeOssec)
-print "system     : Seek to end of " + filenameOssec
+print("system     : Seek to end of " + filenameOssec)
 
 # Look for ClamAV events
 st_resultsClamd = os.stat(filenameClamd)
 st_sizeClamd = st_resultsClamd[6]
 fileClamd.seek(st_sizeClamd)
-print "system     : Seek to end of " + filenameClamd
+print("system     : Seek to end of " + filenameClamd)
 
 # Look for session data in Argus log file
 st_resultsArgus = os.stat(filenameArgus)
 st_sizeArgus = st_resultsArgus[6]
 fileArgus.seek(st_sizeArgus)
-print "system     : Seek to end of " + filenameArgus
+print("system     : Seek to end of " + filenameArgus)
 
 # Look for SMTP session data in Spamholed log file
 st_resultsSpam = os.stat(filenameSpam)
 st_sizeSpam = st_resultsSpam[6]
 fileSpam.seek(st_sizeSpam)
-print "system     : Seek to end of " + filenameSpam
+print("system     : Seek to end of " + filenameSpam)
 
 # Look for events in Kippo log file
 st_resultsKippo = os.stat(filenameKippo)
 st_sizeKippo = st_resultsKippo[6]
 fileKippo.seek(st_sizeKippo)
-print "system     : Seek to end of " + filenameKippo
+print("system     : Seek to end of " + filenameKippo)
 
 # Look for events in TSOM Threat Level Calculation log file
 st_resultsTSOM = os.stat(filenameTSOM)
 st_sizeTSOM = st_resultsTSOM[6]
 fileTSOM.seek(st_sizeTSOM)
-print "system     : Seek to end of " + filenameTSOM
+print("system     : Seek to end of " + filenameTSOM)
 
 # Look for events in Telnet log file
 st_resultsTelnet = os.stat(filenameTelnet)
 st_sizeTelnet    = st_resultsTelnet[6]
 fileTelnet.seek(st_sizeTelnet)
-print "system     : Seek to end of " + filenameTelnet
+print("system     : Seek to end of " + filenameTelnet)
 
 # Look for Amun malware analysis malware analysis submissions
 st_resultsAmunSubmit = os.stat(filenameAmunSubmit)
 st_sizeAmunSubmit = st_resultsAmunSubmit[6]
 fileAmunSubmit.seek(st_sizeAmunSubmit)
-print "system     : Seek to end of " + filenameAmunSubmit
+print("system     : Seek to end of " + filenameAmunSubmit)
 
 # Look for Amun malware analysis exploit messages
 st_resultsAmunExploit = os.stat(filenameAmunExploit)
 st_sizeAmunExploit    = st_resultsAmunExploit[6]
 fileAmunExploit.seek(st_sizeAmunExploit)
-print "system     : Seek to end of " + filenameAmunExploit
+print("system     : Seek to end of " + filenameAmunExploit)
 
 # Look for Amun successful download attempts
 st_resultsAmunDownload = os.stat(filenameAmunDownload)
 st_sizeAmunDownload    = st_resultsAmunDownload[6]
 fileAmunDownload.seek(st_sizeAmunDownload)
-print "system     : Seek to end of " + filenameAmunDownload
+print("system     : Seek to end of " + filenameAmunDownload)
 
 # Look for Glastopf web attacks
 st_resultsGlastopf = os.stat(filenameGlastopf)
 st_sizeGlastopf    = st_resultsGlastopf[6]
 fileGlastopf.seek(st_sizeGlastopf)
-print "system     : Seek to end of " + filenameGlastopf
+print("system     : Seek to end of " + filenameGlastopf)
 
 # Look for PADS discovered assets
 st_resultsPads = os.stat(filenamePads)
 st_sizePads    = st_resultsPads[6]
 filePads.seek(st_sizePads)
-print "system     : Seek to end of " + filenamePads
+print("system     : Seek to end of " + filenamePads)
 
 # Look for PASSER discovered assets
 st_resultsPasser = os.stat(filenamePasser)
 st_sizePasser    = st_resultsPasser[6]
 filePasser.seek(st_sizePasser)
-print "system     : Seek to end of " + filenamePasser
+print("system     : Seek to end of " + filenamePasser)
 
 # Look for IPLOG scans
 st_resultsIplog  = os.stat(filenameIplog)
 st_sizeIplog     = st_resultsIplog[6]
 fileIplog.seek(st_sizeIplog)
-print "system     : Seek to end of " + filenameIplog
+print("system     : Seek to end of " + filenameIplog)
 
 # Look for LMD malware detection
 st_resultsMaldet  = os.stat(filenameMaldet)
 st_sizeMaldet     = st_resultsMaldet[6]
 fileMaldet.seek(st_sizeMaldet)
-print "system     : Seek to end of " + filenameMaldet
+print("system     : Seek to end of " + filenameMaldet)
 
 # Look for remaining probes to honeytrap
 st_resultsHoneytrap  = os.stat(filenameHoneytrap)
 st_sizeHoneytrap     = st_resultsHoneytrap[6]
 fileHoneytrap.seek(st_sizeHoneytrap)
-print "system     : Seek to end of " + filenameHoneytrap
+print("system     : Seek to end of " + filenameHoneytrap)
 
 # Look for Sagan HIDS / Amun events - correlated events but not Snort events
 #st_resultsSagan = os.stat(filenameSagan)
@@ -1269,61 +1269,61 @@ print "system     : Seek to end of " + filenameHoneytrap
 st_resultsSnort = os.stat(filenameSnort)
 st_sizeSnort    = st_resultsSnort[6]
 fileSnort.seek(st_sizeSnort)
-print "system     : Seek to end of " + filenameSnort
+print("system     : Seek to end of " + filenameSnort)
 
 # Look for @netmenaces events
 st_resultsNetmenaces = os.stat(filenameNetmenaces)
 st_sizeNetmenaces    = st_resultsNetmenaces[6]
 fileNetmenaces.seek(st_sizeNetmenaces)
-print "system     : Seek to end of " + filenameNetmenaces
+print("system     : Seek to end of " + filenameNetmenaces)
 
 # Look for @evilafoot events
 st_resultsEvilafoot = os.stat(filenameEvilafoot)
 st_sizeEvilafoot    = st_resultsEvilafoot[6]
 fileEvilafoot.seek(st_sizeEvilafoot)
-print "system     : Seek to end of " + filenameEvilafoot
+print("system     : Seek to end of " + filenameEvilafoot)
 
 # Look for Suricata events
 st_resultsSur = os.stat(filenameSur)
 st_sizeSur    = st_resultsSur[6]
 fileSur.seek(st_sizeSur)
-print "system     : Seek to end of " + filenameSur
+print("system     : Seek to end of " + filenameSur)
 
 # Look for Shadow Snort events
 st_resultsShadowSnort = os.stat(filenameShadowSnort)
 st_sizeShadowSnort    = st_resultsShadowSnort[6]
 fileShadowSnort.seek(st_sizeShadowSnort)
-print "system     : Seek to end of " + filenameShadowSnort
+print("system     : Seek to end of " + filenameShadowSnort)
 
 # Look for Spade Snort events
 st_resultsSpadeSnort = os.stat(filenameSpadeSnort)
 st_sizeSpadeSnort    = st_resultsSpadeSnort[6]
 fileSpadeSnort.seek(st_sizeSpadeSnort)
-print "system     : Seek to end of " + filenameSpadeSnort
+print("system     : Seek to end of " + filenameSpadeSnort)
 
 # Look for Fwsnort events
 st_resultsFwSnort = os.stat(filenameFwSnort)
 st_sizeFwSnort    = st_resultsFwSnort[6]
 fileFwSnort.seek(st_sizeFwSnort)
-print "system     : Seek to end of " + filenameFwSnort
+print("system     : Seek to end of " + filenameFwSnort)
 
 # Look for Honeyd events
 st_resultsHoneyd = os.stat(filenameHoneyd)
 st_sizeHoneyd    = st_resultsHoneyd[6]
 fileHoneyd.seek(st_sizeHoneyd)
-print "system     : Seek to end of " + filenameHoneyd
+print("system     : Seek to end of " + filenameHoneyd)
 
 # Look for Netflow events
 st_resultsNetflow = os.stat(filenameNetflow)
 st_sizeNetflow    = st_resultsNetflow[6]
 fileNetflow.seek(st_sizeNetflow)
-print "system     : Seek to end of " + filenameNetflow
+print("system     : Seek to end of " + filenameNetflow)
 
 # Look for Defcon events generated by sec
 st_resultsDefcon = os.stat(filenameDefcon)
 st_sizeDefcon    = st_resultsDefcon[6]
 fileDefcon.seek(st_sizeDefcon)
-print "system     : Seek to end of " + filenameDefcon
+print("system     : Seek to end of " + filenameDefcon)
 
 # Look for interesting events in Bro connection log
 #st_resultsBroCon = os.stat(filenameBroCon)
@@ -1335,19 +1335,19 @@ print "system     : Seek to end of " + filenameDefcon
 st_resultsAuth = os.stat(filenameAuth)
 st_sizeAuth    = st_resultsAuth[6]
 fileAuth.seek(st_sizeAuth)
-print "system     : Seek to end of " + filenameAuth
+print("system     : Seek to end of " + filenameAuth)
 
 # Look for interesting events in honeyrtr AAA accounting log
 st_resultsAcct = os.stat(filenameAcct)
 st_sizeAcct    = st_resultsAcct[6]
 fileAcct.seek(st_sizeAcct)
-print "system     : Seek to end of " + filenameAcct
+print("system     : Seek to end of " + filenameAcct)
 
 # Look for interesting events in p0f log
 st_resultsp0f = os.stat(filenamep0f)
 st_sizep0f    = st_resultsp0f[6]
 filep0f.seek(st_sizep0f)
-print "system     : Seek to end of " + filenamep0f
+print("system     : Seek to end of " + filenamep0f)
 
 # Look for interesting events in Kojoney guru log
 #st_resultsguru = os.stat(filenameguru)
@@ -1359,22 +1359,22 @@ print "system     : Seek to end of " + filenamep0f
 st_resultsrouter = os.stat(filenamerouter)
 st_sizerouter    = st_resultsrouter[6]
 filerouter.seek(st_sizerouter)
-print "system     : Seek to end of " + filenamerouter
+print("system     : Seek to end of " + filenamerouter)
 
 # Look for interesting events in honey router (IPv6) syslog
 st_resultsrouterv6 = os.stat(filenamerouterv6)
 st_sizerouterv6    = st_resultsrouterv6[6]
 filerouterv6.seek(st_sizerouterv6)
-print "system     : Seek to end of " + filenamerouterv6
+print("system     : Seek to end of " + filenamerouterv6)
 
 # Look for interesting events in Conpot SCADA honepot syslog
 st_resultsConpot = os.stat(filenameConpot)
 st_sizeConpot    = st_resultsConpot[6]
 fileConpot.seek(st_sizeConpot)
-print "system     : Seek to end of " + filenameConpot
+print("system     : Seek to end of " + filenameConpot)
 
-print " "
-print "Waiting..."
+print(" ")
+print("Waiting...")
 
 # TransactionId - make this serialised and permanent at some point - BUG
 txnId = -1
@@ -1548,7 +1548,7 @@ while True:
             #print "nothing in Amun submissions.log file to process"
             fileAmunSubmit.seek(whereAmunSubmit)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Amun submissions file to process !"
+            print("*** NEW EVENT in Amun submissions file to process !")
             tweet = kojoney_amun_parse.processAmunSubmit(lineAmunSubmit)
             if tweet != None :
                 twitter_funcs.addTweetToQueue(tweet,geoip=False)
@@ -1557,7 +1557,7 @@ while True:
             #print "nothing in Amun exploit file to process"
             fileAmunExploit.seek(whereAmunExploit)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Amun exploit file to process !"
+            print("*** NEW EVENT in Amun exploit file to process !")
             tweet = kojoney_amun_parse.processAmunExploit(lineAmunExploit)
             if tweet != None :
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)      
@@ -1566,7 +1566,7 @@ while True:
             #print "nothing in Clamd log file to process"
             fileClamd.seek(whereClamd)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Clamd log file to process !"
+            print("*** NEW EVENT in Clamd log file to process !")
             tweet = kojoney_clamd_parse.processClamd(lineClamd,sensorId,txnId)
             if tweet != None :
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)      
@@ -1575,7 +1575,7 @@ while True:
             #print "nothing in Amun download file to process"
             fileAmunDownload.seek(whereAmunDownload)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Amun download file to process !"
+            print("*** NEW EVENT in Amun download file to process !")
             tweet = kojoney_amun_parse.processAmunDownload(lineAmunDownload)
             if tweet != None :
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1594,7 +1594,7 @@ while True:
             #print "nothing in Glastopf log to process"
             fileGlastopf.seek(whereGlastopf)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Glastopf log to process !"
+            print("*** NEW EVENT in Glastopf log to process !")
             tweet = kojoney_glastopf_parse.processGlastopf(txnId,sensorId,lineGlastopf)
             if tweet != None :
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1615,7 +1615,7 @@ while True:
             #print "nothing in PASSER log to process"
             filePasser.seek(wherePasser)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in PASSER log to process !"
+            print("*** NEW EVENT in PASSER log to process !")
             tweet = kojoney_passer_parse.processPasser(linePasser)
             if tweet != None :
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1646,8 +1646,8 @@ while True:
             #print "nothing in Spamholed log to process"
             fileSpam.seek(whereSpam)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in SPAM log to process !"
-            print lineSpam
+            print("*** NEW EVENT in SPAM log to process !")
+            print(lineSpam)
             tweets = kojoney_spamhole_parse.processSpamholed(lineSpam)
             #if tweets != None and len(tweets) != 0 :
             #    for tweet in tweets :
@@ -1658,7 +1658,7 @@ while True:
             #print "nothing in Argus log to process"
             fileArgus.seek(whereArgus)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Argus log to process !"
+            print("*** NEW EVENT in Argus log to process !")
             tweets = kojoney_argus_parse.processArgus(txnId,sensorId,lineArgus)	# return multiple Tweets
             if tweets != None and len(tweets) != 0 :
                 for tweet in tweets :
@@ -1669,7 +1669,7 @@ while True:
             #print "nothing in Honeytrap log to process"
             fileHoneytrap.seek(whereHoneytrap)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Honeytrap log to process !"
+            print("*** NEW EVENT in Honeytrap log to process !")
             tweet = kojoney_honeytrap_parse.processHoneytrap(txnId,sensorId,lineHoneytrap)
             if tweet != None :
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1679,7 +1679,7 @@ while True:
             #print "nothing in AAA auth log to process"
             fileAuth.seek(whereAuth)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Honey Router AAA Authentication log to process !"
+            print("*** NEW EVENT in Honey Router AAA Authentication log to process !")
             tweet = kojoney_aaa_parse.processAuth(lineAuth)
             if tweet != None :
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1689,7 +1689,7 @@ while True:
             #print "nothing in AAA auth log to process"
             fileAcct.seek(whereAcct)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Honey Router AAA Accounting log to process !"
+            print("*** NEW EVENT in Honey Router AAA Accounting log to process !")
             tweet = kojoney_aaa_parse.processAcct(lineAcct)
             if tweet != None :
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1719,7 +1719,7 @@ while True:
             #print "nothing in router syslog to process"
             filerouter.seek(whererouter)
         else :			# new data has been added to router syslog file
-            print "*** NEW EVENT in Router honeypot (IPv4) syslog to process !"
+            print("*** NEW EVENT in Router honeypot (IPv4) syslog to process !")
             tweet = kojoney_router_parse.processrouter(linerouter)
             if tweet != None :
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1729,7 +1729,7 @@ while True:
             #print "nothing in router syslog to process"
             filerouterv6.seek(whererouterv6)
         else :			# new data has been added to router syslog file
-            print "*** NEW EVENT in Router honeypot (IPv6) syslog to process !"
+            print("*** NEW EVENT in Router honeypot (IPv6) syslog to process !")
             tweet = kojoney_router_parse.processrouterv6(linerouterv6)
             
             if tweet != None :
@@ -1740,7 +1740,7 @@ while True:
             #print "nothing in Conpot syslog to process"
             fileConpot.seek(whereConpot)
         else :			# new data has been added to router syslog file
-            print "*** NEW EVENT in Conpot SCADA honeypot syslog to process !"
+            print("*** NEW EVENT in Conpot SCADA honeypot syslog to process !")
             tweet = kojoney_conpot_parse.processConpot(lineConpot)
             
             if tweet != None :
@@ -1751,7 +1751,7 @@ while True:
         #    print "nothing in Ossec feed to process"
             fileOssec.seek(whereOssec)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Ossec file to process !"
+            print("*** NEW EVENT in Ossec file to process !")
             tweet = kojoney_ossec_parse.processOssecSyslog(txnId,sensorId,lineOssec)
         
         # Add the GeoIP bit when this is working
@@ -1770,7 +1770,7 @@ while True:
         #    #print "nothing in Snort event feed to process"
             fileSnort.seek(whereSnort)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Snort alert file (Internal IDS) to process !"
+            print("*** NEW EVENT in Snort alert file (Internal IDS) to process !")
             tweet = kojoney_shadow_snort_parse.processSnortSyslog(lineSnort)
             if tweet != None:	# not every line in Snort is required to be tweeted
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1779,7 +1779,7 @@ while True:
             #print "nothing in Snort event feed to process"
             fileSur.seek(whereSur)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Suricata IDS alert file to process !"
+            print("*** NEW EVENT in Suricata IDS alert file to process !")
             tweet = kojoney_suricata_parse.processSur(lineSur)
             if tweet != None:	# 	not every line in Snort is required to be tweeted
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1788,7 +1788,7 @@ while True:
             #print "nothing in Shadow Snort event feed to process"
             fileShadowSnort.seek(whereShadowSnort)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Shadow Snort IDS (External IDS) alert file to process !"
+            print("*** NEW EVENT in Shadow Snort IDS (External IDS) alert file to process !")
             tweet = kojoney_shadow_snort_parse.processSnortSyslog(lineShadowSnort)
             if tweet != None:	# 	not every line in Shadow Snort is required to be tweeted
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1797,7 +1797,7 @@ while True:
             #print "nothing in Spade Snort event feed to process"
             fileSpadeSnort.seek(whereSpadeSnort)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Spade Snort ADS (External ADS) alert file to process !"
+            print("*** NEW EVENT in Spade Snort ADS (External ADS) alert file to process !")
             tweet = kojoney_spade_parse.processSpadeSyslog(lineSpadeSnort)
             if tweet != None:	# 	not every line in Spade Snort is required to be tweeted
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1806,21 +1806,21 @@ while True:
             #print "nothing in Netmenaces event feed to process"
             fileNetmenaces.seek(whereNetmenaces)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in @netmenaces (External Twitter Honeypot) alert file to process for IDMEF !"
+            print("*** NEW EVENT in @netmenaces (External Twitter Honeypot) alert file to process for IDMEF !")
             kojoney_netmenaces_idmef.sendNetmenacesIDMEF(lineNetmenaces)
         
         if not lineEvilafoot :		# no data in feed
             #print "nothing in Evilafoot event feed to process"
             fileEvilafoot.seek(whereEvilafoot)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in @evilafoot (External Twitter Honeypot) alert file to process for IDMEF !"
+            print("*** NEW EVENT in @evilafoot (External Twitter Honeypot) alert file to process for IDMEF !")
             kojoney_netmenaces_idmef.sendEvilafootIDMEF(lineEvilafoot)
             
         if not lineFwSnort:		# no data in feed
             #print "nothing in Fwsnort event feed to process"
             fileFwSnort.seek(whereFwSnort)
         else :			# new data has been added to log file
-            print "*** NEW EVENT in Fwsnort IDS alert file to process !"
+            print("*** NEW EVENT in Fwsnort IDS alert file to process !")
             #tweet = kojoney_fwsnort_parse.processFwSnortSyslog(lineFwSnort)
             #if tweet != None:	# 	not every line in Fwsnort is required to be tweeted
             #    twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1835,7 +1835,7 @@ while True:
             #print "nothing in Kippo event feed to process"
             fileKippo.seek(whereKippo)
         else :			# 	new data has been added to log file
-            print "*** NEW EVENT in Kippo log file to process !"
+            print("*** NEW EVENT in Kippo log file to process !")
             tweet = kojoney_kippo_parse.processKippo(txnId,sensorId,lineKippo)
             if tweet != None:		# not every line in Kippo log file is required to be tweeted
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1854,7 +1854,7 @@ while True:
             #print "nothing in Telnet event feed to process"
             fileTelnet.seek(whereTelnet)
         else :			# 	new data has been added to log file
-            print "*** NEW EVENT in Telnet log file to process !"
+            print("*** NEW EVENT in Telnet log file to process !")
             tweet = kojoney_telnetd_parse.processTelnetd(txnId,sensorId,lineTelnet)
             if tweet != None:		# not every line in Telnet log file is required to be tweeted
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
@@ -1863,22 +1863,22 @@ while True:
             #print "nothing in Honeyd event feed to process"
             fileHoneyd.seek(whereHoneyd)
         else :				# new data has been added to log file
-            print "*** NEW EVENT in Honeyd log file to process !"
-            print lineHoneyd
+            print("*** NEW EVENT in Honeyd log file to process !")
+            print(lineHoneyd)
             tweet,flowEvent = kojoney_honeyd_parse.processHoneyd(lineHoneyd)
             #print tweet
             #print flowEvent
             if tweet != None :		# not every line in Honeyd log file is required to be tweeted
                 twitter_funcs.addTweetToQueue(tweet,geoip=True)
             if len(flowEvent) != 0 :
-                print "Send event to BRX" + flowEvent.__str__()    
+                print("Send event to BRX" + flowEvent.__str__())    
                 kojoney_blackrain.sendEvent(flowEvent)			# send the event to BRX
       
         if not lineNetflow:		# no data in feed
             #print "nothing in Netflow event feed to process"
             fileNetflow.seek(whereNetflow)
         else :				# new data has been added to log file
-            print "*** NEW EVENT in Netflow event file to process !"
+            print("*** NEW EVENT in Netflow event file to process !")
             tweet,flowEvent = kojoney_netflow_parse.processNetflow(lineNetflow)
             
             # something broke on 1 or 2 december so dont tweet until fixed
@@ -1905,7 +1905,7 @@ while True:
         # this can be a float for sub-second sleep    
         time.sleep(0.5)		# 0.2 second
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : main() exception caught = " + `e`)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : main() exception caught = " + repr(e))
         sys.exit()              
                                              

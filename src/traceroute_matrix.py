@@ -19,9 +19,9 @@ def traceroute(sensorId,ip,hops,fpDebug=None):
      asn = []
      asnUnique = []
      
-     print "----------------------"
+     print("----------------------")
      if fpDebug != None:
-         print >> fpDebug,"-------------"
+         print("-------------", file=fpDebug)
      
      if hops != 0:
          #cmdLine = "/usr/local/bin/traceroute -p 53 -A -m " + hops.__str__() + " " + ip
@@ -29,26 +29,26 @@ def traceroute(sensorId,ip,hops,fpDebug=None):
      else:
          #cmdLine = "/usr/local/bin/traceroute -p 53 -A " + ip
          cmdLine = "/usr/local/bin/traceroute -n " + ip  
-     print cmdLine    
+     print(cmdLine)    
 
      pipe = os.popen(cmdLine,'r')
      if pipe == None :
          syslog.syslog("getP0fInfo() os.popen() returned None for " + cmdLine)
      raw = pipe.read().strip()
      if fpDebug != None:
-         print >> fpDebug,raw
-     print "raw = " + raw.__str__()                                  
+         print(raw, file=fpDebug)
+     print("raw = " + raw.__str__())                                  
 
      #asn = re.findall("AS(\d+)",raw)
      ipList = re.findall("(\d+\.\d+\.\d+\.\d+)",raw)
-     print "traceroute() : list of IPs = " + ipList.__str__()
+     print("traceroute() : list of IPs = " + ipList.__str__())
 
      for ip in ipList[3:] :
          a = ipintellib.ip2asn(ip)    
          #asn.append(a['as'] + ":" + a['registeredCode'])
          asn.append(a['registeredCode'])
      
-     print "asn = " + asn.__str__()    
+     print("asn = " + asn.__str__())    
      #sys.exit()
 
      # Pre-pend sensorId to start of AS Path
@@ -70,9 +70,9 @@ def traceroute(sensorId,ip,hops,fpDebug=None):
      
      # Eliminate duplicates
      asnUnique = eliminateASpathDuplicates(asnUnique)
-     print asnUnique                
+     print(asnUnique)                
      if fpDebug != None:
-         print >> fpDebug,"traceroute(out) : " + asnUnique.__str__()
+         print("traceroute(out) : " + asnUnique.__str__(), file=fpDebug)
      
      return asnUnique
 
@@ -83,10 +83,10 @@ def eliminateASpathDuplicates(asPath):
     asnUnique = []
     
     a = len(asPath)
-    print a
+    print(a)
     asnUnique.append(asPath[0])				# restore HPOT tag
     
-    print "eliminateASpathDuplicates() : asPath raw     : " + asPath.__str__()
+    print("eliminateASpathDuplicates() : asPath raw     : " + asPath.__str__())
     for i in range(0,len(asPath)-2):
         if asPath[i+1] != asPath[i] :
             if asPath[i+1] != "28513" and asPath[i+1] != "8151":	# IP is private IP ?
@@ -94,7 +94,7 @@ def eliminateASpathDuplicates(asPath):
     
     asnUnique.append(asPath[a-1])			# restore attacker IP and CC            
     
-    print "eliminateASpathDuplicates() : asPath cleaned : " + asnUnique.__str__()
+    print("eliminateASpathDuplicates() : asPath cleaned : " + asnUnique.__str__())
     return asnUnique 
 
 
@@ -104,7 +104,7 @@ def eliminateASpathDuplicates(asPath):
 def removeCore(asPath):
     a = []
     b = len(asPath)
-    print "removeCore() : asPath=" + asPath.__str__()
+    print("removeCore() : asPath=" + asPath.__str__())
     
     
     a.append(asPath[0])				# Honeypot sensorID
@@ -112,7 +112,7 @@ def removeCore(asPath):
     a.append("INTERNET_CORE")
     if b >= 5 :
          a.append(asPath[len(asPath)-3])     	# Attacker AS
-         print "b=" + b.__str__()
+         print("b=" + b.__str__())
     a.append(asPath[len(asPath)-2])     	# Attacker AS 
     a.append(asPath[len(asPath)-1])		# Attacker IP address
     
@@ -126,25 +126,25 @@ def removeCore(asPath):
 # AS4567,AS2856
 # CN:124.105.166.228
 def afterglow(asPath,fpOut,fpDebug):
-    print "afterglow() : asPath = " + asPath.__str__()
+    print("afterglow() : asPath = " + asPath.__str__())
     
     # Write the AS Path info to debug file
-    print >> fpDebug,"afterglow(in) : " + asPath.__str__()
+    print("afterglow(in) : " + asPath.__str__(), file=fpDebug)
        
     for i in range(0,len(asPath)-1):
         #print asPath[i]
         a = asPath[i] + "," + asPath[i+1]
-        print >> fpOut,a    
-        print >> fpDebug,a
-        print a
+        print(a, file=fpOut)    
+        print(a, file=fpDebug)
+        print(a)
     
     return None 
 
 # append AfterGlow-compatible list of attacker IP and open TCP ports to file 
 def afterglowPorts(ip,openPorts,fpOut,fpDebug):
     a = "afterglowPorts() : openPorts = " + openPorts.__str__()
-    print a
-    print >> fpDebug,a
+    print(a)
+    print(a, file=fpDebug)
     
     geoIP = ipintellib.geo_ip(ip)
     countryCode = geoIP['countryCode']        
@@ -155,9 +155,9 @@ def afterglowPorts(ip,openPorts,fpOut,fpDebug):
     # Write open ports info to afterglow file   
     for i in openPorts:
         a = i.__str__() + "," + attacker
-        print >> fpOut,a    
-        print >> fpDebug,a
-        print a
+        print(a, file=fpOut)    
+        print(a, file=fpDebug)
+        print(a)
     
     return None 
 
@@ -196,17 +196,17 @@ def main(argv):
                 dstIP   = ip[1][0]
                 dstPort = ip[1][1]
                 #print "srcIP=" + srcIP + " dstPort=" + dstPort
-                if ipHash.has_key(srcIP) != True and not "192.168.1." in srcIP :
+                if (srcIP in ipHash) != True and not "192.168.1." in srcIP :
                     # Does the destination port indicate an exploit ?
                     if dstPort == "135" or dstPort == "137" or dstPort == "139" or dstPort == "445" or dstPort == "1025" or dstPort == "2967" or dstPort == "1433" or dstPort == "5554" :
-                        print "botnet drone : srcIP=" + srcIP + " dstPort=" + dstPort
+                        print("botnet drone : srcIP=" + srcIP + " dstPort=" + dstPort)
                         ipHash[srcIP] = 1
                         attackers.append(srcIP)
                     
-    print "Number of unique attacker IPs found = " + len(attackers).__str__()
-    print " "
-    print attackers
-    print " "
+    print("Number of unique attacker IPs found = " + len(attackers).__str__())
+    print(" ")
+    print(attackers)
+    print(" ")
         
     sensorId = "666666666666"
     sensorId = "s:ermin"
@@ -222,7 +222,7 @@ def main(argv):
     syslog.syslog("Started traceroute scan to " + len(attackers).__str__() + " attacker IPs, max hops=" + hops.__str__() + "...")
     for ip in attackers:
          a = traceroute(sensorId,ip,hops,fpDebug)		
-         print "AsPath = " + a.__str__()
+         print("AsPath = " + a.__str__())
          
          #a = removeCore(a)
          #print "AsPath(Core Removed) = " + a.__str__()

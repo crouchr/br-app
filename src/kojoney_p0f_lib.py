@@ -75,25 +75,25 @@ def getp0f(srcIP,dstIP,dstPort):
         # Shorten for Twitter 
         #p0f['genre'].replace("Windows","Win32")
         #p0f['link'].replace("Ethernet/modem","Eth")
-        print "getp0f() returns : " + p0f.__str__()
+        print("getp0f() returns : " + p0f.__str__())
         
         return p0f
         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_p0f_lib.py : getp0f() : exception : " + e.__str__() + " " + line 
         syslog.syslog(msg)
-        print msg
+        print(msg)
         return None
 
 # TEST HARNESS
 if __name__ == '__main__' :
 
-    print "Started"
+    print("Started")
     
     # Test 1 - modify - e.g. use GRC shields up
     # =========================================
     #120.33.99.226:38715 - Linux 2.6, seldom 2.4 (older, 4) (up: 180654 secs) -> 192.168.1.60:6004
-    print "Test 1"
+    print("Test 1")
     srcIP = "120.33.99.226"
     dstIP = "192.168.1.60"
     dstPort = "6004"
@@ -101,13 +101,13 @@ if __name__ == '__main__' :
     p0fDict = getp0f(srcIP,dstIP,dstPort)
     
     if p0fDict != None:
-        print "p0fDict : " + p0fDict.__str__()
+        print("p0fDict : " + p0fDict.__str__())
     else:
-        print "Failed to determine p0fDict"
+        print("Failed to determine p0fDict")
     
     # Test 2 - GRC shields up
     # =======================
-    print "Test 2"
+    print("Test 2")
     srcIP = "4.79.142.206"
     dstIP = "192.168.1.60"
     dstPort = "18080"
@@ -115,13 +115,13 @@ if __name__ == '__main__' :
     p0fDict = getp0f(srcIP,dstIP,dstPort)
     
     if p0fDict != None:
-        print "p0fDict : " + p0fDict.__str__()
+        print("p0fDict : " + p0fDict.__str__())
     else:
-        print "Failed to determine p0fDict"
+        print("Failed to determine p0fDict")
     
     # Test 3 - always fail
     # ====================
-    print "Test 3"
+    print("Test 3")
     srcIP = "1.1.1.1"
     dstIP = "192.168.1.60"
     dstPort = "18080"
@@ -129,13 +129,13 @@ if __name__ == '__main__' :
     p0fDict = getp0f(srcIP,dstIP,dstPort)
     
     if p0fDict != None:
-        print "p0fDict : " + p0fDict.__str__()
+        print("p0fDict : " + p0fDict.__str__())
     else:
-        print "Failed to determine p0fDict"
+        print("Failed to determine p0fDict")
         
     # Test 4 - Mac Mini
     # =================
-    print "Test 4 - Macmini"
+    print("Test 4 - Macmini")
     srcIP = "192.168.1.75"
     dstIP = "192.168.1.60"
     dstPort = "54"
@@ -143,8 +143,8 @@ if __name__ == '__main__' :
     p0fDict = getp0f(srcIP,dstIP,dstPort)
     
     if p0fDict != None:
-        print "p0fDict : " + p0fDict.__str__()
+        print("p0fDict : " + p0fDict.__str__())
     else:
-        print "Failed to determine p0fDict"
+        print("Failed to determine p0fDict")
         
                                                                                                                                                                                                                    

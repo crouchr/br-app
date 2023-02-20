@@ -4,7 +4,7 @@
 
 import time, os , syslog , re 
 import twitter		# Google API
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 import ipintellib	# RCH library - master on mars
 import mailalert	# RCH library
@@ -37,7 +37,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -63,14 +63,14 @@ def statusAlert(subject,content):
         status = mailalert.mailalert(sender,destination,smtpServer,alertSubject,alertContent,debugLevel)        
         
         # uncomment the following line if you want to see the e-mail being sent
-        print "notify     : e-mail : subject=" + '"' + alertSubject + '"'  
+        print("notify     : e-mail : subject=" + '"' + alertSubject + '"')  
         
         # Add a record to syslog
         a = "Sent alert e-mail, Subject=" + alertSubject + " to " + destination[0]
         syslog.syslog(a)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : statusAlert() : " + `e`)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : statusAlert() : " + repr(e))
 
 # process kojoney_tail.log
 # this is too vebose - need to re-think this 
@@ -79,7 +79,7 @@ def processChannelTweet(line):
 
     try:
         fields=line.split(",")
-        print "processChannelTweet() : " + `fields`
+        print("processChannelTweet() : " + repr(fields))
         
         timeS       = fields[0]
         type        = fields[4]		# e.g. ids , flow , amun , aaa , honeyd
@@ -204,11 +204,11 @@ def processChannelTweet(line):
         # file needs to be touched
         fpOut = open(r'/home/var/log/kojoney_tail_tweets.csv','a')
         #secviz5_tweets.csv','a')
-        print >> fpOut,msg 
+        print(msg, file=fpOut) 
         fpOut.close()
 
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processChannelTweet() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processChannelTweet() exception caught = " + repr(e) + " line=" + line)
 
 
 # /var/log/messages   
@@ -230,7 +230,7 @@ def processMessages(line):
         if line.find("Accepted password for") == -1 :
             return
         
-        print "processMessages() : candidate line read from /var/log/messages : " + line
+        print("processMessages() : candidate line read from /var/log/messages : " + line)
                                                                                  
         # Parse
         # -----    
@@ -242,7 +242,7 @@ def processMessages(line):
         #username = fields[9]    
         pat = r'password for (\w+)'             # locate a number of IP addresses
         username = re.findall(pat,line)[0]     
-        print "kojoney_tweet.py : processMessages() : username is " + username
+        print("kojoney_tweet.py : processMessages() : username is " + username)
         
                                                                                                                                          
         srcIP   = ips[0]
@@ -253,7 +253,7 @@ def processMessages(line):
                                                                                                                                                                                          
         # Get OS type of SRC IP    
         
-        print "kojoney_tweet.py : processMessages() : p0f input is srcIP=" + srcIP + " dstIP=" + dstIP + " dstPort=" + dstPort
+        print("kojoney_tweet.py : processMessages() : p0f input is srcIP=" + srcIP + " dstIP=" + dstIP + " dstPort=" + dstPort)
         
         p0fInfo = p0fcmd.getP0fInfo(srcIP,"0",dstIP,dstPort);           # 0 = wildcard the srcPort
         if p0fInfo['result'] == True :                                  # p0f data is available   
@@ -289,11 +289,11 @@ def processMessages(line):
                 ",WHOIS=" + asNum + " (" + asRegisteredCode + ")" + \
                 ",GeoIP=" + countryCode + " " + city + " " + "%.2f" % longitude + "E"
                 
-        print "tweet before compression : " + msg
+        print("tweet before compression : " + msg)
         sendTweet(msg)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processMessages() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processMessages() exception caught = " + repr(e) + " line=" + line)
 
 
 #Jun 15 10:15:09 mars passwd[28828]: password for `test' changed by `test' 
@@ -314,7 +314,7 @@ def processSecure(line):
             
         if line.find(" password for ") == -1 :
             return
-        print "processSecure() : candidate line read from /var/log/secure : " + line
+        print("processSecure() : candidate line read from /var/log/secure : " + line)
                                                                                  
         # Parse
         # -----    
@@ -322,7 +322,7 @@ def processSecure(line):
         #ips = re.findall(pat,line)     
                                                                                                                  
         fields=line.split(" ")
-        print fields                            # locate username
+        print(fields)                            # locate username
         msg = ' '.join(fields[5:])
         
         #username = fields[8]    
@@ -360,11 +360,11 @@ def processSecure(line):
 
         msg  = "Password change : " + msg
                 
-        print "tweet before compression : " + msg
+        print("tweet before compression : " + msg)
         sendTweet(msg)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processSecure() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processSecure() exception caught = " + repr(e) + " line=" + line)
 
 
                                          
@@ -375,11 +375,11 @@ def processSebekTweet(line):
     ftpInfo = {}
     
     line=line.strip("\n")
-    print "entered processSebekTweet() with line=" + line
+    print("entered processSebekTweet() with line=" + line)
 
     try:
         filtered = filter_sebek.filterSebek(line)
-        print "processSebekTweet() : filtered = " + filtered
+        print("processSebekTweet() : filtered = " + filtered)
         
         # missing step is to normalise the sebek line i.e. to remove [BS] etc.
 
@@ -391,12 +391,12 @@ def processSebekTweet(line):
         
             # file needs to be touched - is this the daily file ?
             fpOut = open(r'/home/var/log/kojoney_tail_tweets.csv','a')
-            print >> fpOut,msg 
+            print(msg, file=fpOut) 
             fpOut.close()
             
             # for sebek lines containing "wget", perform additional analysis on destination URL
             if filtered.find("wget") != -1 :
-                print "kojoney_tweet.py : processSebekTweet() : wget found"
+                print("kojoney_tweet.py : processSebekTweet() : wget found")
                 url = extract_url.extractURL(filtered)	# Normalise URL
                 o = urlparse(url)
                 domain = "127.0.0.1"
@@ -432,18 +432,18 @@ def processSebekTweet(line):
                     ",WHOIS=" + asNum + " (" + asRegisteredCode + ")" + \
                     ",GeoIP=" + countryCode + " " + city + " " + "%.2f" % longitude + "E"
                 
-                    print msg
+                    print(msg)
                     sendTweet(msg)
                     # file needs to be touched - see above
                     fpOut = open(r'/home/var/log/kojoney_tail_tweets.csv','a')
-                    print >> fpOut,msg 
+                    print(msg, file=fpOut) 
                     fpOut.close()
                     
             # for sebek lines containing an IP address, perform additional analysis
             # only searches for 1 IP address
             pat = r'\d+\.\d+\.\d+\.\d+'             # locate a number of IP addresses
             ips = re.findall(pat,filtered)     
-            print "first IP address found = " + `ips[0]`
+            print("first IP address found = " + repr(ips[0]))
             if len(ips) != 0 :
                     ip = ips[0]
                     # Get DNS name
@@ -467,11 +467,11 @@ def processSebekTweet(line):
                     ",WHOIS=" + asNum + " (" + asRegisteredCode + ")" + \
                     ",GeoIP=" + countryCode + " " + city + " " + "%.2f" % longitude + "E"
                 
-                    print msg
+                    print(msg)
                     sendTweet(msg)
                     # file needs to be touched - see above
                     fpOut = open(r'/home/var/log/kojoney_tail_tweets.csv','a')
-                    print >> fpOut,msg 
+                    print(msg, file=fpOut) 
                     fpOut.close()
                     
                                                                                                                                                                                                                                                          
@@ -479,8 +479,8 @@ def processSebekTweet(line):
             #print "tweet filtered out : " + line
             pass
             
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processSebekTweet() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processSebekTweet() exception caught = " + repr(e) + " line=" + line)
 
 def processVisualisationTweet(line):
     #print "entered processVisualisationTweet()"
@@ -510,8 +510,8 @@ def processVisualisationTweet(line):
         #print "tweet=" + tweet
         sendTweet(tweet)
         
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : processVisualisationTweet() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : processVisualisationTweet() exception caught = " + repr(e) + " line=" + line)
 
 
 # wrapper for sending Tweets
@@ -523,7 +523,7 @@ def sendTweet(tweet_raw):
     
     now = time.time()
     
-    print "sendTweet(): raw = " + tweet_raw
+    print("sendTweet(): raw = " + tweet_raw)
     
     try:
         # Anonymise and shorten actual honeypot IP address to HPOT
@@ -608,9 +608,9 @@ def sendTweet(tweet_raw):
             return
     
         # Log all attempts to send Tweets
-        print "Tweet to be sent via Twitter API : " + tweet
+        print("Tweet to be sent via Twitter API : " + tweet)
         fpOut = open(r'/home/var/log/tweets.attempts.log.txt','a')
-        print >> fpOut,tweet 
+        print(tweet, file=fpOut) 
         fpOut.close()
 
         # ***************************************************************************
@@ -619,12 +619,12 @@ def sendTweet(tweet_raw):
         #status = "tweetDisabledInCode"
         # ***************************************************************************  
         #print "notify     : " + tweet
-        syslog.syslog("kojoney_tweet.py : TweetClient.PostUpdate() returned status=" + `status` + " for following Tweet : " + tweet)
+        syslog.syslog("kojoney_tweet.py : TweetClient.PostUpdate() returned status=" + repr(status) + " for following Tweet : " + tweet)
             
         # Log the successfully sent Tweets - have a .txt extension so Windoze can open it up
         # bug - need to check the status reurn from TweetClient
         fpOut = open(r'/home/var/log/tweets.log.txt','a')
-        print >> fpOut,"TWEET=" + tweet 
+        print("TWEET=" + tweet, file=fpOut) 
         fpOut.close()
 
         # This is too crude - it is triggering on Cisco p0f
@@ -638,8 +638,8 @@ def sendTweet(tweet_raw):
         
         time.sleep(0.5)					# crude rate limit 
     
-    except Exception,e:
-        syslog.syslog("kojoney_tweet.py : sendTweet() exception caught = " + `e` + " tweet=" + tweet)
+    except Exception as e:
+        syslog.syslog("kojoney_tweet.py : sendTweet() exception caught = " + repr(e) + " tweet=" + tweet)
 
     
                            
@@ -693,20 +693,20 @@ try:
     #print "Post a valid GeoTagged Tweet :"
     #status = TweetClient.PostUpdate("Banger tweet OK for GeoIP",lat=52.0,long=1.0)
     
-    print "Post a valid GeoTagged Tweet :"
+    print("Post a valid GeoTagged Tweet :")
     lat  = 53.56454
     long = -113.5
 
     #status = TweetClient.PostUpdate("This is a test Tweet sent using geotap API at epoch " + `time.time()` , lat=53.56454, long=-113.5)
-    status = TweetClient.PostUpdate("This is a test Tweet sent using geotap API at epoch " + `time.time()` , lat=lat , long=long)
+    status = TweetClient.PostUpdate("This is a test Tweet sent using geotap API at epoch " + repr(time.time()) , lat=lat , int=int)
 
     #print "Post a very long GeoTagged Tweet :"
     #status = TweetClient.PostUpdate("TW3 : Banger tweet OK for GeoIP 3",lat=53.549999923706052,long=-113.5)
 
-    print "Exiting."
+    print("Exiting.")
 
-except Exception,e:
-    syslog.syslog("kojoney_geoip.py : exception " + `e`)
+except Exception as e:
+    syslog.syslog("kojoney_geoip.py : exception " + repr(e))
     
 # Set the Kojoney Channel filename to scan
 #filename = '/home/var/log/kojoney_tail.log'

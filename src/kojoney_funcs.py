@@ -8,7 +8,7 @@ def makePidFile(name):
         
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()     
     #print "pid is " + `pid`
     return pid  # returns None if failed
@@ -33,9 +33,9 @@ def logDefconEvent(msg):
     msg = time.asctime(nowLocal) + " " + msg
     
     fp = open(r'/home/var/log/defconf_events.log',"a")
-    print >> fp,msg
+    print(msg, file=fp)
     fp.close()
-    print "**** Logged defcon event to file : " + msg
+    print("**** Logged defcon event to file : " + msg)
 
 
 # This file used to only be netflow events  but now it is all defcon related events
@@ -47,10 +47,10 @@ def writeDefconEvent(src,line):
 
     # file needs to be touched - is this the daily file ?
     msg = src + ":" + line + " at " + time.asctime(nowLocal)
-    print "kojoney_funcs.py : writeDefconEvent() : msg =" + msg
+    print("kojoney_funcs.py : writeDefconEvent() : msg =" + msg)
     
     fpOut = open(r'/home/var/log/netflow_events.log','a')
-    print >> fpOut,msg
+    print(msg, file=fpOut)
     fpOut.close()
 
 # Make he other functions in this file use this function
@@ -60,10 +60,10 @@ def appendGenericLogfile(filename,src,line):
 
     # file needs to be touched - is this the daily file ?
     msg = src + ":" + line + " at " + time.asctime(nowLocal)
-    print "kojoney_funcs.py : appendGenericLogfile() : msg =" + msg
+    print("kojoney_funcs.py : appendGenericLogfile() : msg =" + msg)
     
     fpOut = open(filename,'a')
-    print >> fpOut,msg
+    print(msg, file=fpOut)
     fpOut.close()
 
 
@@ -76,10 +76,10 @@ def calcLocalTime(longitude):
     now = time.time()
     localTime = now + int(offsetSecs)
                                         
-    print "offsetSecs        : " + `offsetSecs`
-    print "localTime (epoch) : " + `localTime` 
+    print("offsetSecs        : " + repr(offsetSecs))
+    print("localTime (epoch) : " + repr(localTime)) 
     timeTuple = time.localtime(localTime)
-    print "localTime         : " + time.asctime(timeTuple)
+    print("localTime         : " + time.asctime(timeTuple))
                                                             
     return time.asctime(timeTuple)
                                                                 

@@ -77,9 +77,9 @@ def processTSOM(txnId,sensorId,line):
         else:
             return None
             
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_tsom_parse.py : processTsom() : " + e.__str__() + " line=" + line
-        print msg
+        print(msg)
         syslog.syslog(msg)
         
                                
@@ -111,7 +111,7 @@ if __name__ == '__main__' :
             msg = processTSOM(123,"TEST",line)
         
         if msg != None:
-            print "*** Tweet : [" + msg +"]"
+            print("*** Tweet : [" + msg +"]")
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

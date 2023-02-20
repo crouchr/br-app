@@ -15,9 +15,9 @@ def isPadsAnomaly(ip,service,app,port):
             
         return None    
         
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_pads_parse.py : isPadsAnomaly() : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
     
@@ -122,8 +122,8 @@ def processPads(line):
         # Write to more useful log file
         logMsg = ip + "," + port + ',' + service + "," + app + "," + appAddinfo + "," + "AS" + asInfo['as'] + "," + asInfo['registeredCode'] + "," + dnsInfo['name'].rstrip('.') 
         fpOut = open('/home/var/log/pads-enhanced.log','a')
-        print >> fpOut,time.ctime() + "," + logMsg
-        print "processPads() : msg written to file : " + logMsg.__str__()
+        print(time.ctime() + "," + logMsg, file=fpOut)
+        print("processPads() : msg written to file : " + logMsg.__str__())
         fpOut.close()
      
         # Prepare list of Tweets       
@@ -134,9 +134,9 @@ def processPads(line):
  
         return tweetList
 
-    except Exception,e:
-        msg = "kojoney_pads_parse.py : processPads() : " + `e` + " line=" + line
-        print msg
+    except Exception as e:
+        msg = "kojoney_pads_parse.py : processPads() : " + repr(e) + " line=" + line
+        print(msg)
         syslog.syslog(msg)
         return None
                                
@@ -165,7 +165,7 @@ if __name__ == '__main__' :
             
         if tweetList != None:
             for tweet in tweetList:
-                print "*** Tweet : " + tweet
+                print("*** Tweet : " + tweet)
                        
         #print "sleeping..."
         # this can be a float for sub-second sleep    

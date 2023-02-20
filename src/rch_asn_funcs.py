@@ -51,7 +51,7 @@ def ip2asnCymru(ip):
         #print "raw2.split()=" + `n`
 
         if len(n) <= 2:
-            print "ip2asn(): not enough fields returned by WHOIS for ",ip
+            print("ip2asn(): not enough fields returned by WHOIS for ",ip)
             resultDict['as']             = 'AS-none'
             resultDict['netblock']       = 'whois-failed'
             resultDict['countryCode']    = 'whois-failed'
@@ -127,28 +127,28 @@ def ip2asnCymru(ip):
                     #print "AS " + `a` + " not seen before"
                 #    GlobalAS[a]=1
         else:
-            print "\nParse failed\n"
-            print "n[0]:" ,n[0]
-            print "n[1]:" ,n[1]
-            print "n[2]:" ,n[2]
-            print "n[3]:" ,n[3]
-            print "n[4]:" ,n[4]
-            print "n[5]:" ,n[5]
-            print "n[6]:" ,n[6]
-            print "n[7]:" ,n[7]
-            print "n[8]:" ,n[8]
-            print "n[9]:" ,n[9]
-            print "n[10]:",n[10]
-            print "n[11]:",n[11]
-            print "n[12]:",n[12]
-            print "n[13]:",n[13]
-            print "n[14]:",n[14]
+            print("\nParse failed\n")
+            print("n[0]:" ,n[0])
+            print("n[1]:" ,n[1])
+            print("n[2]:" ,n[2])
+            print("n[3]:" ,n[3])
+            print("n[4]:" ,n[4])
+            print("n[5]:" ,n[5])
+            print("n[6]:" ,n[6])
+            print("n[7]:" ,n[7])
+            print("n[8]:" ,n[8])
+            print("n[9]:" ,n[9])
+            print("n[10]:",n[10])
+            print("n[11]:",n[11])
+            print("n[12]:",n[12])
+            print("n[13]:",n[13])
+            print("n[14]:",n[14])
     
-    except Exception,e:
-        print "!!!!! ip2asnCymru(): Caught exception for following raw data for IP=" + ip
-        print "command-line:" + cmdLine
-        print "raw data    :" + raw2
-        print "exception   :" + `e`
+    except Exception as e:
+        print("!!!!! ip2asnCymru(): Caught exception for following raw data for IP=" + ip)
+        print("command-line:" + cmdLine)
+        print("raw data    :" + raw2)
+        print("exception   :" + repr(e))
 
     #print resultDict['registeredName']
 
@@ -309,12 +309,12 @@ def ip2asn(ip,routes=0):
     
         return resultDict
     
-    except Exception,e:
+    except Exception as e:
         #print "!!!!! ip2asn(): Caught exception for following raw data for IP=" + ip
         #print "command-line:" + cmdLine
         #print "raw data    :" + raw2
         #print "exception   :" + `e`
-        syslog.syslog("ip2asn(): Caught exception = " + `e` + " for IP=" + ip) 
+        syslog.syslog("ip2asn(): Caught exception = " + repr(e) + " for IP=" + ip) 
         return resultDict
 
 # e.g. asn = 34419
@@ -348,14 +348,14 @@ def asn2routes(asn):
                 #print "whoisAS = " + whoisAS
                 #print "asn     = " + asn
                 if whoisAS != "AS" + asn :
-                    raise Exception,"WHOIS route origin does not match expected"
+                    raise Exception("WHOIS route origin does not match expected")
                    
-    except Exception,e:
+    except Exception as e:
         #print "!!!!! asn2routes(): Caught exception for following raw data for AS=" + asn
         #print "command-line:" + cmdLine
         #print "raw data    :" + raw2
         #print "exception   :" + `e`
-        syslog.syslog("asn2routes(): Caught exception = " + `e` + " for AS=" + asn) 
+        syslog.syslog("asn2routes(): Caught exception = " + repr(e) + " for AS=" + asn) 
             
     return resultSeq        
                
@@ -363,19 +363,19 @@ def asn2routes(asn):
 if __name__ == "__main__" :
 
     routes = asn2routes("34419")
-    print "routes = " + `routes`
+    print("routes = " + repr(routes))
   
-    print "\ntest1\n-----"
+    print("\ntest1\n-----")
     asInfo = ip2asnCymru("217.41.27.169")
     #print asInfo['registeredName']
-    print asInfo['registeredCode']
-    print asInfo['as']
+    print(asInfo['registeredCode'])
+    print(asInfo['as'])
     
-    print "\ntest2\n-----"
+    print("\ntest2\n-----")
     asInfo = ip2asnCymru("41.222.232.123")
     #print asInfo['registeredName']
-    print asInfo['registeredCode']
-    print asInfo['as']
+    print(asInfo['registeredCode'])
+    print(asInfo['as'])
     
     #if asInfo['error'] != None:
     #    print "ip2asn error : [" + asInfo['error'] + "]"

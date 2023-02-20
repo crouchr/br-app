@@ -77,8 +77,8 @@ def processrouter(line):
         #print "processrouter() : tweet = " + tweet        
         return tweet
         
-    except Exception,e:
-        syslog.syslog("kojoney_router_parse.py : processrouter() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_router_parse.py : processrouter() : " + repr(e) + " line=" + line)
 
 # Tweet interesting honey router syslog events
 # Do not Tweet if source IP is in 192.168.1.0.0/24
@@ -108,8 +108,8 @@ def processrouterv6(line):
         
         return tweet
         
-    except Exception,e:
-        syslog.syslog("kojoney_router_parse.py : processrouterv6() : " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_router_parse.py : processrouterv6() : " + repr(e) + " line=" + line)
                 
 if __name__ == '__main__' :
     
@@ -123,5 +123,5 @@ if __name__ == '__main__' :
         #tweet = processrouterv6(line)
         
         if tweet != None:
-            print "tweet:" + tweet
+            print("tweet:" + tweet)
         

@@ -49,7 +49,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -61,7 +61,7 @@ def processURLfoundWget(line,test=False):
 
     try :
         line=line.strip("\n")
-        print "processURLfoundWget() : line read : " + line
+        print("processURLfoundWget() : line read : " + line)
         if line.find("GURU,") != -1 :
             return # Do not process GURU records
                 
@@ -96,7 +96,7 @@ def processURLfoundWget(line,test=False):
         url=url.rstrip("?")
         url=url.rstrip("?")
         
-        print "url is " + url.__str__()
+        print("url is " + url.__str__())
         #t = t[:t.find(" ")]
         # Write the URL to a file to be picked up by kojoney_analyst for download etc
         a = url.split("->")[0]
@@ -105,7 +105,7 @@ def processURLfoundWget(line,test=False):
         a = a[0]
 
         msg = "kojoney_guru.py : found url " + a
-        print msg
+        print(msg)
         
         # **********************************************************
         # Add URL Task to Job Queue for processing by kojoney_anubis
@@ -129,42 +129,42 @@ def processURLfoundWget(line,test=False):
             return None
                                                                                                                                          
         return ip
-    except Exception,e:
-        syslog.syslog("kojoney_guru.py : processURLfoundTweet() exception caught = " + `e` + " line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_guru.py : processURLfoundTweet() exception caught = " + repr(e) + " line=" + line)
 
 # Use wget to download the single malware file
 def retrieveSingleURL(url,ip):
 
     try :
-        print "retrieveURL() : url to be downloaded from " + ip + " is " + url
+        print("retrieveURL() : url to be downloaded from " + ip + " is " + url)
      
         # generate destination filename
-        dFilename = url + "--" + ip + "--" + `time.time()`
+        dFilename = url + "--" + ip + "--" + repr(time.time())
         #print "retrieveURL() : destination filename : " + dFilename
         
         # not working : bug
         #cmd = "wget -t 3 --directory-prefix=/home/var/haxxor_webs/honeytweeter-downloads --no-check-certificate" + " -O " + dFilename + " " + url 
         cmd = "wget --directory-prefix=/home/var/haxxor_webs/honeytweeter-downloads --no-check-certificate" + " " + url 
-        print "retrieveURL() : cmd to be exectuted : " + cmd
+        print("retrieveURL() : cmd to be exectuted : " + cmd)
         
         result = os.system(cmd)		# returns int
-        print "wget result is " + `result`         
-        syslog.syslog("kojoney_guru.py retrieveURL() : result=" + `result` + " for " + cmd)
+        print("wget result is " + repr(result))         
+        syslog.syslog("kojoney_guru.py retrieveURL() : result=" + repr(result) + " for " + cmd)
 
         # Downloading a file changes defcon status
         kojoney_funcs.writeDefconEvent("botwall","haxxor downloaded malware from " + ip + " file=" + url) 
             
-    except Exception,e:
-        syslog.syslog("kojoney_guru.py : retrieveURL() exception caught = " + `e` + " url=" + url)
+    except Exception as e:
+        syslog.syslog("kojoney_guru.py : retrieveURL() exception caught = " + repr(e) + " url=" + url)
 
 # Write tweet to file where it will get picked up by kojoney_tweet and sent
 # make this a global function so it can be used elsewhere e.g. by kojoney_analyst
 def addTweetToQueue(tweet):
     #print "-----------------"
-    print "*** tweet:" + tweet
+    print("*** tweet:" + tweet)
     
     fpOut = open(r'/home/var/log/kojoney_guru.txt','a')
-    print >> fpOut,tweet 
+    print(tweet, file=fpOut) 
     fpOut.close()
 
 # Write url to a file where it will be picked up by kojoney_anubis
@@ -179,7 +179,7 @@ def addUrlToFile(url,test=False):
         fpOut = open(r'/home/var/log/kojoney_analyst.txt','a')
     else:
         fpOut = open(r'/home/var/log/kojoney_analyst_testoutput.txt','a')
-    print >> fpOut,msg
+    print(msg, file=fpOut)
     fpOut.close()
 
 # Write ANUBIS report URLs to a file where it will be picked up by kojoney_anubis
@@ -200,10 +200,10 @@ def addAnubisURLtoFile(line,test=False):
         else:
             fpOut = open(r'/home/var/log/kojoney_analyst_testoutput.txt','a')
         
-        print >> fpOut,msg
+        print(msg, file=fpOut)
         fpOut.close()
     
-    except Exception,e:
+    except Exception as e:
         syslog.syslog("kojoney_guru.py : addAnubisURLtoFile() : " + e.__str__())            
 
 # Write Glastopf PHP file downloads to a file where it will be picked up by kojoney_anubis
@@ -224,11 +224,11 @@ def addPHPtoFile(line,test=False):
         else:
             fpOut = open(r'/home/var/log/kojoney_analyst_testoutput.txt','a')
         
-        print >> fpOut,msg
-        print "kojoney_guru.py : addPHPtoFile() : Added following to kojoney_analyst.txt : " + msg.__str__()
+        print(msg, file=fpOut)
+        print("kojoney_guru.py : addPHPtoFile() : Added following to kojoney_analyst.txt : " + msg.__str__())
         fpOut.close()
     
-    except Exception,e:
+    except Exception as e:
         syslog.syslog("kojoney_guru.py : addPHPtoFile() : " + e.__str__())            
 
 # Write IP address to a file where it will be picked up by kojoney_analyst
@@ -253,10 +253,10 @@ def addIPtoFile(ip,test=False):
             fpOut = open(r'/home/var/log/kojoney_analyst.txt','a')
         else:
             fpOut = open(r'/home/var/log/kojoney_analyst_testoutput.txt','a')
-        print >> fpOut,msg
+        print(msg, file=fpOut)
         fpOut.close()
     
-    except Exception,e:
+    except Exception as e:
         syslog.syslog("kojoney_guru.py : addIPtoFile() : " + e.__str__())            
 
 # Add an LMD task to Analyst Job Queue
@@ -275,10 +275,10 @@ def addLMDtoFile(line,test=False):
             fpOut = open(r'/home/var/log/kojoney_analyst.txt','a')
         else:
             fpOut = open(r'/home/var/log/kojoney_analyst_testoutput.txt','a')
-        print >> fpOut,msg
+        print(msg, file=fpOut)
         fpOut.close()
     
-    except Exception,e:
+    except Exception as e:
         syslog.syslog("kojoney_guru.py : addLMDtoFile() : " + e.__str__())            
                                    
 # -------------------------------------------------------
@@ -289,16 +289,16 @@ syslog.openlog("kojoney_guru",syslog.LOG_PID,syslog.LOG_LOCAL2)         # Set sy
 # Make pidfile so we can be monitored by monit        
 pid =  makePidFile("kojoney_guru")
 if pid == None:
-    syslog.syslog("Failed to create pidfile for pid " + `pid`)
+    syslog.syslog("Failed to create pidfile for pid " + repr(pid))
     sys.exit(0)
 else:
-    syslog.syslog("kojoney_guru.py started with pid " + `pid`)
+    syslog.syslog("kojoney_guru.py started with pid " + repr(pid))
                 
 # Send an email to say kojoney_tail has started
 now = time.time()
 nowLocal = time.gmtime(now)
 #makeMsg(0,"0","system,kojoney_viz started with pid=" + `pid` + " at localtime " + time.asctime(nowLocal))
-a = "kojoney_guru started with pid=" + `pid`
+a = "kojoney_guru started with pid=" + repr(pid)
 
 #filenameWget = '/home/var/log/tweets.attempts.log.txt' 		# real file
 filenameWget = '/home/var/log/tweet_queue.log'	 			# real file
@@ -315,16 +315,16 @@ test = False
 tail = True
 
 # Find the size of the Tweets file and move to the end
-print "Test Mode : " + test.__str__()
-print "Tail Mode : " + tail.__str__()
+print("Test Mode : " + test.__str__())
+print("Tail Mode : " + tail.__str__())
          
 if tail == True :
     st_resultsWget = os.stat(filenameWget)
     st_sizeWget    = st_resultsWget[6]
     fileWget.seek(st_sizeWget)
-    print "system     : Seek to end of Tweet queue : " + filenameWget
+    print("system     : Seek to end of Tweet queue : " + filenameWget)
 else:
-    print "system     : Test Mode -> Seek to START of Tweet queue : " + filenameWget
+    print("system     : Test Mode -> Seek to START of Tweet queue : " + filenameWget)
     
 ipList = {}                          # list of IPs we have provided network guru information for
      
@@ -338,26 +338,26 @@ while True:
         fileWget.seek(whereWget)
     elif lineWget.find("AMUN_AA") != -1 :
         addAnubisURLtoFile(lineWget,test)
-        print "\n*** NEW EVENT (AMUN_AA) in Tweet queue to pass onto ANALYST for analysis..."
-        print lineWget
+        print("\n*** NEW EVENT (AMUN_AA) in Tweet queue to pass onto ANALYST for analysis...")
+        print(lineWget)
     elif lineWget.find("WEB_WRITE,Previously unseen PHP malware file") != -1 :
-        print "\n*** NEW EVENT (PHP file downloaded) in Tweet queue to pass onto ANALYST for analysis..."
-        print lineWget
+        print("\n*** NEW EVENT (PHP file downloaded) in Tweet queue to pass onto ANALYST for analysis...")
+        print(lineWget)
         addPHPtoFile(lineWget,test)
     elif lineWget.find("LMD,") != -1 :
-        print "\n*** NEW EVENT (Malware File detected by LMD) in Tweet queue to pass onto ANALYST for analysis..."
-        print lineWget
+        print("\n*** NEW EVENT (Malware File detected by LMD) in Tweet queue to pass onto ANALYST for analysis...")
+        print(lineWget)
         addLMDtoFile(lineWget,test)
     elif lineWget.find("GURU") == -1 and lineWget.find("ANALYST") == -1 and lineWget.find("PASSER") == -1  :	# don't process for these agents
-        print "\n*** NEW EVENT in Tweet queue to provide GURU info for..."
-        print lineWget
+        print("\n*** NEW EVENT in Tweet queue to provide GURU info for...")
+        print(lineWget)
         gid = 0					# guru message Id
         lineWget  = lineWget.strip('"')    
         
-        print lineWget
+        print(lineWget)
 
         if lineWget.find(":::") != -1 :
-            print "kojoney_guru.py() : Do not provide GURU info for untweeted messages"
+            print("kojoney_guru.py() : Do not provide GURU info for untweeted messages")
             continue
         
         if lineWget.find("tweet=") != -1 :
@@ -379,7 +379,7 @@ while True:
                 
             # Case #1 : Generate Tweets for raw IPs found
             for ip in ips:
-                if ipList.has_key(ip) == False :	# not seen this IP before
+                if (ip in ipList) == False :	# not seen this IP before
                     # Get DNS name
                     dnsInfo = ipintellib.ip2name(ip)
                     dnsName = dnsInfo['name'].rstrip('.') + " "  
@@ -410,7 +410,7 @@ while True:
                 
         # Case 2 : Generate Tweets for URLs found
         if ipUrl != None and ipUrl != "NoDNS" :
-            print "kojoney_guru.py() : URL IP address = " + ipUrl
+            print("kojoney_guru.py() : URL IP address = " + ipUrl)
             # Get DNS name
             dnsInfo = ipintellib.ip2name(ipUrl)
             dnsName = dnsInfo['name'].rstrip('.') + " "  

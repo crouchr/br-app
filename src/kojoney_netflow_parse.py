@@ -6,7 +6,7 @@ from backlog import blackrain_netflow
 
 
 def twittifyNetflow(tweet):
-    print "kojoney_netflow_parse.py : twittifyHoneyd() : before twittification, raw tweet = " + tweet
+    print("kojoney_netflow_parse.py : twittifyHoneyd() : before twittification, raw tweet = " + tweet)
                                                                                                                             
     # Honeyd - protocol normalisation        
     #tweet = tweet.replace("tcp(6)"  , "T")
@@ -22,7 +22,7 @@ def twittifyNetflow(tweet):
 
     tweet = tweet.replace("192.168.1.63 ",  "[NETFLOW] " ) 
         
-    print "kojoney_netflow_parse.py : twittifyNetflow() : after twittification, raw tweet = " + tweet                                                                                                                                                                   
+    print("kojoney_netflow_parse.py : twittifyNetflow() : after twittification, raw tweet = " + tweet)                                                                                                                                                                   
     
     return tweet                                                                                                                                                                                     
                                                                                                                                                                                                             
@@ -59,7 +59,7 @@ def processNetflow(line):
  
     try :
         line = line.rstrip("\n")
-        print "kojoney_netflow_parse.processNetflow() : line read is " + line
+        print("kojoney_netflow_parse.processNetflow() : line read is " + line)
                 
         # For BRX, do not insist that data was sent - easier to test with ShieldsUp!
         #if line.find("192.168.1.63") != -1 and line.find("END") != -1 :
@@ -120,15 +120,15 @@ def processNetflow(line):
         #else:
         #    return None,flowEvent
         
-    except Exception,e:
-        msg = "kojoney_netflow_parse.py : processNetflow() : " + `e` + " line=" + line
+    except Exception as e:
+        msg = "kojoney_netflow_parse.py : processNetflow() : " + repr(e) + " line=" + line
         syslog.syslog(msg)
-        print msg
+        print(msg)
         return None,flowEvent
 
 # TEST HARNESS
 if __name__ == '__main__' :
-    print "Started"
+    print("Started")
 # Set the input file to scan
     filename = '/home/var/log/netflow.syslog'
     #filename = 'honeyd.syslog.test'
@@ -141,14 +141,14 @@ if __name__ == '__main__' :
         if not line:            # no data to process
             pass
         else :                  # new data has been found
-            print "---------------"
-            print "Found a netflow record to process " + line
+            print("---------------")
+            print("Found a netflow record to process " + line)
             tweet,flowEvent = processNetflow(line)
         
         # print out tweets that would actually get tweeted                                                                                                                            
         if tweet != None and tweet.find(":::") == -1 :
-            print "*** tweet : " + tweet
-            print "*** flow  : " + flowEvent.__str__()
+            print("*** tweet : " + tweet)
+            print("*** flow  : " + flowEvent.__str__())
                                                                                                                                                                                
         time.sleep(0.1)         # 0.1 
                                                                                                                                                                                                             

@@ -7,13 +7,13 @@ def getTLD(hostname) :
     if "." not in hostname :
         return "NO_INFO"
     
-    print "-----------------"
+    print("-----------------")
     fields = hostname.split('.')    
     numFields = len(fields)
-    print "hostname=" + hostname
-    print fields
-    print numFields
-    print fields[-1]
+    print("hostname=" + hostname)
+    print(fields)
+    print(numFields)
+    print(fields[-1])
     
     
     
@@ -32,4 +32,4 @@ def getTLD(hostname) :
 if __name__ == '__main__' :
     for hostname in ['mail','mail.vodafone.com.tr','mail.vodafone.com','vodafone.com','mail.vodafone.co.uk','test.mail.vodafone.co.uk','vodafone.nl','test.vodafone.nl','vodafone.co.uk'] :
         tld = getTLD(hostname)
-        print hostname + " => " + tld.__str__()
+        print(hostname + " => " + tld.__str__())

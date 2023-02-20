@@ -8,7 +8,7 @@ while True :
     if not next:                        # or an empty string at EOF
         break
     
-    print "Data received from SIEM : " + next
+    print("Data received from SIEM : " + next)
     syslog.syslog("SIEM : " + next)
 
             

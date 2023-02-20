@@ -3,7 +3,7 @@
 
 import time, os , syslog , re 
 import twitter		# Google API
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 import codecs, sys
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
@@ -22,7 +22,7 @@ import extract_url      # RCH library - master on mars
 
 
 def processCandCTweet(tweet) :
-    print "processC&Ctweet() : raw tweet=" + tweet
+    print("processC&Ctweet() : raw tweet=" + tweet)
 
 # ==============
 cache = {}
@@ -59,21 +59,21 @@ try:
             #if (s.text.find("the") != -1) : 
                 #print "***interesting content found***"
                 msg = "@" + s.user.screen_name + "," + s.user.name + "," + s.user.description + "," + s.user.location + "," + s.text
-                print msg
+                print(msg)
                 time.sleep(1)
                 
                 #fileObj = codecs.open( "someFile", "r", "utf-8" )                
                 f=codecs.open(r'/home/var/log/twitter_search.txt','a',"utf-8")
-                print >> f,msg
+                print(msg, file=f)
                 f.close()
                 
         #print "Sleeping for 65 seconds..."
         time.sleep(65)
       
-    print "Exiting."
+    print("Exiting.")
 
-except Exception,e:
-    syslog.syslog("twitter_bot.py : exception " + `e`)
+except Exception as e:
+    syslog.syslog("twitter_bot.py : exception " + repr(e))
     
 # Set the Kojoney Channel filename to scan
 #filename = '/home/var/log/kojoney_tail.log'

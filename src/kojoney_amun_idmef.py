@@ -47,7 +47,7 @@ def exploitIDMEF(srcIP,srcPort,dstIP,dstPort,vulnerability,vulninfo,shellcode,li
         
         # Additional Data
         fieldsOffset = fieldsSet
-        print "fieldsOffset = " + fieldsOffset.__str__() 
+        print("fieldsOffset = " + fieldsOffset.__str__()) 
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").type", "string")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").meaning", "Shellcode")
         idmef.Set("alert.additional_data(" + fieldsOffset.__str__() + ").data", shellcode)
@@ -60,9 +60,9 @@ def exploitIDMEF(srcIP,srcPort,dstIP,dstPort,vulnerability,vulninfo,shellcode,li
         client.SendIDMEF(idmef)
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_amun_idmef.py : exploitIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
 
@@ -123,9 +123,9 @@ def exploitDropsiteIDMEF(srcIP,dstIP,attackerIP,dropsite,line):
         client.SendIDMEF(idmef)
         return
 
-    except Exception,e:
+    except Exception as e:
         msg = "kojoney_amun_idmef.py : exploitDropsiteIDMEF() : exception : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
         

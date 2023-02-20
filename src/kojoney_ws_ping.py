@@ -6,7 +6,7 @@
 # Allows the BRX to measure the uptime of a sensor and indicate if a sensor has gone off-line
 #
 
-import urllib,urllib2,time
+import urllib.request, urllib.parse, urllib.error,urllib.request,urllib.error,urllib.parse,time
 
 # Put this in an include at next stage
 BaseURL = 'http://www.mooghill.com/rocknroll'
@@ -33,22 +33,22 @@ def wsPing():
     wsRequest  = fillSensorTag(wsRequest)
     
     wsURL = BaseURL + '/stub_Ping.php'
-    data = urllib.urlencode(wsRequest)
+    data = urllib.parse.urlencode(wsRequest)
     
     try:
-        response = urllib2.urlopen(wsURL,data)		# HTTP 1.1 POST according to tshark
+        response = urllib.request.urlopen(wsURL,data)		# HTTP 1.1 POST according to tshark
         page = response.read()
-        print page
+        print(page)
         return True 
 
-    except urllib2.URLError, e:
+    except urllib.error.URLError as e:
         if hasattr(e, 'code'):
             if e.code == 404:
                 #print "Explicitly trapped exception"
-                print e
+                print(e)
                 return False                                                                               
         else:
-                print e
+                print(e)
                 return False                                        
                                                        
 # Main loop
@@ -59,8 +59,8 @@ if __name__ == '__main__' :
     # sit in an infinite loop and send WS pings to the BRX 
     while True:
         result = wsPing()
-        print "Result of wsPing is " + `result`
-        print "\nsleeping for " + `keepalive` + " seconds..."
+        print("Result of wsPing is " + repr(result))
+        print("\nsleeping for " + repr(keepalive) + " seconds...")
         time.sleep(keepalive)
         
         

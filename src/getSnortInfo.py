@@ -33,8 +33,8 @@ def getSnortMsg(sid):
         #print "result=" + msgText 
         return result
     
-    except Exception,e:
-            syslog.syslog("getSnortInfo.py : getSnortMsg() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+            syslog.syslog("getSnortInfo.py : getSnortMsg() exception caught = " + repr(e) + "line=" + line)
             return "!"        
 
 # sid is a string
@@ -61,8 +61,8 @@ def getSnortAtom(sid,keyword):
         #print result
         return result
     
-    except Exception,e:
-            syslog.syslog("getSnortInfo.py : getSnortAtom() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+            syslog.syslog("getSnortInfo.py : getSnortAtom() exception caught = " + repr(e) + "line=" + line)
             return "!"        
 
 # PSAD 
@@ -94,8 +94,8 @@ def getPsadMsg(sid):
         #print "result=" + msgText 
         return result
     
-    except Exception,e:
-            syslog.syslog("getSnortInfo.py : getSnortMsg() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+            syslog.syslog("getSnortInfo.py : getSnortMsg() exception caught = " + repr(e) + "line=" + line)
             return "!"        
 
 # sid is a string
@@ -121,8 +121,8 @@ def getPsadAtom(sid,keyword):
         #print result
         return result
     
-    except Exception,e:
-            syslog.syslog("getSnortInfo.py : getPsadAtom() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+            syslog.syslog("getSnortInfo.py : getPsadAtom() exception caught = " + repr(e) + "line=" + line)
             return "!"        
 
 # FWSNORT
@@ -154,8 +154,8 @@ def getFwsnortMsg(sid):
         #print "result=" + msgText 
         return result
     
-    except Exception,e:
-            syslog.syslog("getSnortInfo.py : getFwsnortMsg() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+            syslog.syslog("getSnortInfo.py : getFwsnortMsg() exception caught = " + repr(e) + "line=" + line)
             return "!"        
 
 # sid is a string
@@ -181,8 +181,8 @@ def getFwsnortAtom(sid,keyword):
         #print result
         return result
     
-    except Exception,e:
-            syslog.syslog("getSnortInfo.py : getFwsnortAtom() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+            syslog.syslog("getSnortInfo.py : getFwsnortAtom() exception caught = " + repr(e) + "line=" + line)
             return "!"        
 
 

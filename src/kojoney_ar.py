@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import time, os , syslog , urlparse , re 
+import time, os , syslog , urllib.parse , re 
 
 import ipintellib	# RCH library - master on mars
 import mailalert	# RCH library
@@ -23,7 +23,7 @@ def makePidFile(name):
     
     pidFilename = "/var/run/rchpids/" + name + ".pid"
     fp=open(pidFilename,'w')
-    print >> fp,pid
+    print(pid, file=fp)
     fp.close()            
     #print "pid is " + `pid`
     return pid	# returns None if failed
@@ -46,14 +46,14 @@ def statusAlert(subject,content):
         #print "alert subject:" + alertSubject + "\nalertContent:\n" + content + "\n"
         
         status = mailalert.mailalert(sender,destination,smtpServer,alertSubject,alertContent,debugLevel)        
-        print "notify     : e-mail : subject=" + '"' + alertSubject + '"'  
+        print("notify     : e-mail : subject=" + '"' + alertSubject + '"')  
         
         # Add a record to syslog
         a = "Sent alert e-mail, Subject=" + alertSubject + " to " + destination[0]
         syslog.syslog(a)
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : statusAlert() : " + `e`)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : statusAlert() : " + repr(e))
 
 
 # visualise the Tweets
@@ -191,11 +191,11 @@ def writeSecViz5(tweet):
         
         # file needs to be touched
         fpOut = open(r'/home/var/log/kojoney_tail_secviz5_tweets.csv','a')
-        print >> fpOut,msg 
+        print(msg, file=fpOut) 
         fpOut.close()
 
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : writeSecViz5() exception caught = " + `e` + " tweet=" + tweet)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : writeSecViz5() exception caught = " + repr(e) + " tweet=" + tweet)
 
 # master in kojoney_tail.py
 # wrapper for sending Tweets
@@ -253,7 +253,7 @@ def sendTweet(tweet_raw):
         if len(tweet) >= MAXTWEET_LEN:
             tweet=tweet[0:MAXTWEET_LEN]
             tweet=tweet + "+"				# + indicates tweet was truncated
-            syslog.syslog("kojoney_tail.py : sendTweet() msg built [truncated to " + `len(tweet)` + " chars] : tweet=" + tweet)
+            syslog.syslog("kojoney_tail.py : sendTweet() msg built [truncated to " + repr(len(tweet)) + " chars] : tweet=" + tweet)
         else:     
             syslog.syslog("kojoney_tail.py : sendTweet() msg built : " + tweet)
             
@@ -266,12 +266,12 @@ def sendTweet(tweet_raw):
     
         # actually send the tweet
         status = TweetClient.PostUpdate(tweet)    
-        print "notify     : Tweet sent : " + tweet
+        print("notify     : Tweet sent : " + tweet)
         syslog.syslog("kojoney_tail.py : sendTweet() Tweet sent : " + tweet)
             
         # log the sent Tweets - have a .txt extension so Windoze can open it up
         fpOut = open(r'/home/var/log/tweets.log.txt','a')
-        print >> fpOut,"TWEET=" + tweet 
+        print("TWEET=" + tweet, file=fpOut) 
         fpOut.close()
 
         # send an e-mail if the exploit contains particularly interesting keywords
@@ -284,8 +284,8 @@ def sendTweet(tweet_raw):
         
         time.sleep(1)					# crude rate limit 
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : sendTweet() exception caught = " + `e` + " tweet=" + tweet)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : sendTweet() exception caught = " + repr(e) + " tweet=" + tweet)
 
 # main routine for writing to kojoney Channel        
 # master in kojoney_tail.py
@@ -299,7 +299,7 @@ def makeMsg(cliNum,ip,msg):
     #print a 
     fpOut = open(r'/home/var/log/kojoney_tail.log','a')
     #syslog.syslog(a)
-    print >> fpOut,a
+    print(a, file=fpOut)
     fpOut.close()
 
     
@@ -317,7 +317,7 @@ def getSrcIPSnort(line):
         a=line.find("}")
     
         if a == -1:	# Failed to find '}'
-            print "Failed to find } anchor"
+            print("Failed to find } anchor")
             syslog.syslog("kojoney_tail.py : getSrcIPSnort() failed to find } anchor in " + line)
             sock['ip']   = "0.0.0.0"
             sock['port'] = "-1"
@@ -344,8 +344,8 @@ def getSrcIPSnort(line):
     
         return sock
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : getSrcIPSnort() exception caught = " + `e` + " line=" + line.strip("\n"))
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : getSrcIPSnort() exception caught = " + repr(e) + " line=" + line.strip("\n"))
         return None
 
 # master in kojoney_tail.py
@@ -386,8 +386,8 @@ def getDstIPSnort(line):
     
         return sock
     
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : getDstIPSnort() exception caught = " + `e` + " line=" + line.strip("\n"))
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : getDstIPSnort() exception caught = " + repr(e) + " line=" + line.strip("\n"))
         return None
 
 # Request autoblock from PSAD
@@ -414,7 +414,7 @@ def psadBlock(srcIP,reason) :
 def processSnortAR(line):
     try:
         line=line.strip("\n")        
-        print "snortAR    : " + line
+        print("snortAR    : " + line)
         
         # Filter out non-Snort messages
         if line.find("last message repeated") != -1:
@@ -502,8 +502,8 @@ def processSnortAR(line):
         else :	# default is not to block attackers
             return 
            
-    except Exception,e:
-        syslog.syslog("kojoney_ar.py : processSnortAR() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_ar.py : processSnortAR() exception caught = " + repr(e) + "line=" + line)
 
 
 # master in kojoney_tail.py
@@ -587,14 +587,14 @@ def processPSAD(line):
             
         # Construct the event message       
         msg = "psad" + "," + sensorName + "," + phase + "," + getIntelStr(srcIP,"-1") + "," + flow1 + "," + event 
-        print "psad       : " + msg
+        print("psad       : " + msg)
         
         # Log to kojoney_tail.log    
         makeMsg(0,"0",msg)
         sendTweet(msg)		# hack to get secviz5() called
         
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : processPSAD() exception caught = " + `e` + "line=" + line)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : processPSAD() exception caught = " + repr(e) + "line=" + line)
 
 # master in kojoney_tail.py
 # add try: exception to this
@@ -666,8 +666,8 @@ def getIntelStr(ip1,ip2):
         #print "***** intelStr for " + ip + " is " + intelStr 
         return intelStr        
 
-    except Exception,e:
-        syslog.syslog("kojoney_tail.py : getIntelStr() exception caught = " + `e` + "ip=" + ip)
+    except Exception as e:
+        syslog.syslog("kojoney_tail.py : getIntelStr() exception caught = " + repr(e) + "ip=" + ip)
         return "intell=exception!"
        
 # ----------------------------------------------
@@ -677,14 +677,14 @@ def getIntelStr(ip1,ip2):
 # Make pidfile so we can be monitored by monit        
 pid =  makePidFile("kojoney_ar")
 if pid == None:
-    syslog.syslog("Failed to create pidfile for pid " + `pid`)
+    syslog.syslog("Failed to create pidfile for pid " + repr(pid))
     sys.exit(0)
 else:
-    syslog.syslog("kojoney_tail started with pid " + `pid`)
+    syslog.syslog("kojoney_tail started with pid " + repr(pid))
                 
 # Send an email to say kojoney_tail has started
-makeMsg(0,"0","system,kojoney_ar started with pid=" + `pid`)
-a = "kojoney_ar started with pid=" + `pid`
+makeMsg(0,"0","system,kojoney_ar started with pid=" + repr(pid))
+a = "kojoney_ar started with pid=" + repr(pid)
 
 statusAlert("*** kojoney_ar started",a)
     
@@ -701,7 +701,7 @@ fileSnort = open(filenameSnort,'r')
 st_results_snort = os.stat(filenameSnort)
 st_size_snort = st_results_snort[6]
 fileSnort.seek(st_size_snort)
-print "system     : Seek to end of Snort IDS feed"
+print("system     : Seek to end of Snort IDS feed")
 
 while True:
     
