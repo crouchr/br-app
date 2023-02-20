@@ -16,12 +16,12 @@ registerVersion = "v0.1"	# change when this file changes
 import sys,logging
 
 # rch libraries
-import blackrain_stun
-import blackrain_mac
-import blackrain_ipintellib
-import blackrain_default_gw
-import blackrain_cpuinfo
-import blackrain_logging
+from . import blackrain_stun
+from . import blackrain_mac
+from . import blackrain_ipintellib
+from . import blackrain_default_gw
+from . import blackrain_cpuinfo
+from . import blackrain_logging
 
 # third-party libraries
 import BlackRainClient  # Mat's API to BRX
@@ -52,7 +52,7 @@ try:
     if a == False:
         msg = "Aborting, failed to configure connectivity to Internet, testHost=" + pingHost
         logging.critical(msg)
-        print msg
+        print(msg)
         sys.exit()
 
     # Uncomment the following to test exception handling
@@ -103,7 +103,7 @@ try:
             logging.info(a)
     else:
         a = "Failed to determine this LAN's default gateway, sensorDGip=" + sensorDGip.__str__() + ", sensorDGiface=" + sensorDGiface.__str__()
-        print a
+        print(a)
         logging.critical(a)
         sys.exit()
 
@@ -117,7 +117,7 @@ try:
     
     if mac == None:
         a = "No ethernet interfaces found in UP state, sensorDGiface=" + sensorDGiface.__str__()
-        print a
+        print(a)
         logging.critical(a)
         sys.exit()
     else:    
@@ -125,37 +125,37 @@ try:
         logging.info(a)
 
     #print "\n"
-    print "+-------------------------------+"
-    print "| BlackRain Sensor Registration |"
-    print "+-------------------------------+"
-    print " "
-    print "version : " + sensorVersion
-    print " "
-    print "Thank you for participating in the BlackRain Honeynet Project"
-    print "Remember : All your honeypots are belong to us !"
+    print("+-------------------------------+")
+    print("| BlackRain Sensor Registration |")
+    print("+-------------------------------+")
+    print(" ")
+    print("version : " + sensorVersion)
+    print(" ")
+    print("Thank you for participating in the BlackRain Honeynet Project")
+    print("Remember : All your honeypots are belong to us !")
 #    print " "
 #    print "Note : You must be running DHCP on your LAN"
-    print " "
-    print "Only information marked with a * will appear on the BlackRain public website"
-    print "BlackRain website : http://blackrain.org [tbd]"
-    print " "
-    print "If you experience problems, please e-mail honeytweeter@gmail.com for help."
-    print " "
-    print "Your equipment details"
-    print "----------------------"
-    print "sensor MAC address                : " + mac
-    print "sensor ID                         : " + sensorId
-    print "sensor ethernet interface         : " + sensorDGiface 
-    print "IP  address of default gateway    : " + sensorDGip 
-    print "MAC address of default gateway    : " + sensorDGmac 
-    print " "
-    print "Your details"
-    print "-------------"
-    sensorPersonName   = raw_input("Your name                         : ")
-    sensorName         = raw_input("BlackRain Sensor name*            : ")
-    sensorPersonEmail  = raw_input("Contact e-mail address            : ")
-    sensorReportsEmail = raw_input("BlackRain Reports e-mail address  : ")
-    print " "
+    print(" ")
+    print("Only information marked with a * will appear on the BlackRain public website")
+    print("BlackRain website : http://blackrain.org [tbd]")
+    print(" ")
+    print("If you experience problems, please e-mail honeytweeter@gmail.com for help.")
+    print(" ")
+    print("Your equipment details")
+    print("----------------------")
+    print("sensor MAC address                : " + mac)
+    print("sensor ID                         : " + sensorId)
+    print("sensor ethernet interface         : " + sensorDGiface) 
+    print("IP  address of default gateway    : " + sensorDGip) 
+    print("MAC address of default gateway    : " + sensorDGmac) 
+    print(" ")
+    print("Your details")
+    print("-------------")
+    sensorPersonName   = input("Your name                         : ")
+    sensorName         = input("BlackRain Sensor name*            : ")
+    sensorPersonEmail  = input("Contact e-mail address            : ")
+    sensorReportsEmail = input("BlackRain Reports e-mail address  : ")
+    print(" ")
     #print "Your sensor's customisation"
     #print "---------------------------"
     #honeydIP   =  raw_input("HONEYD honeypot IP address        : ")
@@ -167,15 +167,15 @@ try:
     #a = "list of honeypot IPs : " + honeypotIPList.__str__()
     #logging.info(a)
 
-    print " "
-    print "Press RETURN   to confirm that this data is correct"
-    a = raw_input("Press <Ctrl>-C to abort and re-run the registration process ")
+    print(" ")
+    print("Press RETURN   to confirm that this data is correct")
+    a = input("Press <Ctrl>-C to abort and re-run the registration process ")
 
-    print "\nGathering installation-specific data..."
+    print("\nGathering installation-specific data...")
                             
     # Determine sensor host public IP address using STUN protocol
     # Put a retry loop of 3 attempts in here - it failed on me at least once
-    print "[+] Determining your public IP address (may take upto 30 seconds)..."
+    print("[+] Determining your public IP address (may take upto 30 seconds)...")
     natType , wanIP = blackrain_stun.getExternalIP()
     a = "WAN IP = " + wanIP.__str__()
     logging.info(a)
@@ -184,16 +184,16 @@ try:
 
     if wanIP == None:
         logging.critical("Failed to determine public IP")
-        print "Unable to determine your public IP address"
-        print "This may be a temporary issue so maybe retry in an hour"
+        print("Unable to determine your public IP address")
+        print("This may be a temporary issue so maybe retry in an hour")
         sys.exit()
              
     # Make network calls to gather DNS and WHOIS information
-    print "[+] Determining your ISP information..."
+    print("[+] Determining your ISP information...")
     dnsInfo = blackrain_ipintellib.ip2name(wanIP)
     dnsName = dnsInfo['name'].rstrip('.')                   # right-strip the trailing .
     a = "DNS-derived info " + dnsInfo.__str__()      
-    print a
+    print(a)
     logging.info(a)
                             
     # WHOIS         
@@ -201,7 +201,7 @@ try:
     asNum = asInfo['as']                                    # AS123   
     asRegisteredCode = asInfo['registeredCode']             # Short-form e.g.ARCOR
     a = "whois-derived info " + asInfo.__str__()
-    print a
+    print(a)
     logging.info(a)
                                                              
     # GeoIP information - faster than WHOIS for looking up Country Code information
@@ -213,7 +213,7 @@ try:
     longitude   = geoIP['longitude']                         # Used to calc approx. localtime
     latitude    = geoIP['latitude']
     a = "geoIP-derived info " + geoIP.__str__()
-    print a
+    print(a)
     logging.info(a)
 
     # fill the registration info message structure 
@@ -288,17 +288,17 @@ try:
     logging.info(a)
 
     # establish a session to BRX
-    print "Establishing session to BRX..."
+    print("Establishing session to BRX...")
     responseFromBrapi = brapi.establish_session()
 
     if responseFromBrapi != BlackRainClient.BlackrainConnectStatus.ACCESS_SUCCESS:
         a = "Establish session to BRX FAILED : response = " + responseFromBrapi.__str__()
-        print a
+        print(a)
         logging.critical(a)
         sys.exit()
     else :        
         a = "Establish session to BRX was SUCCESSFUL : response = " + responseFromBrapi.__str__()
-        print a
+        print(a)
         logging.info(a)
             
     # send registration details to BRX    
@@ -306,17 +306,17 @@ try:
     
     if responseFromBrapi != BlackRainClient.BlackrainConnectStatus.PUSH_OK:
         a = "Push registration data to BRX FAILED : response = " + responseFromBrapi.__str__()
-        print a
+        print(a)
         logging.critical(a)
         sys.exit()
     else :	
         a = "Push registration data to BRX : response = " + responseFromBrapi.__str__()
-        print a
+        print(a)
         logging.info(a)
                 
     # Report result to user
-    print "Congratulations !"
-    print "Your sensor " + '"' + sensorName + '"' + " has been successfully registered with the BlackRain Honeynet"
+    print("Congratulations !")
+    print("Your sensor " + '"' + sensorName + '"' + " has been successfully registered with the BlackRain Honeynet")
     #print " "
     #print "Now you need to enable port forwarding/DMZ on your DSL/Firewall/Router as follows :-"
     #print "1. Set the following IP as the DSL/Firewall/Router 'DMZ' : " + honeydIP
@@ -324,16 +324,16 @@ try:
     #print "3. Win32 attacks to         : "  + amunIP     + " , ports = tcp135 tcp445 + <more here>..."
     #print "4. Web-server attacks to    : "  + glastopfIP + " , ports = tcp80 tcp8080"
     #print "5. Forward the following port(s) to "  + kippoIP +    " : tcp22"
-    print " "
-    print "Happy Honeypotting !" 
-    print " "
-    print "The BlackRain Development Team"
-    print " "
+    print(" ")
+    print("Happy Honeypotting !") 
+    print(" ")
+    print("The BlackRain Development Team")
+    print(" ")
 
     logging.info("Finished")
     
-except Exception,e :
+except Exception as e :
     a = "Exception " + e.__str__() + " in register-simple.py main()"
-    print a
+    print(a)
     logging.critical(a)
         

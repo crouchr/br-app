@@ -22,7 +22,7 @@ if __name__ == '__main__' :
         logging.info("Zeroed logfile")
         #print "Finished"
     
-    except Exception, e:
+    except Exception as e:
         a = "Exception " + e.__str__() + " in blackrain_logging.py main()"
-        print a
+        print(a)
         syslog.syslog(a)

@@ -4,7 +4,7 @@
 
 import re , sys
 import syslog
-import blackrain_ipintellib
+from . import blackrain_ipintellib
 import kojoney_p0f_lib
 
 # Convert decimal logical OR of TCP flags to their flag names
@@ -142,9 +142,9 @@ def processNetflow(line):
         #print flowEvent.__str__()                                       
         return flowEvent
             
-    except Exception,e :
+    except Exception as e :
         msg = "blackrain_netflow.py : exception " + e.__str__() + " in line=" + line
-        print msg
+        print(msg)
         syslog.syslog(msg)
     
 
@@ -172,5 +172,5 @@ if __name__ == '__main__' :
         if not line :
             sys.exit()
         
-        print "------------"    
-        print processNetflow(line)
+        print("------------")    
+        print(processNetflow(line))

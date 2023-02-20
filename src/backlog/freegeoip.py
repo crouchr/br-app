@@ -1,6 +1,6 @@
 
 #import simplejson
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import time
 import socket
 import json
@@ -17,26 +17,26 @@ def freegeoip(ip):
         user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         headers = {'User-Agent' : user_agent}
                                                                                                                                     
-        req = urllib2.Request(u,None,headers) 
+        req = urllib.request.Request(u,None,headers) 
         time.sleep(1)	# 4000 requests per hour are permitted                                                                                                                                 
-        return json.load(urllib2.urlopen(req))
+        return json.load(urllib.request.urlopen(req))
     
-    except urllib2.HTTPError,e:
-        print "HTTP error " + e.__str__()
+    except urllib.error.HTTPError as e:
+        print("HTTP error " + e.__str__())
         return None
-    except urllib2.URLError,e:
-        print "URL error " + e.__str__()
+    except urllib.error.URLError as e:
+        print("URL error " + e.__str__())
         return None
-    except Exception,e:
-        print "freegeoip() : exception " + e.__str__()
+    except Exception as e:
+        print("freegeoip() : exception " + e.__str__())
         return None    
         
 if __name__ == '__main__':
     ip = "8.8.8.8"
     results = freegeoip(ip)
-    print results.__str__()
+    print(results.__str__())
     if results != None:
-        print results['country_code']
+        print(results['country_code'])
 #
 #      Searches the public timeline for the q string. There is no sanity checking
 #      of the parameters. It's all passed straight to the API. Spec defined here:

@@ -50,9 +50,9 @@ def getGroup(keyword):
         #print "No match found for keyword=" + keyword
         return "DEFAULT"
                 
-    except Exception, e:
+    except Exception as e:
         msg = "twitter_streamer.py : getGroup() : exception : " + e.__str__() + " : " + group.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
 
 # curl -l TCO =>
@@ -78,9 +78,9 @@ def getRealURLtco(tco):
                     #print "getRealURLtco(" + tco + ") => " + url
                     return url
         return None              
-    except Exception, e:
+    except Exception as e:
         msg = "getRealURLtco() : exception : " + e.__str__() + " : " + tco.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None  
 
@@ -102,9 +102,9 @@ def stripTCO(tweet):
         else:	# No TCO found
             return tweet,None
                      
-    except Exception, e:
+    except Exception as e:
         msg = "twitter_streamer.py : stripTCO() : exception : " + e.__str__() + " : " + tweet.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return tweet,None
         
@@ -171,25 +171,25 @@ def logToFile(status):
                  if TweetCache.update(noTCOtweet) == True :
                      geo    = status.geo 			# nearly always=None       
                      logmsg = status.author.screen_name + "\t" + status.created_at.__str__() + "\t" + status.source + "\t" + text + "\t" + lang.__str__()
-                     print "------------------------------------------------------------------------------------------"
+                     print("------------------------------------------------------------------------------------------")
                      group = getGroup(keyword)
                      filename = "/home/var/log/" + 'twitterverse_' + group.upper() + '.csv'
-                     print time.ctime()
-                     print "group  : " + group.upper() + "\n" + "lang   : " + lang + "\n" + "author : " + "@" + status.author.screen_name.encode('utf-8') + "\n" + text
-                     print "URL?   : " + url.__str__() 
+                     print(time.ctime())
+                     print("group  : " + group.upper() + "\n" + "lang   : " + lang + "\n" + "author : " + "@" + status.author.screen_name.encode('utf-8') + "\n" + text)
+                     print("URL?   : " + url.__str__()) 
                      #print "noTCOtweet : " + noTCOtweet.__str__()
                      #print "TCO    : " + tco.__str__()
                      #print "From User " + status.from_user.__str__()
                      
                      fpOut = open(filename,'a')
-                     print >> fpOut,logmsg
+                     print(logmsg, file=fpOut)
                      fpOut.close()
                      
                      return group,text
                      
          return "NONE","NONE"            
     
-    except Exception, e:
+    except Exception as e:
         #return
         #pass
         # need to handle foreign characters
@@ -256,9 +256,9 @@ def writeExternalHpotIDMEF(normalisedTweet,status,group,filepath):
         # Send the IDMEF message
         client.SendIDMEF(idmef)
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-    except Exception, e:
+    except Exception as e:
         msg = "twitter_streamer.py : writeExternalHpotIDMEF() : exception : " + e.__str__() + " : " + normalisedTweet.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return
         
@@ -288,16 +288,16 @@ def writeExternalHpotLogfile(normalisedTweet,status,group,idmefFlag,filepath):
         msg = time.ctime() + "," + "@" + status.author.screen_name + "," + text + "," + status.author.lang.upper()
         
         fpOut = open(filepath,"a")
-        print >> fpOut,msg
+        print(msg, file=fpOut)
         fpOut.close()
         
         # Send to Prelude SIEM if flag is True
         if idmefFlag == True:
             writeExternalHpotIDMEF(normalisedTweet,status,group,filepath)
         
-    except Exception, e:
+    except Exception as e:
         msg = "twitter_streamer.py : writeExternalHpotTweetLogfile() : exception : " + e.__str__() + " : " + normalisedTweet.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
 
 def blackListTweet(normalisedTweet,twitterer):
@@ -305,12 +305,12 @@ def blackListTweet(normalisedTweet,twitterer):
         twitterer = "@" + twitterer
         ignoreTweetersList = ['@pdonovan92130','@Africanex','@draefon_pi']
         if twitterer in ignoreTweetersList :
-            print twitterer + " is in blacklist so do not process"
+            print(twitterer + " is in blacklist so do not process")
             return True
         return False    
-    except Exception, e:
+    except Exception as e:
         msg = "twitter_streamer.py : blackListTweet() : exception : " + e.__str__() + " : " + normalisedTweet.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return False
                         
@@ -352,10 +352,10 @@ class StreamListener(tweepy.StreamListener):
                 if flag == True :
                     alert(status,group,event,normalisedTweet)
             
-        except Exception, e:
+        except Exception as e:
         # Catch any unicode errors while printing to console
         # and just ignore them to avoid breaking application.
-            print "StreamListener() : exception : " + e.__str__()
+            print("StreamListener() : exception : " + e.__str__())
             pass
 
 def alert(status,group,subject,normalisedTweet):
@@ -366,18 +366,18 @@ def alert(status,group,subject,normalisedTweet):
         
         msg     = subject + " : " + body
         
-        print " "
-        print "++++++++++ ALERT ++++++++++"
-        print msg
-        print "+++++++++++++++++++++++++++"
-        print " "
+        print(" ")
+        print("++++++++++ ALERT ++++++++++")
+        print(msg)
+        print("+++++++++++++++++++++++++++")
+        print(" ")
         
         syslog.syslog("ALERT:" + msg)
         kojoney_alert_client.sendAlert(subject,body,True,True)
          
-    except Exception, e:
+    except Exception as e:
         msg = "twitter_streamer.py : alert() : exception : " + e.__str__() + " : " + status.text
-        print msg
+        print(msg)
         syslog.syslog(msg)
         
 # Also send the alert            
@@ -411,9 +411,9 @@ def checkDoStweet(text,group,victim):
             
             kojoney_alert_client.sendAlert(subject,body,True,True)
         
-    except Exception, e:
+    except Exception as e:
         msg = "twitter_streamer.py : checkDoStweet() : exception : " + e.__str__() + " : " + text.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
                             
 ##########################################################################################
@@ -480,9 +480,9 @@ def isInteresting(group,status,normalisedTweet):
         
         return False,"NONE"    
     
-    except Exception, e:
+    except Exception as e:
         msg = "twitter_streamer.py : isInteresting() : exception : " + e.__str__() + " : " + normalisedTweet.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return False,"NONE"
 
@@ -550,7 +550,7 @@ if __name__ == '__main__' :
                 terms = terms + 1
         
         msg = "Started => loaded " + len(SEARCHMAP).__str__() + " search groups and " + terms.__str__() + " search terms. MAX_API_TERMS = " + MAX_API_TERMS.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
                 
         #print SEARCHMAP.__str__()
@@ -579,13 +579,13 @@ if __name__ == '__main__' :
                 group = "test"
                 a = isInteresting(line,group)
                 if a == True:
-                    print "isInteresting() is True for : " + line.__str__()
+                    print("isInteresting() is True for : " + line.__str__())
                     
             sys.exit("TEST MODE - exiting normally.")
         
         # Normal mode
         # -----------
-        print "Connect to Twitter Streaming API..."
+        print("Connect to Twitter Streaming API...")
         l = StreamListener()
         streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000000000 )
       
@@ -599,11 +599,11 @@ if __name__ == '__main__' :
             for k in j:
                 KEYWORDS.append(k)
         
-        print "KEYWORDS : " + KEYWORDS.__str__()    
+        print("KEYWORDS : " + KEYWORDS.__str__())    
         
-        print "Listen for data on Twitter Streaming API..."
+        print("Listen for data on Twitter Streaming API...")
         streamer.filter(None,KEYWORDS)
     
-    except Exception, e:
-        print "main() : exception : " + e.__str__()
+    except Exception as e:
+        print("main() : exception : " + e.__str__())
         

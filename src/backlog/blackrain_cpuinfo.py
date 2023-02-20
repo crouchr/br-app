@@ -57,8 +57,8 @@ def getCpuInfo():
         
         return cpuinfo
                                                                                                                                                                             
-    except Exception,e:                                    
-        syslog.syslog("Exception " + `e` + " in getCpuInfo(), raw=" + raw);
+    except Exception as e:                                    
+        syslog.syslog("Exception " + repr(e) + " in getCpuInfo(), raw=" + raw);
         return None
                                                                                                                                           
 
@@ -118,8 +118,8 @@ def getCpuMem():
                 
         return meminfo
 
-    except Exception,e:                                    
-        syslog.syslog("Exception " + `e` + " in getCpuMem(), raw=" + raw);
+    except Exception as e:                                    
+        syslog.syslog("Exception " + repr(e) + " in getCpuMem(), raw=" + raw);
         return None
 
 
@@ -128,15 +128,15 @@ def getCpuMem():
 ########           
 
 if __name__ == '__main__':
-    print "\nTest 1"
+    print("\nTest 1")
     cpuinfo = getCpuInfo()
     if cpuinfo != None:
         #print "results"
-        print cpuinfo
+        print(cpuinfo)
 
-    print "\nTest 2"
+    print("\nTest 2")
     meminfo = getCpuMem()
     if meminfo != None:
         #print "results"
-        print meminfo
+        print(meminfo)
                                                            

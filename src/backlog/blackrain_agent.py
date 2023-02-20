@@ -160,13 +160,13 @@ def getOID(database,oid) :
         oid2Find = oid.replace(oidRoot,"")	# strip of leading part of OID
         #print "oid2Find is " + oid2Find
     
-        if Oid2Shelf.has_key(oid2Find) == True :
+        if (oid2Find in Oid2Shelf) == True :
             value = database[Oid2Shelf[oid2Find]]
             return value
         else:
             return None    
             
-    except Exception,e:
+    except Exception as e:
         syslog.syslog("getOID() : Exception : " + e.__str__())
 
 # attacker IP stats
@@ -182,13 +182,13 @@ def getOID2(database,oid) :
         oid2Find = oid.replace(oidRoot,"")	# strip of leadingpart of OID
         #print "oid2Find is " + oid2Find
     
-        if Oid2Shelf2.has_key(oid2Find) == True :
+        if (oid2Find in Oid2Shelf2) == True :
             value = database[Oid2Shelf2[oid2Find]]
             return value
         else:
             return None    
 
-    except Exception,e:
+    except Exception as e:
         syslog.syslog("getOID2() : Exception : " + e.__str__())
 
 
@@ -209,7 +209,7 @@ if __name__ == '__main__' :
         # look in first shelf file
         # ------------------------
         #value = None
-        if Oid2Shelf.has_key(oid2find) == True :                    
+        if (oid2find in Oid2Shelf) == True :                    
             database = shelve.open('/home/var/log/snmp_shelf.dat')
             value = getOID(database,oid)
             database.close()
@@ -217,16 +217,16 @@ if __name__ == '__main__' :
             if value == None :     
                 syslog.syslog("Error : shelf1 : SNMP get-request for OID " + oid + " returned value " + value.__str__())
             else:
-                print oid
-                print "counter"
+                print(oid)
+                print("counter")
                 #print "gauge"
-                print value
+                print(value)
                 #syslog.syslog("shelf1 : SNMP get-request OK for OID " + oid + " returned value " + value.__str__())
         
         # look in second shelf file
         # -------------------------
         #value = None
-        if Oid2Shelf2.has_key(oid2find) == True :                    
+        if (oid2find in Oid2Shelf2) == True :                    
             database = shelve.open('/home/var/log/attacker_shelf.dat')
             value = getOID2(database,oid)
             database.close()
@@ -234,13 +234,13 @@ if __name__ == '__main__' :
             if value == None :     
                 syslog.syslog("Error : shelf2 : SNMP get-request for OID " + oid + " returned value " + value.__str__())
             else:
-                print oid
+                print(oid)
                 #print "counter"
-                print "gauge"
-                print value
+                print("gauge")
+                print(value)
                 #syslog.syslog("shelf2 : SNMP get-request OK for OID " + oid + " returned value " + value.__str__())
         
-    except Exception,e :
+    except Exception as e :
         syslog.syslog("main() : Exception : " + e.__str__())
         
                

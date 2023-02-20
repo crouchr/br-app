@@ -45,8 +45,8 @@ api=tweepy.API(auth)
 #api.update_status(msg,lat=None,long=None)
 
 
-for tweet in tweepy.Cursor(api.search,q='#ddos', count=10, lang='en').items() :
-    print tweet.text.encode('utf-8')
+for tweet in list(tweepy.Cursor(api.search,q='#ddos', count=10, lang='en').items()) :
+    print(tweet.text.encode('utf-8'))
     
     
 

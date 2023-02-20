@@ -50,11 +50,11 @@ def sendTweet(username,tweet):
             tweet = "id=" + now.__str__() + ":" + tweet
         
         a = len(tweet)
-        print "Length of Tweet is " + a.__str__()
+        print("Length of Tweet is " + a.__str__())
         if (a > MaxTweetLen):
            msg = "Truncated Tweet : Tweet too long, it is " + a.__str__() + " characters long, MaxTweetLen is " + MaxTweetLen.__str__() 
-           print msg
-           print tweet
+           print(msg)
+           print(tweet)
            tweet = tweet[:156] + "..."
        
        #return False 
@@ -74,10 +74,10 @@ def sendTweet(username,tweet):
         auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
         api = tweepy.API(auth)
-        api.update_status(tweet,lat=GLEBE_LAT,long=GLEBE_LONG)    
-        print "*** Tweet sent to " + username + " ::: [" + tweet + "]"
+        api.update_status(tweet,lat=GLEBE_LAT,int=GLEBE_LONG)    
+        print("*** Tweet sent to " + username + " ::: [" + tweet + "]")
         syslog.syslog("Tweeted to " + username + ":" + tweet)
-    except Exception,e:
+    except Exception as e:
         syslog.syslog("sendTweet() exception = " + e.__str__())
         return False
         
@@ -95,31 +95,31 @@ def main():
         syslog.openlog("autotweetr")
         syslog.syslog("autotweetr started, TEST=" + TEST.__str__())
 
-        print "argc = " + len(sys.argv).__str__()
+        print("argc = " + len(sys.argv).__str__())
         
         if len(sys.argv) != 2 :
             msg = "Abort : You need to specify the file to read Tweets from as the first command line argument"
             syslog.syslog(msg)
-            print msg
+            print(msg)
             sys.exit()
         else :
             tweetFile = sys.argv[1]
-            print "tweetFile is " + tweetFile.__str__()
+            print("tweetFile is " + tweetFile.__str__())
             syslog.syslog("Read Tweets from " + tweetFile.__str__())
         
         now = time.time()
-        print now
-        print time.asctime(time.localtime(now))
-        print "MaxTweetLen is " + MaxTweetLen.__str__()
+        print(now)
+        print(time.asctime(time.localtime(now)))
+        print("MaxTweetLen is " + MaxTweetLen.__str__())
     
         # Calculate epoch of the event : 15:00 July 10th 2011
         event = (2011,7,10,15,0,0,-1,-1,True)   	# Real Thing
         #event = (2011,6,13,15,00,0,-1,-1,True)		# Test 
         eventEpoch = time.mktime(event)
-        print "eventEpoch = " + eventEpoch.__str__()
-        print time.localtime(eventEpoch)
+        print("eventEpoch = " + eventEpoch.__str__())
+        print(time.localtime(eventEpoch))
         msg = "Stockcross event starts at : " + time.asctime(time.localtime(eventEpoch)).__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
     
         # Calculate when to start Tweeting : 1 pm
@@ -127,16 +127,16 @@ def main():
         campaignStart = (2011,6,13,13,0,0,-1,-1,True)    # RealThing
         campaignStart = (2011,6,17,3,0,0,-1,-1,True)     # Test 
         campaignEpoch = time.mktime(campaignStart)
-        print "campaignEpoch = " + campaignEpoch.__str__()
-        print time.localtime(campaignEpoch)
-        print time.asctime(time.localtime(campaignEpoch))
+        print("campaignEpoch = " + campaignEpoch.__str__())
+        print(time.localtime(campaignEpoch))
+        print(time.asctime(time.localtime(campaignEpoch)))
         msg = "Twitter campaign starts at : " + time.asctime(time.localtime(campaignEpoch)).__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
     
         if campaignEpoch >= eventEpoch :
             msg = "Invalid epoch times, exiting..."
-            print msg
+            print(msg)
             syslog.syslog(msg)
             sys.exit()
   
@@ -153,26 +153,26 @@ def main():
                 tweets.append(line)
                 msg = "OK : " + line
                 syslog.syslog(msg)
-                print msg
+                print(msg)
             else :
                 msg = "** Error : len=" + a.__str__() + " : " + line
                 syslog.syslog(msg)
-                print msg
+                print(msg)
                 sys.exit()
     
-        print "Tweets to be sent : \n" + tweets.__str__()
+        print("Tweets to be sent : \n" + tweets.__str__())
 
         numOfTweets = len(tweets)
         msg = "Number of valid tweets  = " + numOfTweets.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
 
         msg = "Interval between Tweets is " + int(SecsInADay/3600).__str__() + " hour(s)"
-        print msg
+        print(msg)
         syslog.syslog(msg)
     
         msg = "Jitter added to Interval is " + JitterMins.__str__() + " minute(s)"
-        print msg
+        print(msg)
         syslog.syslog(msg)
     
         secsTillCampaign = campaignEpoch - now
@@ -182,16 +182,16 @@ def main():
         #syslog.syslog(msg)
     
         msg = "Waiting for " + int(secsTillCampaign/3600).__str__() + " hours (="  + secsTillCampaign.__str__() + " seconds) until Twitter campaign starts..."
-        print msg
+        print(msg)
         syslog.syslog(msg)
         time.sleep(secsTillCampaign)
         
         while True:
             for tweet in tweets:
-                print "-----------------------------------------"
+                print("-----------------------------------------")
                 i = tweets.index(tweet)
                 msg = "SOTG_OPS : Current tweet index = " + i.__str__()
-                print msg
+                print(msg)
                 syslog.syslog(msg)
             
                 # Send Tweet
@@ -213,7 +213,7 @@ def main():
                 
                     jitter = randrange(JitterMins * 60)
                     msg = "Jitter (in seconds) is " + jitter.__str__() + " i.e. " + str(jitter/60) + " minutes" 
-                    print msg
+                    print(msg)
                     syslog.syslog(msg)
                     timeToWait = SecsInADay + jitter
                 
@@ -235,21 +235,21 @@ def main():
                     syslog.syslog(msg)
                 
                     msg = "Waiting for " + timeToWait.__str__() + " second(s) until next Tweet shall be sent..."
-                    print msg
+                    print(msg)
                     syslog.syslog(msg)
                     time.sleep(timeToWait)
                     #time.sleep(1)
                 
-            print " "
-            print "===================================================="
-            print "=                    Next cycle                    ="
-            print "===================================================="
-            print " "
+            print(" ")
+            print("====================================================")
+            print("=                    Next cycle                    =")
+            print("====================================================")
+            print(" ")
             syslog.syslog("Repeating Tweets...")
     
-    except Exception,e:
+    except Exception as e:
         msg = "Exception in autotweetr : " + e.__str__()
-        print msg
+        print(msg)
         syslog.syslog(msg)
     
     

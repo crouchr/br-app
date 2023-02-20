@@ -34,9 +34,9 @@ if Fake == False :
     try:
         #print "Opening GeoIP City database..."
         Gi = GeoIP.open(Geo_ip_dbase,GeoIP.GEOIP_STANDARD)
-    except Exception,e:
-        print "Exception" + `e` 
-        syslog.syslog("blackrain_ipintellib.py() : Exception " + `e` + " caught whilst opening GeoIP City database " + Geo_ip_dbase)
+    except Exception as e:
+        print("Exception" + repr(e)) 
+        syslog.syslog("blackrain_ipintellib.py() : Exception " + repr(e) + " caught whilst opening GeoIP City database " + Geo_ip_dbase)
         sys.exit(-1)
     
 # Get version of this library  
@@ -132,7 +132,7 @@ def geo_ip(ip):
         #print resultDict         
         return resultDict     
     
-    except Exception,e:
+    except Exception as e:
         #print "Caught exception " + `e` + " in geo_ip():ip=" + ip
         resultDict['result']       = False
         resultDict['countryName']  = '?'
@@ -144,7 +144,7 @@ def geo_ip(ip):
         resultDict['latitude']     =  0
         resultDict['longitude']    =  0
         resultDict['postCode']     = '?'
-        syslog.syslog("Caught exception " + `e` + " in geo_ip(): ip=" + ip)
+        syslog.syslog("Caught exception " + repr(e) + " in geo_ip(): ip=" + ip)
         return resultDict
     
     #print resultDict         
@@ -202,7 +202,7 @@ def ip2asn(ip):
             #print resultDict['as']
             
             if "ASNA" in resultDict['as'] :	
-                print "ip2asn(): WHOIS server could not determine AS for IP address : ",ip
+                print("ip2asn(): WHOIS server could not determine AS for IP address : ",ip)
                 resultDict['as']             = 'AS-none'
                 resultDict['netblock']       = 'whois-failed'
                 resultDict['countryCode']    = 'whois-failed'
@@ -253,25 +253,25 @@ def ip2asn(ip):
                 if resultDict['as'] == 'AS3125'  : resultDict['registeredCode'] = "COMP:FT-ORANGE"
                 
         else:
-            print "\nParse failed\n"    
-            print "n[0]:" ,n[0]
-            print "n[1]:" ,n[1]
-            print "n[2]:" ,n[2]
-            print "n[3]:" ,n[3]
-            print "n[4]:" ,n[4]
-            print "n[5]:" ,n[5]
-            print "n[6]:" ,n[6]
-            print "n[7]:" ,n[7]
-            print "n[8]:" ,n[8]
-            print "n[9]:" ,n[9]
-            print "n[10]:",n[10]
-            print "n[11]:",n[11]
-            print "n[12]:",n[12]
-            print "n[13]:",n[13]
-            print "n[14]:",n[14]	
+            print("\nParse failed\n")    
+            print("n[0]:" ,n[0])
+            print("n[1]:" ,n[1])
+            print("n[2]:" ,n[2])
+            print("n[3]:" ,n[3])
+            print("n[4]:" ,n[4])
+            print("n[5]:" ,n[5])
+            print("n[6]:" ,n[6])
+            print("n[7]:" ,n[7])
+            print("n[8]:" ,n[8])
+            print("n[9]:" ,n[9])
+            print("n[10]:",n[10])
+            print("n[11]:",n[11])
+            print("n[12]:",n[12])
+            print("n[13]:",n[13])
+            print("n[14]:",n[14])	
 
-    except Exception,e:
-        syslog.syslog("Exception " + `e` + " in ip2asn(): ip=" + ip + " raw2=" + raw2);
+    except Exception as e:
+        syslog.syslog("Exception " + repr(e) + " in ip2asn(): ip=" + ip + " raw2=" + raw2);
 	resultDict['as']             = 'AS-none'
         resultDict['netblock']       = 'whois-failed'
         resultDict['countryCode']    = 'whois-failed'
@@ -300,8 +300,8 @@ def name2ipHosts(name):
                 #print ips[0]
                 return ips[0]
         return None 
-    except Exception,e:
-        syslog.syslog("Exception " + `e` + " in name2ipHosts(): name=" + name);
+    except Exception as e:
+        syslog.syslog("Exception " + repr(e) + " in name2ipHosts(): name=" + name);
         return None
     
     #	pipe = os.popen(cmdLine,'r')
@@ -362,8 +362,8 @@ def ip2name(ip):
             
         # print dns
 
-    except Exception,e:
-        syslog.syslog("Exception " + `e` + " in ip2name(): ip=" + ip + " raw=" + raw);
+    except Exception as e:
+        syslog.syslog("Exception " + repr(e) + " in ip2name(): ip=" + ip + " raw=" + raw);
     	#print "ip2name(): Caught exception for following raw data for IP=" + ip
 	#print "command-line:" + cmdLine
 	#print "raw:" + raw
@@ -426,63 +426,63 @@ def test():
     asInfo = {}
     dnsInfo = {}
     
-    print "\n\n\n\n"
-    print "==============================================="
-    print "BlackRain : IP Intelligence Library Test Module"
-    print "==============================================="
-    print "Library version           : " + getVersion()
-    print "GeoIP dbase file location : " + getDatabase()
-    print "Fake GeoIP info           : " + `Fake`
+    print("\n\n\n\n")
+    print("===============================================")
+    print("BlackRain : IP Intelligence Library Test Module")
+    print("===============================================")
+    print("Library version           : " + getVersion())
+    print("GeoIP dbase file location : " + getDatabase())
+    print("Fake GeoIP info           : " + repr(Fake))
 
-    print "\n----------------"
-    print "Hard-coded tests"
-    print "----------------\n"
+    print("\n----------------")
+    print("Hard-coded tests")
+    print("----------------\n")
 
     
     # IP to DNS name
     ipStr = "0.0.0.0"				# corner case
     dnsInfo  = ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
 
     # DNS name to IP using /etc/hosts
     name  = "rocknroll.dyndns.org"	# 
     ip = name2ipHosts(name)	       	# resolve get DNS name	
-    print name + " resolves via /etc/hosts to " + ip.__str__()
+    print(name + " resolves via /etc/hosts to " + ip.__str__())
     
     # DNS name to IP using /etc/hosts
     name  = "www.google.com"		# 
     ip = name2ipHosts(name)	       	# resolve get DNS name	
-    print name + " resolves via /etc/hosts to " + ip.__str__()
+    print(name + " resolves via /etc/hosts to " + ip.__str__())
 
     # IP to DNS name
     ipStr = "127.0.0.1"				# corner case 
     dnsInfo  = ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
 
     # IP to DNS name
     ipStr = "255.255.255.255"			# corner case 
     dnsInfo  = ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
 
     # IP to DNS name
     ipStr = "270.255.255.255"			# nonsense IP 
     dnsInfo  = ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
 
     # IP to DNS name
     ipStr = "217.41.27.169"			# My home ADSL IP
     dnsInfo  = ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
 
     # DNS name to IP
     ipStr = "www.openbsd.org"
     dnsInfo  = ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
     
     # DNS name to IP
     ipStr = "www.google.com"
     dnsInfo  = ip2name(ipStr)	        	# resolve get DNS name	
-    print ipStr + " resolves to " + dnsInfo['name']
+    print(ipStr + " resolves to " + dnsInfo['name'])
     
     # Richard's IP 
     ipStr      = RichardIP
@@ -493,7 +493,7 @@ def test():
     result = ipStr + "," + dnsInfo['name'].strip('.') + \
                      "," + asInfo['as'] + ",registeredCode=" + asInfo['registeredCode'] + ",registeredName=" + asInfo['registeredName'] + ",ASnetblock=" + asInfo['netblock'] + ",ASregistry=" + asInfo['registry'] + \
                      ",geoIPcountryName=" + geoIP['countryName'] + ",geoIPcountry=" + geoIP['countryCode'] + ",geoIPcity=" + geoIP['city'] + ",geoIPlat=" + "%.2f" % geoIP['latitude'] + ",geoIPlong=" + "%.2f" % geoIP['longitude']
-    print "\nRichard's IP :\n" + result
+    print("\nRichard's IP :\n" + result)
     
     # Mat's IP 
     ipStr      = MatIP
@@ -504,12 +504,12 @@ def test():
     result = ipStr + "," + dnsInfo['name'].strip('.') + \
                      "," + asInfo['as'] + ",registeredCode=" + asInfo['registeredCode'] + ",registeredName=" + asInfo['registeredName'] + ",ASnetblock=" + asInfo['netblock'] + ",ASregistry=" + asInfo['registry'] + \
                      ",geoIPcountryName=" + geoIP['countryName'] + ",geoIPcountry=" + geoIP['countryCode'] + ",geoIPcity=" + geoIP['city'] + ",geoIPlat=" + "%.2f" % geoIP['latitude'] + ",geoIPlong=" + "%.2f" % geoIP['longitude']
-    print "\nMat's IP :\n" + result
+    print("\nMat's IP :\n" + result)
   
       
-    print "\n-------------------------"
-    print "Test data taken from file"
-    print "-------------------------\n"
+    print("\n-------------------------")
+    print("Test data taken from file")
+    print("-------------------------\n")
     
     # input file : file of IPs (hand-crafted)
     fpIn   = open(r'blackrain_ipintellib.test.in.csv','r')
@@ -535,10 +535,10 @@ def test():
             continue
         
         fields = line1.split(',')
-        print "----------------------------------------------"
+        print("----------------------------------------------")
     
         ipStr = fields[0].strip()
-        print "IP=" + ipStr    
+        print("IP=" + ipStr)    
         
         dnsInfo    = ip2name(ipStr)	        # resolve get DNS name	
         asInfo     = ip2asn(ipStr)        	# get AS information from WHOIS whob
@@ -549,7 +549,7 @@ def test():
                          "," + asInfo['as'] + ",ASowner=" + asInfo['registeredCode'] + ",ASnetblock=" + asInfo['netblock'] + ",ASregistry=" + asInfo['registry'] + \
                          ",geoIPcountry=" + geoIP['countryCode'] + ",geoIPcity=" + geoIP['city'] + ",geoIPlat=" + "%.2f" % geoIP['latitude'] + ",geoIPlong=" + "%.2f" % geoIP['longitude']
   
-        print result        
+        print(result)        
                       
         #print >> fpOut0,result
      

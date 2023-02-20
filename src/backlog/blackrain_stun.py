@@ -60,7 +60,7 @@ ChangedAddressError = "Meet an error, when do Test1 on Changed IP and Port"
 
 def GenTranID():
     a =''
-    for i in xrange(32):
+    for i in range(32):
         a+=random.choice('0123456789ABCDEF')
     #return binascii.a2b_hex(a)
     return a
@@ -136,15 +136,15 @@ def Test(s, host, port, source_ip, source_port, send_data=""):
     return retVal
 
 def Initialize():
-    items = dictAttrToVal.items()
+    items = list(dictAttrToVal.items())
     global dictValToAttr
     dictValToAttr = {}
-    for i in xrange(len(items)):
+    for i in range(len(items)):
         dictValToAttr.update({items[i][1]:items[i][0]})
-    items = dictMsgTypeToVal.items()
+    items = list(dictMsgTypeToVal.items())
     global dictValToMsgType
     dictValToMsgType = {}
-    for i in xrange(len(items)):
+    for i in range(len(items)):
         dictValToMsgType.update({items[i][1]:items[i][0]})
     
 
@@ -239,8 +239,8 @@ if __name__ == '__main__':
     #NatType, exIP, exPort = GetNATType(s, source_ip, source_port)
     #print "NAT Type:", NatType
     natType , extIP = getExternalIP()
-    print "NAT Type    = " , natType
-    print "External IP = " , extIP
+    print("NAT Type    = " , natType)
+    print("External IP = " , extIP)
     #print "External Port:", exPort
     #import time
     #time.sleep(60)

@@ -124,9 +124,9 @@ def processHoneyd(line):
         #print flowEvent
         return flowEvent
             
-    except Exception,e :
+    except Exception as e :
         msg = "Exception : " + e.__str__() + " in line=" + line
-        print msg
+        print(msg)
         syslog.syslog(msg)
         return None
 
